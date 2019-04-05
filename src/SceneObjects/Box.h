@@ -1,5 +1,5 @@
-#ifndef __BOX_H__
-#define __BOX_H__
+#ifndef BOX_H_
+#define BOX_H_
 
 #include "../scene/scene.h"
 
@@ -12,15 +12,16 @@ public:
 	{
 	}
 
-	virtual bool intersectLocal( const ray& r, isect& i ) const;
-	virtual bool hasBoundingBoxCapability() const { return true; }
-    virtual BoundingBox ComputeLocalBoundingBox()
+	bool intersectLocal( const Ray& r, ISect& i ) const override;
+	bool hasBoundingBoxCapability() const override { return true; }
+
+	BoundingBox ComputeLocalBoundingBox() override
     {
-        BoundingBox localbounds;
-        localbounds.max = vec3f(0.5, 0.5, 0.5);
-		localbounds.min = vec3f(-0.5, -0.5, -0.5);
-        return localbounds;
+        BoundingBox localBounds;
+        localBounds.max = vec3f(0.5, 0.5, 0.5);
+		localBounds.min = vec3f(-0.5, -0.5, -0.5);
+        return localBounds;
     }
 };
 
-#endif // __BOX_H__
+#endif // BOX_H_

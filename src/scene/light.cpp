@@ -1,33 +1,31 @@
-#include <cmath>
-
 #include "light.h"
 
-double DirectionalLight::distanceAttenuation( const vec3f& P ) const
+double DirectionalLight::distanceAttenuation( const vec3f& p ) const
 {
 	// distance to light is infinite, so f(di) goes to 0.  Return 1.
 	return 1.0;
 }
 
 
-vec3f DirectionalLight::shadowAttenuation( const vec3f& P ) const
+vec3f DirectionalLight::shadowAttenuation( const vec3f& p ) const
 {
     // YOUR CODE HERE:
     // You should implement shadow-handling code here.
     return vec3f(1,1,1);
 }
 
-vec3f DirectionalLight::getColor( const vec3f& P ) const
+vec3f DirectionalLight::getColor( const vec3f& p ) const
 {
 	// Color doesn't depend on P 
 	return color;
 }
 
-vec3f DirectionalLight::getDirection( const vec3f& P ) const
+vec3f DirectionalLight::getDirection( const vec3f& p ) const
 {
 	return -orientation;
 }
 
-double PointLight::distanceAttenuation( const vec3f& P ) const
+double PointLight::distanceAttenuation( const vec3f& p ) const
 {
 	// YOUR CODE HERE
 
@@ -37,19 +35,19 @@ double PointLight::distanceAttenuation( const vec3f& P ) const
 	return 1.0;
 }
 
-vec3f PointLight::getColor( const vec3f& P ) const
+vec3f PointLight::getColor( const vec3f& p ) const
 {
 	// Color doesn't depend on P 
 	return color;
 }
 
-vec3f PointLight::getDirection( const vec3f& P ) const
+vec3f PointLight::getDirection( const vec3f& p ) const
 {
-	return (position - P).normalize();
+	return (position - p).normalize();
 }
 
 
-vec3f PointLight::shadowAttenuation(const vec3f& P) const
+vec3f PointLight::shadowAttenuation(const vec3f& p) const
 {
     // YOUR CODE HERE:
     // You should implement shadow-handling code here.

@@ -18,9 +18,9 @@
 // the standard getops() on Linux.
 //
 
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
+#include <cstdio>
+#include <cctype>
+#include <cstring>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -53,8 +53,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-char* optarg = NULL;
-int optind, opterr, optopt;
+char* optArg = nullptr;
+int optInd, optErr, optOpt;
 
 int GetOption (
     int argc,
@@ -64,12 +64,11 @@ int GetOption (
 {
     static int iArg = 1;
     char chOpt;
-    char* psz = NULL;
-    char* pszParam = NULL;
+    char* pszParam = nullptr;
 
     if (iArg < argc)
     {
-        psz = &(argv[iArg][0]);
+        char* psz = &(argv[iArg][0]);
         if (*psz == '-' || *psz == '/')
         {
             // we have an option specifier
@@ -78,7 +77,7 @@ int GetOption (
             {
                 // we have an option character
                 psz = strchr(pszValidOpts, chOpt);
-                if (psz != NULL)
+                if (psz != nullptr)
                 {
                     // option is valid, we want to return chOpt
                     if (psz[1] == ':')
@@ -150,21 +149,19 @@ int GetOption (
 
     iArg++;
     *ppszParam = pszParam;
-	optind = iArg-1;
+	optInd = iArg-1;
     return (chOpt);
 }
 
-int getopt(int argc, char **argv, char *optstring)
+int getopt(const int argc, char **argv, char *optString)
 {
-	int i;
-	
-	i = GetOption(argc, argv, optstring, &optarg);
+	const auto i = GetOption(argc, argv, optString, &optArg);
 
 	if (i==0 || i==1) return EOF;
-	else if (i==-1) {
-		char c=*(optarg+1);
+	if (i==-1) {
+		const auto c=*(optArg+1);
 		return c;
 	}
-	else return i;
+	return i;
 }
 			

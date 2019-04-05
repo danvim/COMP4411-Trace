@@ -1,5 +1,5 @@
-#ifndef __VECMATH_H__
-#define __VECMATH_H__
+#ifndef VECMATH_H_
+#define VECMATH_H_
 
 // Vector math classes and support routines.
 // This was taken out of someone's algebra code from the 457 devl directory.
@@ -7,8 +7,6 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
-
-using namespace std;
 
 class vec3f;
 class vec4f;
@@ -100,7 +98,7 @@ public:
 	bool iszero() const { return ( (n[0]==0 && n[1]==0 && n[2]==0) ? true : false); };
 
 public:
-	double n[3];
+	double n[3]{};
 };
 
 class vec4f
@@ -169,7 +167,7 @@ public:
 	}
 
 public:
-	double n[4];
+	double n[4]{};
 };
 
 class mat3f
@@ -404,17 +402,17 @@ inline bool operator !=(const vec3f& a, const vec3f& b)
 	return !( a == b );
 }
 
-inline ostream& operator <<( ostream& os, const vec3f& v )
+inline std::ostream& operator <<(std::ostream& os, const vec3f& v )
 {
 	return os << v.n[0] << " " << v.n[1] << " " << v.n[2];
 }
 
-inline istream& operator >>( istream& is, vec3f& v )
+inline std::istream& operator >>(std::istream& is, vec3f& v )
 {
 	return is >> v.n[0] >> v.n[1] >> v.n[2];
 }
 
-inline void swap( vec3f& a, vec3f& b )
+inline void swap( vec3f& a, vec3f& b ) noexcept
 {
 	vec3f t( a );
 	a = b;
@@ -494,17 +492,17 @@ inline bool operator !=(const vec4f& a, const vec4f& b)
 	return !( a == b );
 }
 
-inline ostream& operator <<( ostream& os, const vec4f& v )
+inline std::ostream& operator <<(std::ostream& os, const vec4f& v )
 {
 	return os << v.n[0] << " " << v.n[1] << " " << v.n[2] << " " << v.n[3];
 }
 
-inline istream& operator >>( istream& is, vec4f& v )
+inline std::istream& operator >>(std::istream& is, vec4f& v )
 {
 	return is >> v.n[0] >> v.n[1] >> v.n[2] >> v.n[3];
 }
 
-inline void swap( vec4f& a, vec4f& b )
+inline void swap( vec4f& a, vec4f& b ) noexcept
 {
 	vec4f t( a );
 	a = b;
@@ -580,17 +578,19 @@ inline bool operator !=( const mat3f& a, const mat3f& b )
 	return !( a == b );
 }
 
-inline ostream& operator <<( ostream& os, const mat3f& m )
+inline std::ostream& operator <<(std::ostream& os, const mat3f& m )
 {
 	os << m.v[0] << " " << m.v[1] << " " << m.v[2];
+	return os;
 }
 
-inline istream& operator >>( istream& is, mat3f& m )
+inline std::istream& operator >>(std::istream& is, mat3f& m )
 {
 	is >> m.v[0] >> m.v[1] >> m.v[2];
+	return is;
 }
 
-inline void swap(mat3f& a, mat3f& b)
+inline void swap(mat3f& a, mat3f& b) noexcept
 {
 	swap( a.v[0], b.v[0] );
 	swap( a.v[1], b.v[1] );
@@ -651,17 +651,19 @@ inline bool operator !=( const mat4f& a, const mat4f& b )
 	return !( a == b );
 }
 
-inline ostream& operator <<( ostream& os, const mat4f& m )
+inline std::ostream& operator <<(std::ostream& os, const mat4f& m )
 {
 	os << m.v[0] << " " << m.v[1] << " " << m.v[2] << " " << m.v[3];
+	return os;
 }
 
-inline istream& operator >>( istream& is, mat4f& m )
+inline std::istream& operator >>(std::istream& is, mat4f& m )
 {
 	is >> m.v[0] >> m.v[1] >> m.v[2] >> m.v[3];
+	return is;
 }
 
-inline void swap( mat4f& a, mat4f& b )
+inline void swap( mat4f& a, mat4f& b ) noexcept
 {
 	swap( a.v[0], b.v[0] );
 	swap( a.v[1], b.v[1] );
@@ -669,11 +671,11 @@ inline void swap( mat4f& a, mat4f& b )
 	swap( a.v[3], b.v[3] );
 }
 
-inline vec3f::vec3f( const vec4f& v ) 
+inline vec3f::vec3f( const vec4f& v4 ) 
 { 
-	n[0] = v[0]; 
-	n[1] = v[1]; 
-	n[2] = v[2]; 
+	n[0] = v4[0]; 
+	n[1] = v4[1]; 
+	n[2] = v4[2]; 
 }
 /*
 inline vec3f clamp( const vec3f& other )
@@ -681,4 +683,4 @@ inline vec3f clamp( const vec3f& other )
 	return maximum( vec3f(), minimum( other, vec3f( 1.0, 1.0, 1.0 ) ) );
 }
 */
-#endif // __VECMATH_H__
+#endif // VECMATH_H_

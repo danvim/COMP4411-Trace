@@ -15,14 +15,14 @@ Camera::Camera()
 }
 
 void
-Camera::rayThrough( double x, double y, ray &r )
+Camera::rayThrough( double x, double y, Ray &r ) const
 // Ray through normalized window point x,y.  In normalized coordinates
 // the camera's x and y vary both vary from 0 to 1.
 {
     x -= 0.5;
     y -= 0.5;
-    vec3f dir = look + x * u + y * v;
-    r = ray( eye, dir.normalize() );
+    auto dir = look + x * u + y * v;
+    r = Ray( eye, dir.normalize() );
 }
 
 void
@@ -36,7 +36,7 @@ Camera::setLook( double r, double i, double j, double k )
 // Set the direction for the camera to look using a quaternion.  The
 // default camera looks down the neg z axis with the pos y axis as up.
 // We derive the new look direction by rotating the camera by the
-// quaternion rijk.
+// quaternion r i j k.
 {
                                 // set look matrix
     m[0][0] = 1.0 - 2.0 * (i * i + j * j);
@@ -57,9 +57,9 @@ Camera::setLook( double r, double i, double j, double k )
 void
 Camera::setLook( const vec3f &viewDir, const vec3f &upDir )
 {
-    vec3f z = -viewDir;          // this is where the z axis should end up
-    const vec3f &y = upDir;      // where the y axis should end up
-    vec3f x = y.cross(z);               // lah,
+	const auto z = -viewDir;          // this is where the z axis should end up
+    const auto& y = upDir;      // where the y axis should end up
+	const auto x = y.cross(z);               // lah,
 
     m = mat3f( x,y,z ).transpose();
 
@@ -67,7 +67,7 @@ Camera::setLook( const vec3f &viewDir, const vec3f &upDir )
 }
 
 void
-Camera::setFOV( double fov )
+Camera::setFov( double fov )
 // fov - field of view (height) in degrees    
 {
     fov /= (180.0 / PI);      // convert to radians

@@ -1,22 +1,24 @@
 //
 // material.h
 //
-// The Material class: a description of the phsyical properties of a surface
+// The Material class: a description of the physical properties of a surface
 // that are used to determine how that surface interacts with light.
 
-#ifndef __MATERIAL_H__
-#define __MATERIAL_H__
+#ifndef MATERIAL_H_
+#define MATERIAL_H_
 
 #include "../vecmath/vecmath.h"
 
 class Scene;
-class ray;
-class isect;
+class Ray;
+class ISect;
 
 class Material
 {
 public:
-    Material()
+	virtual ~Material() = default;
+
+	Material()
         : ke( vec3f( 0.0, 0.0, 0.0 ) )
         , ka( vec3f( 0.0, 0.0, 0.0 ) )
         , ks( vec3f( 0.0, 0.0, 0.0 ) )
@@ -30,7 +32,7 @@ public:
               const vec3f& d, const vec3f& r, const vec3f& t, double sh, double in)
         : ke( e ), ka( a ), ks( s ), kd( d ), kr( r ), kt( t ), shininess( sh ), index( in ) {}
 
-	virtual vec3f shade( Scene *scene, const ray& r, const isect& i ) const;
+	virtual vec3f shade( Scene *scene, const Ray& r, const ISect& i ) const;
 
     vec3f ke;                    // emissive
     vec3f ka;                    // ambient
@@ -46,7 +48,7 @@ public:
                                 // material with zero coeffs for everything
                                 // as opposed to the "default" material which is
                                 // a pleasant blue.
-    static const Material zero;
+    static const Material ZERO;
 
     Material &
     operator+=( const Material &m )
@@ -66,7 +68,7 @@ public:
 };
 
 inline Material
-operator*( double d, Material m )
+operator*(const double d, Material m )
 {
     m.ke *= d;
     m.ka *= d;
@@ -80,4 +82,4 @@ operator*( double d, Material m )
 }
 // extern Material THE_DEFAULT_MATERIAL;
 
-#endif // __MATERIAL_H__
+#endif // MATERIAL_H_

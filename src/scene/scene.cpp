@@ -1,14 +1,15 @@
 #include <cmath>
 
 #include "scene.h"
-#include "light.h"
 #include "../ui/TraceUI.h"
-extern TraceUI* traceUI;
+extern TraceUi* traceUi;
 
-void BoundingBox::operator=(const BoundingBox& target)
+BoundingBox& BoundingBox::operator=(const BoundingBox& target)
 {
 	min = target.min;
 	max = target.max;
+
+	return *this;
 }
 
 // Does this bounding box intersect the target?
@@ -30,15 +31,14 @@ bool BoundingBox::intersects(const vec3f& point) const
 // closest to the origin in tMin and the "t" value of the far intersection
 // in tMax and return true, else return false.
 // Using Kay/Kajiya algorithm.
-bool BoundingBox::intersect(const ray& r, double& tMin, double& tMax) const
+bool BoundingBox::intersect(const Ray& r, double& tMin, double& tMax) const
 {
 	vec3f R0 = r.getPosition();
 	vec3f Rd = r.getDirection();
 
 	tMin = -1.0e308; // 1.0e308 is close to infinity... close enough for us!
 	tMax = 1.0e308;
-	double ttemp;
-	
+
 	for (int currentaxis = 0; currentaxis < 3; currentaxis++)
 	{
 		double vd = Rd[currentaxis];
@@ -55,7 +55,7 @@ bool BoundingBox::intersect(const ray& r, double& tMin, double& tMax) const
 		double t2 = v2/vd;
 		
 		if ( t1 > t2 ) { // swap t1 & t2
-			ttemp = t1;
+			double ttemp = t1;
 			t1 = t2;
 			t2 = ttemp;
 		}
@@ -74,7 +74,7 @@ bool BoundingBox::intersect(const ray& r, double& tMin, double& tMax) const
 }
 
 
-bool Geometry::intersect(const ray&r, isect&i) const
+bool Geometry::intersect(const Ray&r, ISect&i) const
 {
     // Transform the ray into the object's local coordinate space
     vec3f pos = transform->globalToLocalCoords(r.getPosition());
@@ -82,7 +82,7 @@ bool Geometry::intersect(const ray&r, isect&i) const
     double length = dir.length();
     dir /= length;
 
-    ray localRay( pos, dir );
+    Ray localRay( pos, dir );
 
     if (intersectLocal(localRay, i)) {
         // Transform the intersection point & normal returned back into global space.
@@ -90,13 +90,11 @@ bool Geometry::intersect(const ray&r, isect&i) const
 		i.t /= length;
 
 		return true;
-    } else {
-        return false;
     }
-    
+    return false;
 }
 
-bool Geometry::intersectLocal( const ray& r, isect& i ) const
+bool Geometry::intersectLocal( const Ray& r, ISect& i ) const
 {
 	return false;
 }
@@ -117,38 +115,37 @@ bool Geometry::hasBoundingBoxCapability() const
 
 Scene::~Scene()
 {
-    giter g;
-    liter l;
-    
-	for( g = objects.begin(); g != objects.end(); ++g ) {
+    GeometryIter g;
+
+    for( g = objects.begin(); g != objects.end(); ++g ) {
 		delete (*g);
 	}
 
-	for( g = boundedobjects.begin(); g != boundedobjects.end(); ++g ) {
+	for( g = boundedObjects.begin(); g != boundedObjects.end(); ++g ) {
 		delete (*g);
 	}
 
-	for( g = nonboundedobjects.begin(); g != boundedobjects.end(); ++g ) {
+	for( g = unboundedObjects.begin(); g != boundedObjects.end(); ++g ) {
 		delete (*g);
 	}
 
-	for( l = lights.begin(); l != lights.end(); ++l ) {
+	for( LightIter l = lights.begin(); l != lights.end(); ++l ) {
 		delete (*l);
 	}
 }
 
 // Get any intersection with an object.  Return information about the 
 // intersection through the reference parameter.
-bool Scene::intersect( const ray& r, isect& i ) const
+bool Scene::intersect( const Ray& r, ISect& i ) const
 {
-	typedef list<Geometry*>::const_iterator iter;
+	typedef std::list<Geometry*>::const_iterator iter;
 	iter j;
 
-	isect cur;
+	ISect cur;
 	bool have_one = false;
 
 	// try the non-bounded objects
-	for( j = nonboundedobjects.begin(); j != nonboundedobjects.end(); ++j ) {
+	for( j = unboundedObjects.begin(); j != unboundedObjects.end(); ++j ) {
 		if( (*j)->intersect( r, cur ) ) {
 			if( !have_one || (cur.t < i.t) ) {
 				i = cur;
@@ -158,7 +155,7 @@ bool Scene::intersect( const ray& r, isect& i ) const
 	}
 
 	// try the bounded objects
-	for( j = boundedobjects.begin(); j != boundedobjects.end(); ++j ) {
+	for( j = boundedObjects.begin(); j != boundedObjects.end(); ++j ) {
 		if( (*j)->intersect( r, cur ) ) {
 			if( !have_one || (cur.t < i.t) ) {
 				i = cur;
@@ -174,14 +171,13 @@ bool Scene::intersect( const ray& r, isect& i ) const
 void Scene::initScene()
 {
 	bool first_boundedobject = true;
-	BoundingBox b;
-	
-	typedef list<Geometry*>::const_iterator iter;
+
+	typedef std::list<Geometry*>::const_iterator iter;
 	// split the objects into two categories: bounded and non-bounded
 	for( iter j = objects.begin(); j != objects.end(); ++j ) {
 		if( (*j)->hasBoundingBoxCapability() )
 		{
-			boundedobjects.push_back(*j);
+			boundedObjects.push_back(*j);
 
 			// widen the scene's bounding box, if necessary
 			if (first_boundedobject) {
@@ -190,12 +186,12 @@ void Scene::initScene()
 			}
 			else
 			{
-				b = (*j)->getBoundingBox();
+				BoundingBox b = (*j)->getBoundingBox();
 				sceneBounds.max = maximum(sceneBounds.max, b.max);
 				sceneBounds.min = minimum(sceneBounds.min, b.min);
 			}
 		}
 		else
-			nonboundedobjects.push_back(*j);
+			unboundedObjects.push_back(*j);
 	}
 }

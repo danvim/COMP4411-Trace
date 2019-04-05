@@ -4,67 +4,65 @@
 // The header file for the UI part
 //
 
-#ifndef __rayUI_h__
-#define __rayUI_h__
+#ifndef RAY_UI_H_
+#define RAY_UI_H_
 
-#include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
-#include <FL/Fl_Value_Slider.H>
-#include <FL/Fl_Check_Button.H>
 #include <FL/Fl_Button.H>
 
-#include <FL/fl_file_chooser.H>		// FLTK file chooser
+#include <FL/Fl_File_Chooser.H>		// FLTK file chooser
 
 #include "TraceGLWindow.h"
 
-class TraceUI {
+class TraceUi
+{
 public:
-	TraceUI();
+	TraceUi();
 
 	// The FLTK widgets
-	Fl_Window*			m_mainWindow;
-	Fl_Menu_Bar*		m_menubar;
+	Fl_Window* mMainWindow;
+	Fl_Menu_Bar* mMenuBar;
 
-	Fl_Slider*			m_sizeSlider;
-	Fl_Slider*			m_depthSlider;
+	Fl_Slider* mSizeSlider{};
+	Fl_Slider* mDepthSlider{};
 
-	Fl_Button*			m_renderButton;
-	Fl_Button*			m_stopButton;
+	Fl_Button* mRenderButton;
+	Fl_Button* mStopButton;
 
-	TraceGLWindow*		m_traceGlWindow;
+	TraceGLWindow* mTraceGlWindow;
 
 	// member functions
-	void show();
+	void show() const;
 
-	void		setRayTracer(RayTracer *tracer);
+	void setRayTracer(RayTracer* tracer);
 
-	int			getSize();
-	int			getDepth();
+	int getSize() const;
+	int getDepth() const;
 
 private:
-	RayTracer*	raytracer;
+	RayTracer* rayTracer{};
 
-	int			m_nSize;
-	int			m_nDepth;
+	int mNSize;
+	int mNDepth;
 
-// static class members
-	static Fl_Menu_Item menuitems[];
+	// static class members
+	static Fl_Menu_Item menuItems[];
 
-	static TraceUI* whoami(Fl_Menu_* o);
+	static TraceUi* whoami(Fl_Menu_* o);
 
-	static void cb_load_scene(Fl_Menu_* o, void* v);
-	static void cb_save_image(Fl_Menu_* o, void* v);
-	static void cb_exit(Fl_Menu_* o, void* v);
-	static void cb_about(Fl_Menu_* o, void* v);
+	static Fl_Callback cbLoadScene;
+	static Fl_Callback cbSaveImage;
+	static Fl_Callback cbExit;
+	static Fl_Callback cbAbout;
 
-	static void cb_exit2(Fl_Widget* o, void* v);
+	static Fl_Callback cbExit2;
 
-	static void cb_sizeSlides(Fl_Widget* o, void* v);
-	static void cb_depthSlides(Fl_Widget* o, void* v);
+	static Fl_Callback cbSizeSlides;
+	static Fl_Callback cbDepthSlides;
 
-	static void cb_render(Fl_Widget* o, void* v);
-	static void cb_stop(Fl_Widget* o, void* v);
+	static Fl_Callback cbRender;
+	static Fl_Callback cbStop;
 };
 
 #endif

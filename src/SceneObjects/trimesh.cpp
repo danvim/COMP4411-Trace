@@ -1,5 +1,5 @@
 #include <cmath>
-#include <float.h>
+#include <cfloat>
 #include "trimesh.h"
 
 Trimesh::~Trimesh()
@@ -51,7 +51,7 @@ Trimesh::doubleCheck()
     if( normals.size() && normals.size() != vertices.size() )
         return "Bad Trimesh: Wrong number of normals.";
 
-    return 0;
+    return nullptr;
 }
 
 // Intersect ray r with the triangle abc.  If it hits returns true,
@@ -60,16 +60,14 @@ Trimesh::doubleCheck()
 // Uses the algorithm and notation from _Graphic Gems 5_, p. 232.
 //
 // Calculates and returns the normal of the triangle too.
-bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
+bool TrimeshFace::intersectLocal( const Ray& r, ISect& i ) const
 {
     const vec3f& a = parent->vertices[ids[0]];
     const vec3f& b = parent->vertices[ids[1]];
     const vec3f& c = parent->vertices[ids[2]];
     
     vec3f bary;
-    float t;
-    vec3f n;
-    
+
     vec3f p = r.getPosition();
     vec3f v = r.getDirection();
     
@@ -82,13 +80,13 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
 	// there exists some bad triangles such that two vertices coincide
 	// check this before normalize
 	if (cv.iszero()) return false;
-    n = (cv).normalize();
+    vec3f n = (cv).normalize();
 	
     double vdotn = v*n;
     if( -vdotn < NORMAL_EPSILON )
         return false;
     
-    t = - (ap*n)/vdotn;
+    float t = - (ap * n) / vdotn;
     
     if( t < RAY_EPSILON )
         return false;

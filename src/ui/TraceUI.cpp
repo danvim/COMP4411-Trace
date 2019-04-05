@@ -3,11 +3,11 @@
 //
 // Handles FLTK integration and other user interface tasks
 //
-#include <stdio.h>
-#include <time.h>
-#include <string.h>
+#include <ctime>
+#include <cmath>
 
-#include <FL/fl_ask.h>
+#include <FL/fl_ask.H>
+#include <FL/Fl_Value_Slider.H>
 
 #include "TraceUI.h"
 #include "../RayTracer.h"
@@ -15,251 +15,263 @@
 static bool done;
 
 //------------------------------------- Help Functions --------------------------------------------
-TraceUI* TraceUI::whoami(Fl_Menu_* o)	// from menu item back to UI itself
+TraceUi* TraceUi::whoami(Fl_Menu_* o) // from menu item back to UI itself
 {
-	return ( (TraceUI*)(o->parent()->user_data()) );
+	return static_cast<TraceUi*>(o->parent()->user_data());
 }
 
 //--------------------------------- Callback Functions --------------------------------------------
-void TraceUI::cb_load_scene(Fl_Menu_* o, void* v) 
+void TraceUi::cbLoadScene(Fl_Widget* o, void* v)
 {
-	TraceUI* pUI=whoami(o);
-	
-	char* newfile = fl_file_chooser("Open Scene?", "*.ray", NULL );
+	auto pUi = whoami(dynamic_cast<Fl_Menu_*>(o));
 
-	if (newfile != NULL) {
+	auto* newFile = fl_file_chooser("Open Scene?", "*.ray", nullptr);
+
+	if (newFile != nullptr)
+	{
 		char buf[256];
 
-		if (pUI->raytracer->loadScene(newfile)) {
-			sprintf(buf, "Ray <%s>", newfile);
-			done=true;	// terminate the previous rendering
-		} else{
-			sprintf(buf, "Ray <Not Loaded>");
+		if (pUi->rayTracer->loadScene(newFile))
+		{
+			sprintf_s(buf, "Ray <%s>", newFile);
+			done = true; // terminate the previous rendering
+		}
+		else
+		{
+			sprintf_s(buf, "Ray <Not Loaded>");
 		}
 
-		pUI->m_mainWindow->label(buf);
+		pUi->mMainWindow->label(buf);
 	}
 }
 
-void TraceUI::cb_save_image(Fl_Menu_* o, void* v) 
+void TraceUi::cbSaveImage(Fl_Widget* o, void* v)
 {
-	TraceUI* pUI=whoami(o);
-	
-	char* savefile = fl_file_chooser("Save Image?", "*.bmp", "save.bmp" );
-	if (savefile != NULL) {
-		pUI->m_traceGlWindow->saveImage(savefile);
+	auto pUi = whoami(dynamic_cast<Fl_Menu_*>(o));
+
+	auto* saveFile = fl_file_chooser("Save Image?", "*.bmp", "save.bmp");
+	if (saveFile != nullptr)
+	{
+		pUi->mTraceGlWindow->saveImage(saveFile);
 	}
 }
 
-void TraceUI::cb_exit(Fl_Menu_* o, void* v)
+void TraceUi::cbExit(Fl_Widget* o, void* v)
 {
-	TraceUI* pUI=whoami(o);
+	auto pUi = whoami(dynamic_cast<Fl_Menu_*>(o));
 
 	// terminate the rendering
-	done=true;
+	done = true;
 
-	pUI->m_traceGlWindow->hide();
-	pUI->m_mainWindow->hide();
+	pUi->mTraceGlWindow->hide();
+	pUi->mMainWindow->hide();
 }
 
-void TraceUI::cb_exit2(Fl_Widget* o, void* v) 
+void TraceUi::cbExit2(Fl_Widget* o, void* v)
 {
-	TraceUI* pUI=(TraceUI *)(o->user_data());
-	
+	auto* pUi = static_cast<TraceUi *>(o->user_data());
+
 	// terminate the rendering
-	done=true;
+	done = true;
 
-	pUI->m_traceGlWindow->hide();
-	pUI->m_mainWindow->hide();
+	pUi->mTraceGlWindow->hide();
+	pUi->mMainWindow->hide();
 }
 
-void TraceUI::cb_about(Fl_Menu_* o, void* v) 
+void TraceUi::cbAbout(Fl_Widget* o, void* v)
 {
-	fl_message("RayTracer Project, FLTK version for CS 341 Spring 2002. Latest modifications by Jeff Maurer, jmaurer@cs.washington.edu");
+	fl_message(
+		"RayTracer Project, FLTK version for CS 341 Spring 2002. Latest modifications by Jeff Maurer, jmaurer@cs.washington.edu");
 }
 
-void TraceUI::cb_sizeSlides(Fl_Widget* o, void* v)
+void TraceUi::cbSizeSlides(Fl_Widget* o, void* v)
 {
-	TraceUI* pUI=(TraceUI*)(o->user_data());
-	
-	pUI->m_nSize=int( ((Fl_Slider *)o)->value() ) ;
-	int	height = (int)(pUI->m_nSize / pUI->raytracer->aspectRatio() + 0.5);
-	pUI->m_traceGlWindow->resizeWindow( pUI->m_nSize, height );
+	auto* pUi = static_cast<TraceUi*>(o->user_data());
+
+	pUi->mNSize = int(dynamic_cast<Fl_Slider *>(o)->value());
+	const auto height = lround(pUi->mNSize / pUi->rayTracer->aspectRatio());
+	pUi->mTraceGlWindow->resizeWindow(pUi->mNSize, height);
 }
 
-void TraceUI::cb_depthSlides(Fl_Widget* o, void* v)
+void TraceUi::cbDepthSlides(Fl_Widget* o, void* v)
 {
-	((TraceUI*)(o->user_data()))->m_nDepth=int( ((Fl_Slider *)o)->value() ) ;
+	static_cast<TraceUi*>(o->user_data())->mNDepth = int(dynamic_cast<Fl_Slider *>(o)->value());
 }
 
-void TraceUI::cb_render(Fl_Widget* o, void* v)
+void TraceUi::cbRender(Fl_Widget* o, void* v)
 {
 	char buffer[256];
 
-	TraceUI* pUI=((TraceUI*)(o->user_data()));
-	
-	if (pUI->raytracer->sceneLoaded()) {
-		int width=pUI->getSize();
-		int	height = (int)(width / pUI->raytracer->aspectRatio() + 0.5);
-		pUI->m_traceGlWindow->resizeWindow( width, height );
+	auto* pUi = static_cast<TraceUi*>(o->user_data());
 
-		pUI->m_traceGlWindow->show();
+	if (pUi->rayTracer->sceneLoaded())
+	{
+		const auto width = pUi->getSize();
+		const auto height = lround(width / pUi->rayTracer->aspectRatio());
+		pUi->mTraceGlWindow->resizeWindow(width, height);
 
-		pUI->raytracer->traceSetup(width, height);
-		
+		pUi->mTraceGlWindow->show();
+
+		pUi->rayTracer->traceSetup(width, height);
+
 		// Save the window label
-		const char *old_label = pUI->m_traceGlWindow->label();
+		const auto* oldLabel = pUi->mTraceGlWindow->label();
 
 		// start to render here	
-		done=false;
-		clock_t prev, now;
-		prev=clock();
-		
-		pUI->m_traceGlWindow->refresh();
+		done = false;
+		auto prev = clock();
+
+		pUi->mTraceGlWindow->refresh();
 		Fl::check();
 		Fl::flush();
 
-		for (int y=0; y<height; y++) {
-			for (int x=0; x<width; x++) {
+		for (auto y = 0; y < height; y++)
+		{
+			for (auto x = 0; x < width; x++)
+			{
 				if (done) break;
-				
+
 				// current time
-				now = clock();
+				const auto now = clock();
 
 				// check event every 1/2 second
-				if (((double)(now-prev)/CLOCKS_PER_SEC)>0.5) {
-					prev=now;
+				if ((double(now - prev) / CLOCKS_PER_SEC) > 0.5)
+				{
+					prev = now;
 
-					if (Fl::ready()) {
+					if (Fl::ready())
+					{
 						// refresh
-						pUI->m_traceGlWindow->refresh();
+						pUi->mTraceGlWindow->refresh();
 						// check event
 						Fl::check();
 
-						if (Fl::damage()) {
+						if (Fl::damage())
+						{
 							Fl::flush();
 						}
 					}
 				}
 
-				pUI->raytracer->tracePixel( x, y );
-		
+				pUi->rayTracer->tracePixel(x, y);
 			}
 			if (done) break;
 
 			// flush when finish a row
-			if (Fl::ready()) {
+			if (Fl::ready())
+			{
 				// refresh
-				pUI->m_traceGlWindow->refresh();
+				pUi->mTraceGlWindow->refresh();
 
-				if (Fl::damage()) {
+				if (Fl::damage())
+				{
 					Fl::flush();
 				}
 			}
 			// update the window label
-			sprintf(buffer, "(%d%%) %s", (int)((double)y / (double)height * 100.0), old_label);
-			pUI->m_traceGlWindow->label(buffer);
-			
+			sprintf_s(buffer, "(%d%%) %s", int(double(y) / double(height) * 100.0), oldLabel);
+			pUi->mTraceGlWindow->label(buffer);
 		}
-		done=true;
-		pUI->m_traceGlWindow->refresh();
+		done = true;
+		pUi->mTraceGlWindow->refresh();
 
 		// Restore the window label
-		pUI->m_traceGlWindow->label(old_label);		
+		pUi->mTraceGlWindow->label(oldLabel);
 	}
 }
 
-void TraceUI::cb_stop(Fl_Widget* o, void* v)
+void TraceUi::cbStop(Fl_Widget* o, void* v)
 {
-	done=true;
+	done = true;
 }
 
-void TraceUI::show()
+void TraceUi::show() const
 {
-	m_mainWindow->show();
+	mMainWindow->show();
 }
 
-void TraceUI::setRayTracer(RayTracer *tracer)
+void TraceUi::setRayTracer(RayTracer* tracer)
 {
-	raytracer = tracer;
-	m_traceGlWindow->setRayTracer(tracer);
+	rayTracer = tracer;
+	mTraceGlWindow->setRayTracer(tracer);
 }
 
-int TraceUI::getSize()
+int TraceUi::getSize() const
 {
-	return m_nSize;
+	return mNSize;
 }
 
-int TraceUI::getDepth()
+int TraceUi::getDepth() const
 {
-	return m_nDepth;
+	return mNDepth;
 }
 
 // menu definition
-Fl_Menu_Item TraceUI::menuitems[] = {
-	{ "&File",		0, 0, 0, FL_SUBMENU },
-		{ "&Load Scene...",	FL_ALT + 'l', (Fl_Callback *)TraceUI::cb_load_scene },
-		{ "&Save Image...",	FL_ALT + 's', (Fl_Callback *)TraceUI::cb_save_image },
-		{ "&Exit",			FL_ALT + 'e', (Fl_Callback *)TraceUI::cb_exit },
-		{ 0 },
+Fl_Menu_Item TraceUi::menuItems[] = {
+	{"&File", 0, nullptr, nullptr, FL_SUBMENU},
+	{"&Load Scene...", FL_ALT + 'l', cbLoadScene},
+	{"&Save Image...", FL_ALT + 's', cbSaveImage},
+	{"&Exit", FL_ALT + 'e', cbExit},
+	{nullptr},
 
-	{ "&Help",		0, 0, 0, FL_SUBMENU },
-		{ "&About",	FL_ALT + 'a', (Fl_Callback *)TraceUI::cb_about },
-		{ 0 },
+	{"&Help", 0, nullptr, nullptr, FL_SUBMENU},
+	{"&About", FL_ALT + 'a', cbAbout},
+	{nullptr},
 
-	{ 0 }
+	{nullptr}
 };
 
-TraceUI::TraceUI() {
+TraceUi::TraceUi()
+{
 	// init.
-	m_nDepth = 0;
-	m_nSize = 150;
-	m_mainWindow = new Fl_Window(100, 40, 320, 100, "Ray <Not Loaded>");
-		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
-		// install menu bar
-		m_menubar = new Fl_Menu_Bar(0, 0, 320, 25);
-		m_menubar->menu(menuitems);
+	mNDepth = 0;
+	mNSize = 150;
+	mMainWindow = new Fl_Window(100, 40, 320, 100, "Ray <Not Loaded>");
+	mMainWindow->user_data(static_cast<void*>(this)); // record self to be used by static callback functions
+	// install menu bar
+	mMenuBar = new Fl_Menu_Bar(0, 0, 320, 25);
+	mMenuBar->menu(menuItems);
 
-		// install slider depth
-		m_depthSlider = new Fl_Value_Slider(10, 30, 180, 20, "Depth");
-		m_depthSlider->user_data((void*)(this));	// record self to be used by static callback functions
-		m_depthSlider->type(FL_HOR_NICE_SLIDER);
-        m_depthSlider->labelfont(FL_COURIER);
-        m_depthSlider->labelsize(12);
-		m_depthSlider->minimum(0);
-		m_depthSlider->maximum(10);
-		m_depthSlider->step(1);
-		m_depthSlider->value(m_nDepth);
-		m_depthSlider->align(FL_ALIGN_RIGHT);
-		m_depthSlider->callback(cb_depthSlides);
+	// install slider depth
+	mDepthSlider = new Fl_Value_Slider(10, 30, 180, 20, "Depth");
+	mDepthSlider->user_data(static_cast<void*>(this)); // record self to be used by static callback functions
+	mDepthSlider->type(FL_HOR_NICE_SLIDER);
+	mDepthSlider->labelfont(FL_COURIER);
+	mDepthSlider->labelsize(12);
+	mDepthSlider->minimum(0);
+	mDepthSlider->maximum(10);
+	mDepthSlider->step(1);
+	mDepthSlider->value(mNDepth);
+	mDepthSlider->align(FL_ALIGN_RIGHT);
+	mDepthSlider->callback(cbDepthSlides);
 
-		// install slider size
-		m_sizeSlider = new Fl_Value_Slider(10, 55, 180, 20, "Size");
-		m_sizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
-		m_sizeSlider->type(FL_HOR_NICE_SLIDER);
-        m_sizeSlider->labelfont(FL_COURIER);
-        m_sizeSlider->labelsize(12);
-		m_sizeSlider->minimum(64);
-		m_sizeSlider->maximum(512);
-		m_sizeSlider->step(1);
-		m_sizeSlider->value(m_nSize);
-		m_sizeSlider->align(FL_ALIGN_RIGHT);
-		m_sizeSlider->callback(cb_sizeSlides);
+	// install slider size
+	mSizeSlider = new Fl_Value_Slider(10, 55, 180, 20, "Size");
+	mSizeSlider->user_data(static_cast<void*>(this)); // record self to be used by static callback functions
+	mSizeSlider->type(FL_HOR_NICE_SLIDER);
+	mSizeSlider->labelfont(FL_COURIER);
+	mSizeSlider->labelsize(12);
+	mSizeSlider->minimum(64);
+	mSizeSlider->maximum(512);
+	mSizeSlider->step(1);
+	mSizeSlider->value(mNSize);
+	mSizeSlider->align(FL_ALIGN_RIGHT);
+	mSizeSlider->callback(cbSizeSlides);
 
-		m_renderButton = new Fl_Button(240, 27, 70, 25, "&Render");
-		m_renderButton->user_data((void*)(this));
-		m_renderButton->callback(cb_render);
+	mRenderButton = new Fl_Button(240, 27, 70, 25, "&Render");
+	mRenderButton->user_data(static_cast<void*>(this));
+	mRenderButton->callback(cbRender);
 
-		m_stopButton = new Fl_Button(240, 55, 70, 25, "&Stop");
-		m_stopButton->user_data((void*)(this));
-		m_stopButton->callback(cb_stop);
+	mStopButton = new Fl_Button(240, 55, 70, 25, "&Stop");
+	mStopButton->user_data(static_cast<void*>(this));
+	mStopButton->callback(cbStop);
 
-		m_mainWindow->callback(cb_exit2);
-		m_mainWindow->when(FL_HIDE);
-    m_mainWindow->end();
+	mMainWindow->callback(cbExit2);
+	mMainWindow->when(FL_HIDE);
+	mMainWindow->end();
 
 	// image view
-	m_traceGlWindow = new TraceGLWindow(100, 150, m_nSize, m_nSize, "Rendered Image");
-	m_traceGlWindow->end();
-	m_traceGlWindow->resizable(m_traceGlWindow);
+	mTraceGlWindow = new TraceGLWindow(100, 150, mNSize, mNSize, "Rendered Image");
+	mTraceGlWindow->end();
+	mTraceGlWindow->resizable(mTraceGlWindow);
 }

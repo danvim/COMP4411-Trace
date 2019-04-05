@@ -1,10 +1,8 @@
-#ifndef TRIMESH_H__
-#define TRIMESH_H__
+#ifndef TRIMESH_H_
+#define TRIMESH_H_
 
-#include <list>
 #include <vector>
 
-#include "../scene/ray.h"
 #include "../scene/material.h"
 #include "../scene/scene.h"
 class TrimeshFace;
@@ -12,10 +10,10 @@ class TrimeshFace;
 class Trimesh : public MaterialSceneObject
 {
     friend class TrimeshFace;
-    typedef vector<vec3f> Normals;
-    typedef vector<vec3f> Vertices;
-    typedef vector<TrimeshFace*> Faces;
-    typedef vector<Material*> Materials;
+    typedef std::vector<vec3f> Normals;
+    typedef std::vector<vec3f> Vertices;
+    typedef std::vector<TrimeshFace*> Faces;
+    typedef std::vector<Material*> Materials;
     Vertices vertices;
     Faces faces;
     Normals normals;
@@ -44,7 +42,7 @@ public:
 class TrimeshFace : public MaterialSceneObject
 {
     Trimesh *parent;
-    int ids[3];
+    int ids[3]{};
 public:
     TrimeshFace( Scene *scene, Material *mat, Trimesh *parent, int a, int b, int c)
         : MaterialSceneObject( scene, mat )
@@ -60,22 +58,22 @@ public:
         return ids[i];
     }
 
-    virtual bool intersectLocal( const ray& r, isect& i ) const;
+    bool intersectLocal( const Ray& r, ISect& i ) const override;
 
-    virtual bool hasBoundingBoxCapability() const { return true; }
-      
-    virtual BoundingBox ComputeLocalBoundingBox()
+    bool hasBoundingBoxCapability() const override { return true; }
+
+    BoundingBox ComputeLocalBoundingBox() override
     {
-        BoundingBox localbounds;
-        localbounds.max = maximum( parent->vertices[ids[0]], parent->vertices[ids[1]]);
-		localbounds.min = minimum( parent->vertices[ids[0]], parent->vertices[ids[1]]);
+        BoundingBox localBounds;
+        localBounds.max = maximum( parent->vertices[ids[0]], parent->vertices[ids[1]]);
+		localBounds.min = minimum( parent->vertices[ids[0]], parent->vertices[ids[1]]);
         
-        localbounds.max = maximum( parent->vertices[ids[2]], localbounds.max);
-		localbounds.min = minimum( parent->vertices[ids[2]], localbounds.min);
-        return localbounds;
+        localBounds.max = maximum( parent->vertices[ids[2]], localBounds.max);
+		localBounds.min = minimum( parent->vertices[ids[2]], localBounds.min);
+        return localBounds;
     }
     
 };
 
 
-#endif // TRIMESH_H__
+#endif // TRIMESH_H_

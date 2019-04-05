@@ -8,39 +8,38 @@
 #ifndef BITMAP_H
 #define BITMAP_H
 
-#include <stdio.h>
-#include <string.h>
+constexpr auto BMP_BI_RGB = 0L;
 
-#define BMP_BI_RGB        0L
+typedef unsigned short BmpWord;
+typedef unsigned int BmpDword;
+typedef int BmpLong;
 
-typedef unsigned short	BMP_WORD; 
-typedef unsigned int	BMP_DWORD; 
-typedef int				BMP_LONG; 
- 
-typedef struct { 
-	BMP_WORD	bfType; 
-	BMP_DWORD	bfSize; 
-	BMP_WORD	bfReserved1; 
-	BMP_WORD	bfReserved2; 
-	BMP_DWORD	bfOffBits; 
-} BMP_BITMAPFILEHEADER; 
- 
-typedef struct { 
-	BMP_DWORD	biSize; 
-	BMP_LONG	biWidth; 
-	BMP_LONG	biHeight; 
-	BMP_WORD	biPlanes; 
-	BMP_WORD	biBitCount; 
-	BMP_DWORD	biCompression; 
-	BMP_DWORD	biSizeImage; 
-	BMP_LONG	biXPelsPerMeter; 
-	BMP_LONG	biYPelsPerMeter; 
-	BMP_DWORD	biClrUsed; 
-	BMP_DWORD	biClrImportant; 
-} BMP_BITMAPINFOHEADER; 
+typedef struct
+{
+	BmpWord bfType;
+	BmpDword bfSize;
+	BmpWord bfReserved1;
+	BmpWord bfReserved2;
+	BmpDword bfOffBits;
+} BmpBitmapFileHeader;
+
+typedef struct
+{
+	BmpDword biSize;
+	BmpLong biWidth;
+	BmpLong biHeight;
+	BmpWord biPlanes;
+	BmpWord biBitCount;
+	BmpDword biCompression;
+	BmpDword biSizeImage;
+	BmpLong biXPixelsPerMeter;
+	BmpLong biYPixelsPerMeter;
+	BmpDword biClrUsed;
+	BmpDword biClrImportant;
+} BmpBitmapInfoHeader;
 
 // global I/O routines
-extern unsigned char *readBMP(char *fname, int& width, int& height);
-extern void writeBMP(char *iname, int width, int height, unsigned char *data); 
+extern unsigned char* readBmp(char* fName, int& width, int& height);
+extern void writeBmp(char* iName, int width, int height, unsigned char* data);
 
 #endif

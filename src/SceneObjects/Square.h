@@ -1,5 +1,5 @@
-#ifndef __SQUARE_H__
-#define __SQUARE_H__
+#ifndef SQUARE_H_
+#define SQUARE_H_
 
 #include "../scene/scene.h"
 
@@ -12,16 +12,16 @@ public:
 	{
 	}
 
-	virtual bool intersectLocal( const ray& r, isect& i ) const;
-	virtual bool hasBoundingBoxCapability() const { return true; }
+	bool intersectLocal( const Ray& r, ISect& i ) const override;
+	bool hasBoundingBoxCapability() const override { return true; }
 
-    virtual BoundingBox ComputeLocalBoundingBox()
+	BoundingBox ComputeLocalBoundingBox() override
     {
-        BoundingBox localbounds;
-        localbounds.min = vec3f(-0.5f, -0.5f, -RAY_EPSILON);
-		localbounds.max = vec3f(0.5f, 0.5f, RAY_EPSILON);
-        return localbounds;
+        BoundingBox localBounds;
+        localBounds.min = vec3f(-0.5f, -0.5f, -RAY_EPSILON);
+		localBounds.max = vec3f(0.5f, 0.5f, RAY_EPSILON);
+        return localBounds;
     }
 };
 
-#endif // __SQUARE_H__
+#endif // SQUARE_H_

@@ -1,5 +1,5 @@
-#ifndef __CONE_H__
-#define __CONE_H__
+#ifndef CONE_H_
+#define CONE_H_
 
 #include "../scene/scene.h"
 
@@ -7,54 +7,53 @@ class Cone
 	: public MaterialSceneObject
 {
 public:
-	Cone( Scene *scene, Material *mat, 
-			double h = 1.0, double br = 1.0, double tr = 0.0, 
-			bool cap = false )
-		: MaterialSceneObject( scene, mat )
+	Cone(Scene* scene, Material* mat,
+	     const double h = 1.0, const double br = 1.0, const double tr = 0.0,
+	     const bool cap = false)
+		: MaterialSceneObject(scene, mat)
 	{
 		height = h;
-		b_radius = (br < 0.0f)?(-br):(br);
-		t_radius = (tr < 0.0f)?(-tr):(tr);
+		bRadius = br < 0.0f ? -br : br;
+		tRadius = tr < 0.0f ? -tr : tr;
 		capped = cap;
 
-		computeABC();
+		computeAbc();
 	}
 
-	virtual bool intersectLocal( const ray& r, isect& i ) const;
-	virtual bool hasBoundingBoxCapability() const { return true; }
+	bool intersectLocal(const Ray& r, ISect& i) const override;
+	bool hasBoundingBoxCapability() const override { return true; }
 
-    virtual BoundingBox ComputeLocalBoundingBox()
-    {
-        BoundingBox localbounds;
-		double biggest_radius = (b_radius > t_radius)?(b_radius):(t_radius);
+	BoundingBox ComputeLocalBoundingBox() override
+	{
+		BoundingBox localBounds;
+		const auto biggestRadius = bRadius > tRadius ? bRadius : tRadius;
 
-		localbounds.min = vec3f(-biggest_radius, -biggest_radius, (height < 0.0f)?(height):(0.0f));
-		localbounds.max = vec3f(biggest_radius, biggest_radius, (height < 0.0f)?(0.0f):(height));
-        return localbounds;
-    }
+		localBounds.min = vec3f(-biggestRadius, -biggestRadius, height < 0.0f ? height : 0.0f);
+		localBounds.max = vec3f(biggestRadius, biggestRadius, height < 0.0f ? 0.0f : height);
+		return localBounds;
+	}
 
-	bool intersectBody( const ray& r, isect& i ) const;
-	bool intersectCaps( const ray& r, isect& i ) const;
+	bool intersectBody(const Ray& r, ISect& i) const;
+	bool intersectCaps(const Ray& r, ISect& i) const;
 
 
 protected:
-	void computeABC()
+	void computeAbc()
 	{
-		A = b_radius * b_radius;
-		B = 2.0 * b_radius * (t_radius - b_radius) / height;
-		C = (t_radius - b_radius) / height;
+		A = bRadius * bRadius;
+		B = 2.0 * bRadius * (tRadius - bRadius) / height;
+		C = (tRadius - bRadius) / height;
 		C = C * C;
 	}
-    
+
 	bool capped;
 	double height;
-	double b_radius;
-	double t_radius;
+	double bRadius;
+	double tRadius;
 
 	double A;
 	double B;
 	double C;
-
 };
 
-#endif // __CONE_H__
+#endif // CONE_H_

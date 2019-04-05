@@ -3,7 +3,7 @@
 #include "scene.h"
 
 const Material &
-isect::getMaterial() const
+ISect::getMaterial() const
 {
     return material ? *material : obj->getMaterial();
 }

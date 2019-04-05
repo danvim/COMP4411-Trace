@@ -8,24 +8,24 @@
 
 #include "parse.h"
 
-static string readID( istream& is );
-static Obj *readString( istream& is );
-static Obj *readScalar( istream& is );
-static Obj *readTuple( istream& is );
-static Obj *readDict( istream& is );
-static Obj *readObject( istream& is );
-static Obj *readName( istream& is );
-static void eatWS( istream& is );
-static void eatNL( istream& is );
+static std::string readId( std::istream& is );
+static Obj *readString( std::istream& is );
+static Obj *readScalar( std::istream& is );
+static Obj *readTuple( std::istream& is );
+static Obj *readDict( std::istream& is );
+static Obj *readObject( std::istream& is );
+static Obj *readName( std::istream& is );
+static void eatWs( std::istream& is );
+static void eatNl( std::istream& is );
 
-Obj *readFile( istream& is )
+Obj *readFile( std::istream& is )
 {
 	return readObject( is );
 }
 
-static void eatWS( istream& is )
+static void eatWs( std::istream& is )
 {
-	int ch = is.peek();
+	auto ch = is.peek();
 	while( ch == ' ' || ch == '\t' || ch == '\n' || ch == 0x0D || ch == 0x0A) {
 		is.get();
 		if( !is ) {
@@ -35,9 +35,9 @@ static void eatWS( istream& is )
 	}
 }
 
-static void eatNL( istream& is )
+static void eatNl( std::istream& is )
 {
-	int ch = is.peek();
+	auto ch = is.peek();
 	while( ch != '\n' ) {
 		is.get();
 		if( !is ) {
@@ -47,17 +47,17 @@ static void eatNL( istream& is )
 	}
 }
 
-static bool eat( istream& is ) 
+static bool eat( std::istream& is ) 
 {
 	while( is ) {
-		eatWS( is );
+		eatWs( is );
 		if( is ) {
-			int ch = is.peek();
-			if( ch == '/' ) {
+			const auto c = is.peek();
+			if( c == '/' ) {
 				is.get();
-				int ch = is.peek();
+				auto ch = is.peek();
 				if( ch == '/' ) {
-					eatNL( is );
+					eatNl( is );
 				} else if( ch == '*' ) {
 					while( true ) {
 						is.get();
@@ -68,7 +68,8 @@ static bool eat( istream& is )
 							if( ch == '/' ) {
 								is.get();
 								break;
-							} else if( ch == -1 ) {	
+							}
+							if( ch == -1 ) {	
 								is.get();
 								throw ParseError( 
 									"Parse Error: unterminated comment" );
@@ -82,7 +83,7 @@ static bool eat( istream& is )
 				} else {
 					return true;
 				}
-			} else if( ch == -1 ) {
+			} else if( c == -1 ) {
 				is.get();
 				return false;
 			} else {
@@ -95,74 +96,68 @@ static bool eat( istream& is )
 	return false;
 }
 
-static Obj *readName( istream& is )
+static Obj *readName( std::istream& is )
 {
-	string s = readID( is );
+	const auto s = readId( is );
 
 	if( s == "true" ) {
 		return new BooleanObj( true );
-	} else if( s == "false" ) {
-		return new BooleanObj( false );
-	} else {
-		if( !eat( is ) ) {
-			return new IdObj( s );
-		}
-
-		int ch = is.peek();
-		if( strchr( "}),;", ch ) != NULL ) {
-			return new IdObj( s );
-		} else {
-			return new NamedObj( s, readObject( is ) );
-		}
 	}
+	if( s == "false" ) {
+		return new BooleanObj( false );
+	}
+	if( !eat( is ) ) {
+		return new IdObj( s );
+	}
+
+	const auto ch = is.peek();
+	if( strchr( "}),;", ch ) != nullptr ) {
+		return new IdObj( s );
+	}
+	return new NamedObj( s, readObject( is ) );
 }
 
-static string readID( istream& is )
+static std::string readId( std::istream& is )
 {
-	int ch;
-	string ret( "" );
+	std::string ret;
 
 	ret += char( is.get() );
 
 	while( is ) {
-		ch = is.peek();
-		if( strchr( " \t\n={}();,/", ch ) != NULL ) {
+		const auto ch = is.peek();
+		if( strchr( " \t\n={}();,/", ch ) != nullptr ) {
 			break;
-		} else {
-			ret += char( ch );
-			is.get();
 		}
+		ret += char( ch );
+		is.get();
 	}
 
 	return ret;
 }
 
-static Obj *readString( istream& is ) 
+static Obj *readString( std::istream& is ) 
 {
-	int ch;
-	string ret( "" );
+	std::string ret;
 
 	is.get();
 
 	while( true ) {
-		ch = is.peek();
+		const auto ch = is.peek();
 		if( ch == '"' ) {
 			is.get();
 			return new StringObj( ret );
-		} else {
-			ret += char( ch );
 		}
+		ret += char( ch );
 		is.get();
 	}
 }
 
-static Obj *readScalar( istream& is )
+static Obj *readScalar( std::istream& is )
 {
-	int ch;
-	string ret( "" );
+	std::string ret;
 
 	while( true ) {
-		ch = is.peek();
+		auto ch = is.peek();
 		if( (ch == '-') || (ch == '.') || (ch == 'e') || (ch == 'E')
 				|| (ch >= '0' && ch <= '9') ) {
 			ret += char( ch );
@@ -175,9 +170,9 @@ static Obj *readScalar( istream& is )
 	return new ScalarObj( atof( ret.c_str() ) );
 }
 
-static Obj *readTuple( istream& is )
+static Obj *readTuple( std::istream& is )
 {
-	vector<Obj*> ret;
+	std::vector<Obj*> ret;
 
 	is.get();
 
@@ -185,25 +180,19 @@ static Obj *readTuple( istream& is )
 		eat( is );
 		ret.push_back( readObject( is ) );	
 		eat( is );
-		int ch = is.get();
+		auto ch = is.get();
 		if( ch == ')' ) {
 			return new TupleObj( ret );
-		} else if( ch == ',' ) {
-			continue;
-		} else {
+		}
+		if( ch != ',' ) {
 			throw ParseError( "Parse error: expected comma." );
 		}
 	}
-
-	throw ParseError( "Parse error: internal error." );
 }
 
-static Obj *readDict( istream& is )
+static Obj *readDict( std::istream& is )
 {
-	string lhs;
-	Obj *rhs;
-
-	map<string,Obj*> ret;
+	std::map<std::string,Obj*> ret;
 
 	is.get();
 
@@ -213,15 +202,15 @@ static Obj *readDict( istream& is )
 			is.get();
 			return new DictObj( ret );
 		}
-		lhs = readID( is );
+		auto lhs = readId(is);
 		eat( is );
 		if( is.get() != '=' ) {
 			throw ParseError( "Parse error: expected equals." );
 		}
-		rhs = readObject( is );
+		auto* rhs = readObject(is);
 		ret[ lhs ] = rhs;
 		eat( is );
-		int ch = is.peek();
+		auto ch = is.peek();
 		if( ch == ';' ) {
 			is.get();
 		} else if( ch != '}' ) {
@@ -230,25 +219,27 @@ static Obj *readDict( istream& is )
 	}
 }
 
-static Obj *readObject( istream& is )
+static Obj *readObject( std::istream& is )
 {
 	if( !eat( is ) ) {
-		return NULL;
+		return nullptr;
 	}
 
-	int ch = is.peek();
+	auto ch = is.peek();
 
 	if( (ch == '-') || (ch >= '0' && ch <= '9') ) {
 		return readScalar( is );
-	} else if( ch == '"' ) {
-		return readString( is );
-	} else if( ch == '(' ) {
-		return readTuple( is );
-	} else if( ch == '{' ) {
-		return readDict( is );
-	} else {
-		return readName( is );
 	}
+	if( ch == '"' ) {
+		return readString( is );
+	}
+	if( ch == '(' ) {
+		return readTuple( is );
+	}
+	if( ch == '{' ) {
+		return readDict( is );
+	}
+	return readName( is );
 }
 
 /*

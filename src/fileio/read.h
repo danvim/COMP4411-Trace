@@ -1,12 +1,11 @@
-#ifndef __READ_H__
-#define __READ_H__
+#ifndef READ_H_
+#define READ_H_
 
 #include <string>
-#include <iostream>
 
 #include "../scene/scene.h"
 
-Scene *readScene( const string& filename );
-Scene *readScene( istream& is );
+Scene *readScene( const std::string& filename );
+Scene *readScene(std::istream& is );
 
-#endif // __READ_H__
+#endif // READ_H_

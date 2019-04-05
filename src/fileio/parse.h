@@ -1,84 +1,114 @@
-#ifndef __PARSE_H__
-#define __PARSE_H__
-// Stupid MSVC complains (for like 1 million lines) that the ugly identifiers for templated
+#ifndef PARSE_H_
+#define PARSE_H_
+// Stupid MSVC complains (for like 1 million lines) that the ugly identifiers for template
 // classes are truncated.  Not my problem, eh?
 #pragma warning( disable : 4786 )
 
 #include <string>
+#include <utility>
 #include <vector>
 #include <map>
-#include <iostream>
 
-using namespace std;
-
-class Exception
+class Exception : public std::exception
 {
 public:
-	Exception( const string& m ) 
-		: msg( m ) {}
-	
-	string getMsg() const { return msg; }
+	explicit Exception(std::string m)
+		: msg(std::move(m))
+	{
+	}
+
+	std::string getMsg() const { return msg; }
+
+	const char* what() const override { return msg.c_str(); }
 
 private:
-	string msg;
+	std::string msg;
 };
 
-inline ostream& operator <<( ostream& os, const Exception& x )
+inline std::ostream& operator <<(std::ostream& os, const Exception& x)
 {
 	return os << x.getMsg();
 }
 
 class Obj;
 
-typedef vector<Obj*> 		mytuple;
-typedef map<string,Obj*> 	dict;
+typedef std::vector<Obj*> MyTuple;
+typedef std::map<std::string, Obj*> Dict;
 
 class ParseError
 	: public Exception
 {
 public:
-	ParseError( const string& msg )
-		: Exception( msg )
-	{}
+	explicit ParseError(const std::string& msg)
+		: Exception(msg)
+	{
+	}
 };
 
 class ObjTypeMismatch
 	: public ParseError
 {
 public:
-	ObjTypeMismatch( string expected, string got ) 
-		: ParseError( string( "Type mismatch error during parse: expected " ) + 
-				expected + string( ", got " ) + got + string( "." ) )
-	{}
+	ObjTypeMismatch(const std::string&& expected, const std::string&& got)
+		: ParseError(std::string("Type mismatch error during parse: expected ") +
+			expected + std::string(", got ") + got + std::string("."))
+	{
+	}
 };
 
 class Obj
 {
 public:
-	virtual ~Obj() {}
+	virtual ~Obj() = default;
 
-	virtual string getTypeName() const { return string( "token" ); }
-	virtual void printOn( ostream& os ) const {};
+	virtual std::string getTypeName() const { return std::string("token"); }
 
-	virtual double 		 getScalar() const 
-	{ throw ObjTypeMismatch( string( "scalar" ), getTypeName() ); }
-	virtual bool   		 getBoolean() const 
-	{ throw ObjTypeMismatch( string( "bool" ), getTypeName() ); }
-	virtual string 		 getID() const 
-	{ throw ObjTypeMismatch( string( "id" ), getTypeName() ); }
-	virtual string 		 getString() const 
-	{ throw ObjTypeMismatch( string( "string" ), getTypeName() ); }
-	virtual const mytuple& getTuple() const 
-	{ throw ObjTypeMismatch( string( "tuple" ), getTypeName() ); }
-	virtual const dict&  getDict() const 
-	{ throw ObjTypeMismatch( string( "dict" ), getTypeName() ); }
+	virtual void printOn(std::ostream& os) const
+	{
+	};
 
-	virtual string 		 getName() const
-	{ throw ObjTypeMismatch( string( "named" ), getTypeName() ); }
-	virtual Obj 		 *getChild() const
-	{ throw ObjTypeMismatch( string( "named" ), getTypeName() ); }
+	virtual double getScalar() const
+	{
+		throw ObjTypeMismatch(std::string("scalar"), getTypeName());
+	}
+
+	virtual bool getBoolean() const
+	{
+		throw ObjTypeMismatch(std::string("bool"), getTypeName());
+	}
+
+	virtual std::string getId() const
+	{
+		throw ObjTypeMismatch(std::string("id"), getTypeName());
+	}
+
+	virtual std::string getString() const
+	{
+		throw ObjTypeMismatch(std::string("std::string"), getTypeName());
+	}
+
+	virtual const MyTuple& getTuple() const
+	{
+		throw ObjTypeMismatch(std::string("tuple"), getTypeName());
+	}
+
+	virtual const Dict& getDict() const
+	{
+		throw ObjTypeMismatch(std::string("dict"), getTypeName());
+	}
+
+	virtual std::string getName() const
+	{
+		throw ObjTypeMismatch(std::string("named"), getTypeName());
+	}
+
+	virtual Obj* getChild() const
+	{
+		throw ObjTypeMismatch(std::string("named"), getTypeName());
+	}
+
 protected:
-	Obj() {}
+	Obj() = default;
 
 private:
 };
@@ -87,16 +117,18 @@ class ScalarObj
 	: public Obj
 {
 public:
-	ScalarObj( double v )
-		: Obj()
-		, val( v )
-	{}
-	virtual ~ScalarObj() {}
+	explicit ScalarObj(const double v)
+		: val(v)
+	{
+	}
 
-	virtual string getTypeName() const { return string( "scalar" ); }
-	virtual void printOn( ostream& os ) const { os << val; }
+	virtual ~ScalarObj()
+	= default;
 
-	virtual double getScalar() const { return val; }
+	std::string getTypeName() const override { return std::string("scalar"); }
+	void printOn(std::ostream& os) const override { os << val; }
+
+	double getScalar() const override { return val; }
 
 private:
 	double val;
@@ -106,16 +138,18 @@ class BooleanObj
 	: public Obj
 {
 public:
-	BooleanObj( bool b )
-		: Obj()
-		, val( b )
-	{}
-	virtual ~BooleanObj() {}
+	explicit BooleanObj(bool b)
+		: val(b)
+	{
+	}
 
-	virtual string getTypeName() const { return string( "bool" ); }
-	virtual void printOn( ostream& os ) const { os << (val?"true":"false"); }
+	virtual ~BooleanObj()
+	= default;
 
-	virtual bool getBoolean() const { return val; }
+	std::string getTypeName() const override { return std::string("bool"); }
+	void printOn(std::ostream& os) const override { os << (val ? "true" : "false"); }
+
+	bool getBoolean() const override { return val; }
 
 private:
 	bool val;
@@ -125,142 +159,163 @@ class IdObj
 	: public Obj
 {
 public:
-	IdObj( const string& s )
-		: Obj()
-		, val( s )
-	{}
-	virtual ~IdObj() {}
+	explicit IdObj(std::string s)
+		: val(std::move(s))
+	{
+	}
 
-	virtual string getTypeName() const { return string( "id" ); }
-	virtual void printOn( ostream& os ) const { os << val; }
-	virtual string getID() const { return val; }
+	virtual ~IdObj()
+	= default;
+
+	std::string getTypeName() const override { return std::string("id"); }
+	void printOn(std::ostream& os) const override { os << val; }
+	std::string getId() const override { return val; }
 
 private:
-	string val;
+	std::string val;
 };
 
 class StringObj
 	: public Obj
 {
 public:
-	StringObj( const string& s )
-		: Obj()
-		, val( s )
-	{}
-	virtual ~StringObj() {}
+	explicit StringObj(std::string s)
+		: val(std::move(s))
+	{
+	}
 
-	virtual string getTypeName() const { return string( "string" ); }
-	virtual void printOn( ostream& os ) const { os << '"' << val << '"'; }
-	virtual string getString() const { return val; }
+	virtual ~StringObj()
+	= default;
+
+	std::string getTypeName() const override { return std::string("std::string"); }
+	void printOn(std::ostream& os) const override { os << '"' << val << '"'; }
+	std::string getString() const override { return val; }
 
 private:
-	string val;
+	std::string val;
 };
 
 class TupleObj
 	: public Obj
 {
 public:
-	TupleObj( const mytuple& vec )
-		: Obj()
-		, val( vec )
-	{}
+	explicit TupleObj(MyTuple vec)
+		: val(std::move(vec))
+	{
+	}
+
 	virtual ~TupleObj()
 	{
-		for( mytuple::iterator i = val.begin(); i != val.end(); ++i ) {
+		for (auto i = val.begin(); i != val.end(); ++i)
+		{
 			delete (*i);
 		}
 	}
 
-	virtual string getTypeName() const { return string( "tuple" ); }
-	virtual void printOn( ostream& os ) const 
-	{ 
-		bool first = true;
+	std::string getTypeName() const override { return std::string("tuple"); }
+
+	void printOn(std::ostream& os) const override
+	{
+		auto first = true;
 		os << '(';
-		for( int idx = 0; idx < val.size(); ++idx ) {
-			if( first ) {
+		for (auto idx : val)
+		{
+			if (first)
+			{
 				first = false;
-			} else {
+			}
+			else
+			{
 				os << ", ";
 			}
-			val[ idx ]->printOn( os );
+			idx->printOn(os);
 		}
 		os << ')';
 	}
 
-	virtual const mytuple& getTuple() const { return val; }
+	const MyTuple& getTuple() const override { return val; }
 
 private:
-	mytuple val;
+	MyTuple val;
 };
 
 class DictObj
 	: public Obj
 {
 public:
-	DictObj( const dict& m )
-		: Obj()
-		, val( m )
-	{}
+	explicit DictObj(Dict m)
+		: val(std::move(m))
+	{
+	}
+
 	virtual ~DictObj()
 	{
-		for( dict::iterator i = val.begin(); i != val.end(); ++i ) {
+		for (auto i = val.begin(); i != val.end(); ++i)
+		{
 			delete ((*i).second);
 		}
 	}
 
-	virtual string getTypeName() const { return string( "dict" ); }
-	virtual void printOn( ostream& os ) const 
-	{ 
-		bool first = true;
+	std::string getTypeName() const override { return std::string("dict"); }
+
+	void printOn(std::ostream& os) const override
+	{
+		auto first = true;
 		os << '{';
-		for( dict::const_iterator ci = val.begin(); 
-				ci != val.end(); ++ci ) {
-			if( first ) {
+		for (auto ci = val.begin();
+		     ci != val.end(); ++ci)
+		{
+			if (first)
+			{
 				first = false;
-			} else {
+			}
+			else
+			{
 				os << "; ";
 			}
 			os << (*ci).first << " = ";
-			(*ci).second->printOn( os );
+			(*ci).second->printOn(os);
 		}
 		os << '}';
 	}
-	virtual const dict& getDict() const { return val; }
+
+	const Dict& getDict() const override { return val; }
 
 private:
-	dict val;
+	Dict val;
 };
 
 class NamedObj
 	: public Obj
 {
 public:
-	NamedObj( const string& n, Obj *ch )
-		: Obj()
-		, name( n )
-		, child( ch )
-	{}
+	NamedObj(std::string n, Obj* ch)
+		: name(std::move(n))
+		  , child(ch)
+	{
+	}
+
 	virtual ~NamedObj()
 	{
 		delete child;
 	}
 
-	virtual string getTypeName() const { return string( "named" ); }
-	virtual void printOn( ostream& os ) const 
-	{ 
+	std::string getTypeName() const override { return std::string("named"); }
+
+	void printOn(std::ostream& os) const override
+	{
 		os << name << ' ';
-		child->printOn( os );
+		child->printOn(os);
 	}
 
-	virtual string getName() const { return name; }
-	virtual Obj *getChild() const { return child; }
+	std::string getName() const override { return name; }
+	Obj* getChild() const override { return child; }
 
 private:
-	string name;
-	Obj *child;
+	std::string name;
+	Obj* child;
 };
 
-Obj *readFile( istream& is );
+Obj* readFile(std::istream& is);
 
-#endif // __PARSE_H__
+#endif // PARSE_H_

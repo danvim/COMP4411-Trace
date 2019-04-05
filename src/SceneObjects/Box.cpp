@@ -1,9 +1,6 @@
-#include <cmath>
-#include <assert.h>
-
 #include "Box.h"
 
-bool Box::intersectLocal( const ray& r, isect& i ) const
+bool Box::intersectLocal( const Ray& r, ISect& i ) const
 {
 	// YOUR CODE HERE:
     // Add box intersection code here.

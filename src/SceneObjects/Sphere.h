@@ -1,5 +1,5 @@
-#ifndef __SPHERE_H__
-#define __SPHERE_H__
+#ifndef SPHERE_H_
+#define SPHERE_H_
 
 #include "../scene/scene.h"
 
@@ -11,16 +11,16 @@ public:
 		: MaterialSceneObject( scene, mat )
 	{
 	}
-    
-	virtual bool intersectLocal( const ray& r, isect& i ) const;
-	virtual bool hasBoundingBoxCapability() const { return true; }
 
-    virtual BoundingBox ComputeLocalBoundingBox()
+	bool intersectLocal( const Ray& r, ISect& i ) const override;
+	bool hasBoundingBoxCapability() const override { return true; }
+
+	BoundingBox ComputeLocalBoundingBox() override
     {
-        BoundingBox localbounds;
-		localbounds.min = vec3f(-1.0f, -1.0f, -1.0f);
-		localbounds.max = vec3f(1.0f, 1.0f, 1.0f);
-        return localbounds;
+        BoundingBox localBounds;
+		localBounds.min = vec3f(-1.0f, -1.0f, -1.0f);
+		localBounds.max = vec3f(1.0f, 1.0f, 1.0f);
+        return localBounds;
     }
 };
-#endif // __SPHERE_H__
+#endif // SPHERE_H_

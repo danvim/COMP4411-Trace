@@ -7,14 +7,14 @@ class Camera
 {
 public:
     Camera();
-    void rayThrough( double x, double y, ray &r );
+    void rayThrough( double x, double y, Ray &r ) const;
     void setEye( const vec3f &eye );
     void setLook( double, double, double, double );
     void setLook( const vec3f &viewDir, const vec3f &upDir );
-    void setFOV( double );
+    void setFov( double );
     void setAspectRatio( double );
 
-    double getAspectRatio() { return aspectRatio; }
+    double getAspectRatio() const { return aspectRatio; }
 private:
     mat3f m;                     // rotation matrix
     double normalizedHeight;    // dimensions of image place at unit dist from eye

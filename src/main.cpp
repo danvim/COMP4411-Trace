@@ -53,15 +53,14 @@
 //
 //=============================================================================
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
 
-#include <FL/Fl.h>
+#include <FL/Fl.H>
 #include <FL/Fl_Window.H>
-#include <FL/Fl_Box.H>
 
-#include <FL/fl_ask.h>
+#include <FL/fl_ask.H>
 
 #include "ui/TraceUI.h"
 #include "RayTracer.h"
@@ -72,71 +71,72 @@
 // from getopt.cpp 
 // it should be put in an include file.
 //
-extern int getopt(int argc, char **argv, char *optstring);
-extern char* optarg;
-extern int optind, opterr, optopt;
+extern int getopt(int argc, char** argv, char* optString);
+extern char* optArg;
+extern int optInd, optErr, optOpt;
 // ***********************************************************
 
 RayTracer* theRayTracer;
-TraceUI* traceUI;
+TraceUi* traceUi;
 
 //
 // options from program parameters
 //
-int recursion_depth = 0;
-int g_height;
-int g_width = 150;
+int recursionDepth = 0;
+int gHeight;
+int gWidth = 150;
 bool bReport = false;
-char *progname, *rayName, *imgName;
+char *progName, *rayName, *imgName;
 
 void usage()
 {
 #ifdef WIN32
-	fl_alert( "usage: %s [-r <#> -w <#> -t] [input.ray output.bmp]\n", progname );
+	fl_alert("usage: %s [-r <#> -w <#> -t] [input.ray output.bmp]\n", progName);
 #else
-	fprintf( stderr, "usage: %s [options] [input.ray output.bmp]\n", progname );
+	fprintf( stderr, "usage: %s [options] [input.ray output.bmp]\n", progName );
 	fprintf( stderr, "  -r <#>      set recurssion level (default %d)\n", recursion_depth );
 	fprintf( stderr, "  -w <#>      set output image width (default %d)\n", g_width );
 	fprintf( stderr, "  -t			report time statistics\n" );
 #endif
 }
 
-bool processArgs(int argc, char **argv) {
+bool processArgs(int argc, char** argv)
+{
 	int i;
 
-    while ( (i = getopt( argc, argv, "tr:w:h:" )) != EOF )
+	while ((i = getopt(argc, argv, "tr:w:h:")) != EOF)
 	{
-		switch ( i )
+		switch (i)
 		{
-			case 't':
+		case 't':
 			bReport = true;
 			break;
-	    
-			case 'r':
-			recursion_depth = atoi( optarg );
-			break;
-	    
-			case 'w':
-			g_width = atoi( optarg );
-			break;
-	    
-			case 'h':
-			g_height = atoi( optarg );
+
+		case 'r':
+			recursionDepth = atoi(optArg);
 			break;
 
-			default:
+		case 'w':
+			gWidth = atoi(optArg);
+			break;
+
+		case 'h':
+			gHeight = atoi(optArg);
+			break;
+
+		default:
 			return false;
 		}
-    }
+	}
 
-    if ( optind >= argc-1 )
-    {
-		fprintf( stderr, "no input and/or output name.\n" );
+	if (optInd >= argc - 1)
+	{
+		fprintf(stderr, "no input and/or output name.\n");
 		return false;
-    }
+	}
 
-    rayName = argv[optind];
-    imgName = argv[optind+1];
+	rayName = argv[optInd];
+	imgName = argv[optInd + 1];
 
 	return true;
 }
@@ -149,42 +149,46 @@ bool processArgs(int argc, char **argv) {
 //
 // Graphics mode will be substantially slower than text mode because of
 // event handling overhead.
-int main(int argc, char **argv) {
-	progname=argv[0];
+int main(int argc, char** argv)
+{
+	progName = argv[0];
 
-	if (argc!=1) {
+	if (argc != 1)
+	{
 		// text mode
-		if (!processArgs(argc, argv)) {
+		if (!processArgs(argc, argv))
+		{
 			usage();
 			exit(1);
 		}
-		
-		theRayTracer=new RayTracer();
+
+		theRayTracer = new RayTracer();
 		theRayTracer->loadScene(rayName);
-	
-		if (theRayTracer->sceneLoaded()) {
-			g_height = (int)(g_width / theRayTracer->aspectRatio() + 0.5);
 
-			theRayTracer->traceSetup(g_width, g_height);
-		
-			clock_t start, end;
-			start=clock();
+		if (theRayTracer->sceneLoaded())
+		{
+			gHeight = int(gWidth / theRayTracer->aspectRatio() + 0.5);
 
-			theRayTracer->traceLines(0, g_height);
-		
-			end=clock();
+			theRayTracer->traceSetup(gWidth, gHeight);
+
+			clock_t start = clock();
+
+			theRayTracer->traceLines(0, gHeight);
+
+			clock_t end = clock();
 
 			// save image
 			unsigned char* buf;
 
-			theRayTracer->getBuffer(buf, g_width, g_height);
+			theRayTracer->getBuffer(buf, gWidth, gHeight);
 			if (buf)
-				writeBMP(imgName, g_width, g_height, buf); 
+				writeBmp(imgName, gWidth, gHeight, buf);
 
-			if (bReport) {
-				double t=(double)(end-start)/CLOCKS_PER_SEC;
+			if (bReport)
+			{
+				double t = double(end - start) / CLOCKS_PER_SEC;
 #ifdef WIN32
-				fl_message( "total time = %.3f seconds\n", t); 
+				fl_message("total time = %.3f seconds\n", t);
 #else
 				fprintf( stderr, "total time = %.3f seconds\n", t); 
 #endif
@@ -192,17 +196,16 @@ int main(int argc, char **argv) {
 		}
 
 		return 1;
-	} else {
-		// graphics mode
-		traceUI=new TraceUI();
-		theRayTracer=new RayTracer();
-
-		traceUI->setRayTracer(theRayTracer);
-
-		Fl::visual(FL_DOUBLE|FL_INDEX);
-
-		traceUI->show();
-
-		return Fl::run();
 	}
+	// graphics mode
+	traceUi = new TraceUi();
+	theRayTracer = new RayTracer();
+
+	traceUi->setRayTracer(theRayTracer);
+
+	Fl::visual(FL_DOUBLE | FL_INDEX);
+
+	traceUi->show();
+
+	return Fl::run();
 }

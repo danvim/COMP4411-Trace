@@ -13,11 +13,11 @@ mat3f mat3f::inverse() const	    // Gauss-Jordan elimination with partial pivoti
 {
 	mat3f a(*this);				// As a evolves from original mat into identity
 	mat3f b; 					// b evolves from identity into inverse(a)
-	int	 i, j, i1;
+	int	 i;
 
 	// Loop over cols of a from left to right, eliminating above and below diag
-	for (j=0; j<3; j++) {		// Find largest pivot in column j among rows j..2
-		i1 = j;					// Row with largest pivot candidate
+	for (int j = 0; j<3; j++) {		// Find largest pivot in column j among rows j..2
+		int i1 = j;					// Row with largest pivot candidate
 		for (i=j+1; i<3; i++)
 			if (fabs(a.v[i].n[j]) > fabs(a.v[i1].n[j]))
 				i1 = i;
@@ -47,11 +47,11 @@ mat4f mat4f::inverse() const	    // Gauss-Jordan elimination with partial pivoti
 {
 	mat4f a(*this);				// As a evolves from original mat into identity
 	mat4f b;   					// b evolves from identity into inverse(a)
-	int i, j, i1;
+	int i;
 
 	// Loop over cols of a from left to right, eliminating above and below diag
-	for (j=0; j<4; j++) {		// Find largest pivot in column j among rows j..3
-		i1 = j;				    // Row with largest pivot candidate
+	for (int j = 0; j<4; j++) {		// Find largest pivot in column j among rows j..3
+		int i1 = j;				    // Row with largest pivot candidate
 		for (i=j+1; i<4; i++)
 			if (fabs(a.v[i].n[j]) > fabs(a.v[i1].n[j]))
 				i1 = i;

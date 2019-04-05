@@ -8,10 +8,10 @@
 #include "../fileio/bitmap.h"
 
 TraceGLWindow::TraceGLWindow(int x, int y, int w, int h, const char *l)
-			: Fl_Gl_Window(x,y,w,h,l)
+	: Fl_Gl_Window(x, y, w, h, l), rayTracer(nullptr), mNDrawWidth(0), mNDrawHeight(0)
 {
-	m_nWindowWidth = w;
-	m_nWindowHeight = h;
+	mNWindowWidth = w;
+	mNWindowHeight = h;
 }
 
 int TraceGLWindow::handle(int event)
@@ -31,22 +31,22 @@ void TraceGLWindow::draw()
 
 		ortho();
 
-		m_nWindowWidth=w();
-		m_nWindowHeight=h();
+		mNWindowWidth=w();
+		mNWindowHeight=h();
 	}
 
 	glClear( GL_COLOR_BUFFER_BIT );
 
 	unsigned char* buf;
-	raytracer->getBuffer(buf, m_nDrawWidth, m_nDrawHeight);
+	rayTracer->getBuffer(buf, mNDrawWidth, mNDrawHeight);
 
 	if ( buf ) {
-		// just copy image to GLwindow conceptually
+		// just copy image to GL window conceptually
 		glRasterPos2i( 0, 0 );
 		glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-		glPixelStorei( GL_UNPACK_ROW_LENGTH, m_nDrawWidth );
+		glPixelStorei( GL_UNPACK_ROW_LENGTH, mNDrawWidth );
 		glDrawBuffer( GL_BACK );
-		glDrawPixels( m_nDrawWidth, m_nDrawHeight, GL_RGB, GL_UNSIGNED_BYTE, buf );
+		glDrawPixels( mNDrawWidth, mNDrawHeight, GL_RGB, GL_UNSIGNED_BYTE, buf );
 	}
 		
 	glFlush();
@@ -60,20 +60,20 @@ void TraceGLWindow::refresh()
 void TraceGLWindow::resizeWindow(int width, int height)
 {
 	resize(x(), y(), width, height);
-	m_nWindowWidth=w();
-	m_nWindowHeight=h();
+	mNWindowWidth=w();
+	mNWindowHeight=h();
 }
 
-void TraceGLWindow::saveImage(char *iname)
+void TraceGLWindow::saveImage(char *iName)
 {
 	unsigned char* buf;
 
-	raytracer->getBuffer(buf, m_nDrawWidth, m_nDrawHeight);
+	rayTracer->getBuffer(buf, mNDrawWidth, mNDrawHeight);
 	if (buf)
-		writeBMP(iname, m_nDrawWidth, m_nDrawHeight, buf); 
+		writeBmp(iName, mNDrawWidth, mNDrawHeight, buf); 
 }
 
 void TraceGLWindow::setRayTracer(RayTracer *tracer)
 {
-	raytracer = tracer;
+	rayTracer = tracer;
 }

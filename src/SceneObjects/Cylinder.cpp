@@ -2,12 +2,12 @@
 
 #include "Cylinder.h"
 
-bool Cylinder::intersectLocal( const ray& r, isect& i ) const
+bool Cylinder::intersectLocal( const Ray& r, ISect& i ) const
 {
 	i.obj = this;
 
 	if( intersectCaps( r, i ) ) {
-		isect ii;
+		ISect ii;
 		if( intersectBody( r, ii ) ) {
 			if( ii.t < i.t ) {
 				i = ii;
@@ -15,12 +15,11 @@ bool Cylinder::intersectLocal( const ray& r, isect& i ) const
 			}
 		}
 		return true;
-	} else {
-		return intersectBody( r, i );
 	}
+	return intersectBody( r, i );
 }
 
-bool Cylinder::intersectBody( const ray& r, isect& i ) const
+bool Cylinder::intersectBody( const Ray& r, ISect& i ) const
 {
 	double x0 = r.getPosition()[0];
 	double y0 = r.getPosition()[1];
@@ -85,7 +84,7 @@ bool Cylinder::intersectBody( const ray& r, isect& i ) const
 	return false;
 }
 
-bool Cylinder::intersectCaps( const ray& r, isect& i ) const
+bool Cylinder::intersectCaps( const Ray& r, ISect& i ) const
 {
 	if( !capped ) {
 		return false;

@@ -1,26 +1,24 @@
-#ifndef __GENERAL_H__
-#define __GENERAL_H__
+#ifndef GENERAL_H_
+#define GENERAL_H_
 
 #include <string>
-#include <iostream>
-
-using namespace std;
+#include <utility>
 
 class Exception
 {
 public:
-	Exception( const string& m ) 
-		: msg( m ) {}
-	
-	string getMsg() const { return msg; }
+	explicit Exception(std::string m ) 
+		: msg(std::move(m)) {}
+
+	std::string getMsg() const { return msg; }
 
 private:
-	string msg;
+	std::string msg;
 };
 
-inline ostream& operator <<( ostream& os, const Exception& x )
+inline std::ostream& operator <<(std::ostream& os, const Exception& x )
 {
 	return os << x.getMsg();
 }
 
-#endif // __GENERAL_H__
+#endif // GENERAL_H_
