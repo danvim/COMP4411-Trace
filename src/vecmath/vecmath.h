@@ -311,9 +311,9 @@ public:
 mat3f identity2D();					    // identity 2D
 mat4f identity3D();					    // identity 3D
 mat4f translation3D(vec3f& v);				    // translation 3D
-mat4f rotation3D(vec3f& Axis, const double angleDeg);	    // rotation 3D
+mat4f rotation3D(vec3f& Axis, double angleDeg);	    // rotation 3D
 mat4f scaling3D(vec3f& scaleVector);			    // scaling 3D
-mat4f perspective3D(const double d);			    // perspective 3D
+mat4f perspective3D(double d);			    // perspective 3D
 
 // And now, many inline functions are defined.
 

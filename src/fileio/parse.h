@@ -109,8 +109,6 @@ public:
 
 protected:
 	Obj() = default;
-
-private:
 };
 
 class ScalarObj
