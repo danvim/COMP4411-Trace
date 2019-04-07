@@ -95,7 +95,7 @@ public:
 
 	Eigen::Vector4d localToGlobalCoords(const Eigen::Vector4d& v) const
 	{
-		return xform.block<3, 3>(1, 1) * v;
+		return xform * v;
 	}
 
 	Eigen::Vector3d localToGlobalCoordsNormal(const Eigen::Vector3d& v) const
@@ -182,8 +182,8 @@ public:
 		newMax = newMax.cwiseMax(v);
 		newMin = newMin.cwiseMin(v);
 
-		bounds.max = Eigen::Vector3d(newMax);
-		bounds.min = Eigen::Vector3d(newMin);
+		bounds.max = Eigen::Vector3d(newMax.head(3));
+		bounds.min = Eigen::Vector3d(newMin.head(3));
 	}
 
 	// default method for ComputeLocalBoundingBox returns a bogus bounding box;

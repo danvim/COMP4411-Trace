@@ -58,7 +58,7 @@ bool Cone::intersectBody(const Ray& r, ISect& i) const
 		{
 			// It's okay.
 			i.t = t1;
-			i.n = Eigen::Vector3d(pp[0], pp[1],
+			i.N = Eigen::Vector3d(pp[0], pp[1],
 			                      -(c * pp[2] + (tRadius - bRadius) * tRadius / height)).normalized();
 
 
@@ -71,14 +71,14 @@ bool Cone::intersectBody(const Ray& r, ISect& i) const
 	if (z >= 0.0 && z <= height)
 	{
 		i.t = t2;
-		i.n = Eigen::Vector3d(ppp[0], ppp[1],
+		i.N = Eigen::Vector3d(ppp[0], ppp[1],
 		                      -(c * ppp[2] + (tRadius - bRadius) * tRadius / height)).normalized();
 		// In case we are _inside_ the _uncapped_ cone, we need to flip the normal.
 		// Essentially, the cone in this case is a double-sided surface
 		// and has _2_ normals
 
-		if (!capped && i.n.dot(r.getDirection()) > 0)
-			i.n = -i.n;
+		if (!capped && i.N.dot(r.getDirection()) > 0)
+			i.N = -i.N;
 
 		return true;
 	}
@@ -135,11 +135,11 @@ bool Cone::intersectCaps(const Ray& r, ISect& i) const
 			if (dz > 0.0)
 			{
 				// Intersection with cap at z = 0.
-				i.n = Eigen::Vector3d(0.0, 0.0, -1.0);
+				i.N = Eigen::Vector3d(0.0, 0.0, -1.0);
 			}
 			else
 			{
-				i.n = Eigen::Vector3d(0.0, 0.0, 1.0);
+				i.N = Eigen::Vector3d(0.0, 0.0, 1.0);
 			}
 			return true;
 		}
@@ -152,11 +152,11 @@ bool Cone::intersectCaps(const Ray& r, ISect& i) const
 		if (dz > 0.0)
 		{
 			// Intersection with interior of cap at z = 1.
-			i.n = Eigen::Vector3d(0.0, 0.0, 1.0);
+			i.N = Eigen::Vector3d(0.0, 0.0, 1.0);
 		}
 		else
 		{
-			i.n = Eigen::Vector3d(0.0, 0.0, -1.0);
+			i.N = Eigen::Vector3d(0.0, 0.0, -1.0);
 		}
 		return true;
 	}
