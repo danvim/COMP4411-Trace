@@ -62,7 +62,7 @@ public:
 
     bool hasBoundingBoxCapability() const override { return true; }
 
-    BoundingBox ComputeLocalBoundingBox() override
+    BoundingBox ComputeLocalBoundingBox() const override
     {
         BoundingBox localBounds;
         localBounds.max = maximum( parent->vertices[ids[0]], parent->vertices[ids[1]]);

@@ -23,7 +23,7 @@ public:
 	bool intersectLocal(const Ray& r, ISect& i) const override;
 	bool hasBoundingBoxCapability() const override { return true; }
 
-	BoundingBox ComputeLocalBoundingBox() override
+	BoundingBox ComputeLocalBoundingBox() const override
 	{
 		BoundingBox localBounds;
 		const auto biggestRadius = bRadius > tRadius ? bRadius : tRadius;

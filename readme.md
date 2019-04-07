@@ -4,7 +4,7 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
 
 ## Basic requirements
 
-- [ ] Box intersection
+- [x] Box intersection
 - [ ] Phong specular-reflection
 - [ ] Light sources
   - [ ] Multiple light sources

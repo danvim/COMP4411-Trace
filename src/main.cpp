@@ -67,6 +67,11 @@
 
 #include "fileio/bitmap.h"
 
+double diff(double a, double b)
+{
+	return abs(a - b);
+}
+
 // ***********************************************************
 // from getopt.cpp 
 // it should be put in an include file.

@@ -15,7 +15,7 @@ public:
 	bool intersectLocal( const Ray& r, ISect& i ) const override;
 	bool hasBoundingBoxCapability() const override { return true; }
 
-	BoundingBox ComputeLocalBoundingBox() override
+	BoundingBox ComputeLocalBoundingBox() const override
     {
         BoundingBox localBounds;
         localBounds.min = vec3f(-0.5f, -0.5f, -RAY_EPSILON);
