@@ -60,7 +60,7 @@ public:
 
 	void setObject(SceneObject* o) { obj = o; }
 	void setT(const double tt) { t = tt; }
-	void setN(const Eigen::Vector3d& n) { N = n; }
+	void setN(const Eigen::Vector3d& n) { n = n; }
 
 	void setMaterial(Material* m)
 	{
@@ -74,7 +74,7 @@ public:
 		{
 			obj = other.obj;
 			t = other.t;
-			N = other.N;
+			n = other.n;
 			//            material = other.material ? new Material( *(other.material) ) : 0;
 			if (other.material)
 			{
@@ -93,7 +93,7 @@ public:
 
 	const SceneObject* obj;
 	double t;
-	Eigen::Vector3d N;
+	Eigen::Vector3d n;
 	Material* material; // if this intersection has its own material
 	// (as opposed to one in its associated object)
 	// as in the case where the material was interpolated

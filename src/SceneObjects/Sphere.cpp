@@ -25,10 +25,10 @@ bool Sphere::intersectLocal( const Ray& r, ISect& i ) const
 
 	if( t1 > RAY_EPSILON ) {
 		i.t = t1;
-		i.N = r.at( t1 ).normalized();
+		i.n = r.at( t1 ).normalized();
 	} else {
 		i.t = t2;
-		i.N = r.at( t2 ).normalized();
+		i.n = r.at( t2 ).normalized();
 	}
 
 	return true;
