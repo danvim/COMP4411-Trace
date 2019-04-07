@@ -4,16 +4,16 @@
 
 bool Sphere::intersectLocal( const Ray& r, ISect& i ) const
 {
-	vec3f v = -r.getPosition();
-	double b = v.dot(r.getDirection());
-	double discriminant = b*b - v.dot(v) + 1;
+	Eigen::Vector3d v = -r.getPosition();
+	const auto b = v.dot(r.getDirection());
+	auto discriminant = b * b - v.dot(v) + 1;
 
 	if( discriminant < 0.0 ) {
 		return false;
 	}
 
 	discriminant = sqrt( discriminant );
-	double t2 = b + discriminant;
+	const auto t2 = b + discriminant;
 
 	if( t2 <= RAY_EPSILON ) {
 		return false;
@@ -21,14 +21,14 @@ bool Sphere::intersectLocal( const Ray& r, ISect& i ) const
 
 	i.obj = this;
 
-	double t1 = b - discriminant;
+	const auto t1 = b - discriminant;
 
 	if( t1 > RAY_EPSILON ) {
 		i.t = t1;
-		i.N = r.at( t1 ).normalize();
+		i.N = r.at( t1 ).normalized();
 	} else {
 		i.t = t2;
-		i.N = r.at( t2 ).normalize();
+		i.N = r.at( t2 ).normalized();
 	}
 
 	return true;

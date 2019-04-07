@@ -13,17 +13,19 @@
 // through the projection plane, and out into the scene.  All we do is
 // enter the main ray-tracing method, getting things started by plugging
 // in an initial ray weight of (0.0,0.0,0.0) and an initial recursion depth of 0.
-vec3f RayTracer::trace(Scene* scene, double x, double y)
+Eigen::Vector3d RayTracer::trace(Scene* scene, double x, double y)
 {
-	Ray r(vec3f(0, 0, 0), vec3f(0, 0, 0));
+	Ray r(Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0));
 	scene->getCamera()->rayThrough(x, y, r);
-	return traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0).clamp();
+	return traceRay(scene, r, Eigen::Vector3d(1.0, 1.0, 1.0), 0).unaryExpr(
+		[](const double x) {return std::clamp<double>(x, 0.0, 1.0); }
+	);
 }
 
 // Do recursive ray tracing!  You'll want to insert a lot of code here
 // (or places called from here) to handle reflection, refraction, etc etc.
-vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
-                          const vec3f& thresh, int depth)
+Eigen::Vector3d RayTracer::traceRay(Scene* scene, const Ray& r,
+                          const Eigen::Vector3d& thresh, int depth)
 {
 	ISect i;
 
@@ -47,7 +49,7 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 	// it according to the background color, which in this (simple) case
 	// is just black.
 
-	return vec3f(0.0, 0.0, 0.0);
+	return Eigen::Vector3d(0.0, 0.0, 0.0);
 }
 
 RayTracer::RayTracer()
@@ -114,7 +116,7 @@ bool RayTracer::loadScene(char* fn)
 	return true;
 }
 
-void RayTracer::traceSetup(int w, int h)
+void RayTracer::traceSetup(const int w, const int h)
 {
 	if (bufferWidth != w || bufferHeight != h)
 	{
@@ -141,7 +143,7 @@ void RayTracer::traceLines(const int start, int stop)
 			tracePixel(i, j);
 }
 
-void RayTracer::tracePixel(int i, int j)
+void RayTracer::tracePixel(const int i, const int j)
 {
 	if (!scene)
 		return;

@@ -153,7 +153,7 @@ int GetOption (
     return (chOpt);
 }
 
-int getopt(const int argc, char **argv, char *optString)
+int getOpt(const int argc, char **argv, char *optString)
 {
 	const auto i = GetOption(argc, argv, optString, &optArg);
 

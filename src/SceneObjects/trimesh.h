@@ -10,8 +10,8 @@ class TrimeshFace;
 class Trimesh : public MaterialSceneObject
 {
     friend class TrimeshFace;
-    typedef std::vector<vec3f> Normals;
-    typedef std::vector<vec3f> Vertices;
+    typedef std::vector<Eigen::Vector3d> Normals;
+    typedef std::vector<Eigen::Vector3d> Vertices;
     typedef std::vector<TrimeshFace*> Faces;
     typedef std::vector<Material*> Materials;
     Vertices vertices;
@@ -28,13 +28,13 @@ public:
     ~Trimesh();
     
     // must add vertices, normals, and materials IN ORDER
-    void addVertex( const vec3f & );
+    void addVertex( const Eigen::Vector3d & );
     void addMaterial( Material *m );
-    void addNormal( const vec3f & );
+    void addNormal( const Eigen::Vector3d & );
 
     bool addFace( int a, int b, int c );
 
-    char *doubleCheck();
+    std::string doubleCheck() const;
     
     void generateNormals();
 };
@@ -44,7 +44,7 @@ class TrimeshFace : public MaterialSceneObject
     Trimesh *parent;
     int ids[3]{};
 public:
-    TrimeshFace( Scene *scene, Material *mat, Trimesh *parent, int a, int b, int c)
+    TrimeshFace( Scene *scene, Material *mat, Trimesh *parent, const int a, const int b, const int c)
         : MaterialSceneObject( scene, mat )
     {
         this->parent = parent;
@@ -53,7 +53,7 @@ public:
         ids[2] = c;
     }
 
-    int operator[]( int i ) const
+    int operator[](const int i ) const
     {
         return ids[i];
     }
@@ -62,14 +62,14 @@ public:
 
     bool hasBoundingBoxCapability() const override { return true; }
 
-    BoundingBox ComputeLocalBoundingBox() override
+    BoundingBox computeLocalBoundingBox() override
     {
         BoundingBox localBounds;
-        localBounds.max = maximum( parent->vertices[ids[0]], parent->vertices[ids[1]]);
-		localBounds.min = minimum( parent->vertices[ids[0]], parent->vertices[ids[1]]);
+        localBounds.max = parent->vertices[ids[0]].cwiseMax(parent->vertices[ids[1]]);
+		localBounds.min = parent->vertices[ids[0]].cwiseMin(parent->vertices[ids[1]]);
         
-        localBounds.max = maximum( parent->vertices[ids[2]], localBounds.max);
-		localBounds.min = minimum( parent->vertices[ids[2]], localBounds.min);
+        localBounds.max = parent->vertices[ids[2]].cwiseMax(localBounds.max);
+		localBounds.min = parent->vertices[ids[2]].cwiseMin(localBounds.min);
         return localBounds;
     }
     

@@ -5,7 +5,6 @@
 #include <cmath>
 #include <cstring>
 #include <fstream>
-#include <strstream>
 
 #include <vector>
 
@@ -27,10 +26,10 @@ static void processObject(Obj* obj, Scene* scene, MMap& materials);
 static Obj* getColorField(Obj* obj);
 static Obj* getField(Obj* obj, const std::string& name);
 static bool hasField(Obj* obj, const std::string& name);
-static vec3f tupleToVec(Obj* obj);
+static Eigen::Vector3d tupleToVec(Obj* obj);
 static void processGeometry(const std::string& name, Obj* child, Scene* scene,
                             const MMap& materials, TransformNode* transform);
-static void processTrimesh(std::string name, Obj* child, Scene* scene,
+static void processTrimesh(const std::string& name, Obj* child, Scene* scene,
                            const MMap& materials, TransformNode* transform);
 static void processCamera(Obj* child, Scene* scene);
 static Material* getMaterial(Obj* child, const MMap& bindings);
@@ -89,7 +88,7 @@ Scene* readScene(std::istream& is)
 
 	if (version != 1.0)
 	{
-		std::ostrstream oss;
+		std::ostringstream oss;
 		oss << "Input is version " << version << ", need version 1.0" << std::ends;
 
 		throw ParseError(std::string(oss.str()));
@@ -171,11 +170,11 @@ static bool hasField(Obj* obj, const std::string& name)
 }
 
 // Turn a parsed tuple into a 3D point.
-static vec3f tupleToVec(Obj* obj)
+static Eigen::Vector3d tupleToVec(Obj* obj)
 {
 	const auto& t = obj->getTuple();
 	verifyTuple(t, 3);
-	return vec3f(t[0]->getScalar(), t[1]->getScalar(), t[2]->getScalar());
+	return Eigen::Vector3d(t[0]->getScalar(), t[1]->getScalar(), t[2]->getScalar());
 }
 
 static void processGeometry(Obj* obj, Scene* scene,
@@ -196,7 +195,7 @@ static void processGeometry(Obj* obj, Scene* scene,
 	}
 	else
 	{
-		std::ostrstream oss;
+		std::ostringstream oss;
 		oss << "Unknown input object ";
 		obj->printOn(oss);
 
@@ -231,11 +230,11 @@ static bool maybeExtractField(Obj* child, const std::string& name, bool& ret)
 }
 
 // Check that a tuple has the expected size.
-static void verifyTuple(const MyTuple& tup, size_t size)
+static void verifyTuple(const MyTuple& tup, const size_t size)
 {
 	if (tup.size() != size)
 	{
-		std::ostrstream oss;
+		std::ostringstream oss;
 		oss << "Bad tuple size " << tup.size() << ", expected " << size;
 
 		throw ParseError(std::string(oss.str()));
@@ -249,45 +248,52 @@ static void processGeometry(const std::string& name, Obj* child, Scene* scene,
 	{
 		const auto& tup = child->getTuple();
 		verifyTuple(tup, 4);
+		Eigen::Affine3d a;
+		a.translate(Eigen::Vector3d(tup[0]->getScalar(),
+		                            tup[1]->getScalar(),
+		                            tup[2]->getScalar()));
 		processGeometry(tup[3],
 		                scene,
 		                materials,
-		                transform->createChild(mat4f::translate(vec3f(tup[0]->getScalar(),
-		                                                              tup[1]->getScalar(),
-		                                                              tup[2]->getScalar()))));
+		                transform->createChild(a.matrix()));
 	}
 	else if (name == "rotate")
 	{
 		const auto& tup = child->getTuple();
 		verifyTuple(tup, 5);
+		Eigen::AngleAxisd a(tup[3]->getScalar(),
+		                    Eigen::Vector3d(tup[0]->getScalar(),
+		                                    tup[1]->getScalar(),
+		                                    tup[2]->getScalar()));
 		processGeometry(tup[4],
 		                scene,
 		                materials,
-		                transform->createChild(mat4f::rotate(vec3f(tup[0]->getScalar(),
-		                                                           tup[1]->getScalar(),
-		                                                           tup[2]->getScalar()),
-		                                                     tup[3]->getScalar())));
+		                transform->createChild(a.matrix()));
 	}
 	else if (name == "scale")
 	{
 		const auto& tup = child->getTuple();
 		if (tup.size() == 2)
 		{
-			auto sc = tup[0]->getScalar();
+			const auto sc = tup[0]->getScalar();
+			Eigen::Affine3d a;
+			a.scale(Eigen::Vector3d(sc, sc, sc));
 			processGeometry(tup[1],
 			                scene,
 			                materials,
-			                transform->createChild(mat4f::scale(vec3f(sc, sc, sc))));
+			                transform->createChild(a.matrix()));
 		}
 		else
 		{
 			verifyTuple(tup, 4);
+			Eigen::Affine3d a;
+			a.scale(Eigen::Vector3d(tup[0]->getScalar(),
+			                        tup[1]->getScalar(),
+			                        tup[2]->getScalar()));
 			processGeometry(tup[3],
 			                scene,
 			                materials,
-			                transform->createChild(mat4f::scale(vec3f(tup[0]->getScalar(),
-			                                                          tup[1]->getScalar(),
-			                                                          tup[2]->getScalar()))));
+			                transform->createChild(a.matrix()));
 		}
 	}
 	else if (name == "transform")
@@ -304,25 +310,18 @@ static void processGeometry(const std::string& name, Obj* child, Scene* scene,
 		verifyTuple(l3, 4);
 		verifyTuple(l4, 4);
 
+		Eigen::Matrix4d m;
+
+		m << l1[0]->getScalar(), l1[1]->getScalar(), l1[2]->getScalar(), l1[3]->getScalar(),
+			l2[0]->getScalar(), l2[1]->getScalar(), l2[2]->getScalar(), l2[3]->getScalar(),
+			l3[0]->getScalar(), l3[1]->getScalar(), l3[2]->getScalar(), l3[3]->getScalar(),
+			l4[0]->getScalar(), l4[1]->getScalar(), l4[2]->getScalar(), l4[3]->getScalar();
+
+
 		processGeometry(tup[4],
 		                scene,
 		                materials,
-		                transform->createChild(mat4f(vec4f(l1[0]->getScalar(),
-		                                                   l1[1]->getScalar(),
-		                                                   l1[2]->getScalar(),
-		                                                   l1[3]->getScalar()),
-		                                             vec4f(l2[0]->getScalar(),
-		                                                   l2[1]->getScalar(),
-		                                                   l2[2]->getScalar(),
-		                                                   l2[3]->getScalar()),
-		                                             vec4f(l3[0]->getScalar(),
-		                                                   l3[1]->getScalar(),
-		                                                   l3[2]->getScalar(),
-		                                                   l3[3]->getScalar()),
-		                                             vec4f(l4[0]->getScalar(),
-		                                                   l4[1]->getScalar(),
-		                                                   l4[2]->getScalar(),
-		                                                   l4[3]->getScalar()))));
+		                transform->createChild(m));
 	}
 	else if (name == "trimesh" || name == "polymesh")
 	{
@@ -334,7 +333,7 @@ static void processGeometry(const std::string& name, Obj* child, Scene* scene,
 		SceneObject* obj = nullptr;
 
 		//if( hasField( child, "material" ) )
-		auto mat = getMaterial(getField(child, "material"), materials);
+		const auto mat = getMaterial(getField(child, "material"), materials);
 		//else
 		//    mat = new Material();
 
@@ -353,16 +352,16 @@ static void processGeometry(const std::string& name, Obj* child, Scene* scene,
 		else if (name == "cone")
 		{
 			auto height = 1.0;
-			auto bottom_radius = 1.0;
-			auto top_radius = 0.0;
+			auto bottomRadius = 1.0;
+			auto topRadius = 0.0;
 			auto capped = true;
 
 			maybeExtractField(child, "height", height);
-			maybeExtractField(child, "bottom_radius", bottom_radius);
-			maybeExtractField(child, "top_radius", top_radius);
+			maybeExtractField(child, "bottom_radius", bottomRadius);
+			maybeExtractField(child, "top_radius", topRadius);
 			maybeExtractField(child, "capped", capped);
 
-			obj = new Cone(scene, mat, height, bottom_radius, top_radius, capped);
+			obj = new Cone(scene, mat, height, bottomRadius, topRadius, capped);
 		}
 		else if (name == "square")
 		{
@@ -374,7 +373,7 @@ static void processGeometry(const std::string& name, Obj* child, Scene* scene,
 	}
 }
 
-static void processTrimesh(std::string name, Obj* child, Scene* scene,
+static void processTrimesh(const std::string& name, Obj* child, Scene* scene,
                            const MMap& materials, TransformNode* transform)
 {
 	Material* mat;
@@ -430,8 +429,8 @@ static void processTrimesh(std::string name, Obj* child, Scene* scene,
 			tmesh->addNormal(tupleToVec(*ni));
 	}
 
-	char* error;
-	if ((error = tmesh->doubleCheck()))
+	std::string error;
+	if (!(error = tmesh->doubleCheck()).empty())
 		throw ParseError(error);
 
 	scene->add(tmesh);
@@ -442,7 +441,7 @@ static Material* getMaterial(Obj* child, const MMap& bindings)
 	const auto tField = child->getTypeName();
 	if (tField == "id")
 	{
-		auto i = bindings.find(child->getId());
+		const auto i = bindings.find(child->getId());
 		if (i != bindings.end())
 		{
 			return (*i).second;
@@ -450,7 +449,7 @@ static Material* getMaterial(Obj* child, const MMap& bindings)
 	}
 	else if (tField == "std::string")
 	{
-		auto i = bindings.find(child->getString());
+		const auto i = bindings.find(child->getString());
 		if (i != bindings.end())
 		{
 			return (*i).second;
@@ -465,7 +464,7 @@ static Material* processMaterial(Obj* child, MMap* bindings)
 //
 // child   - root of parse tree
 // MMap    - bindings of names to materials (if non-null)
-// defmat  - material to start with (if non-null)
+// def mat  - material to start with (if non-null)
 {
 	auto* mat = new Material();
 
@@ -557,8 +556,8 @@ processCamera(Obj* child, Scene* scene)
 		scene->getCamera()->setAspectRatio(getField(child, "aspectratio")->getScalar());
 	if (hasField(child, "viewdir") && hasField(child, "updir"))
 	{
-		scene->getCamera()->setLook(tupleToVec(getField(child, "viewdir")).normalize(),
-		                            tupleToVec(getField(child, "updir")).normalize());
+		scene->getCamera()->setLook(tupleToVec(getField(child, "viewdir")).normalized(),
+		                            tupleToVec(getField(child, "updir")).normalized());
 	}
 }
 
@@ -580,7 +579,7 @@ static void processObject(Obj* obj, Scene* scene, MMap& materials)
 	}
 	else
 	{
-		std::ostrstream oss;
+		std::ostringstream oss;
 		oss << "Unknown input object ";
 		obj->printOn(oss);
 
@@ -595,7 +594,7 @@ static void processObject(Obj* obj, Scene* scene, MMap& materials)
 		}
 
 		scene->add(new DirectionalLight(scene,
-		                                tupleToVec(getField(child, "direction")).normalize(),
+		                                tupleToVec(getField(child, "direction")).normalized(),
 		                                tupleToVec(getColorField(child))));
 	}
 	else if (name == "point_light")

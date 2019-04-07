@@ -4,6 +4,7 @@
 // The main ray tracer.
 
 #include "scene/scene.h"
+#include "Eigen/Dense"
 
 class RayTracer
 {
@@ -11,8 +12,8 @@ public:
     RayTracer();
     ~RayTracer();
 
-    vec3f trace( Scene *scene, double x, double y );
-	vec3f traceRay( Scene *scene, const Ray& r, const vec3f& thresh, int depth );
+    Eigen::Vector3d trace( Scene *scene, double x, double y );
+	Eigen::Vector3d traceRay( Scene *scene, const Ray& r, const Eigen::Vector3d& thresh, int depth );
 
 
 	void getBuffer( unsigned char *&buf, int &w, int &h ) const;

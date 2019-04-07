@@ -1,36 +1,43 @@
 #include "Square.h"
 
-bool Square::intersectLocal( const Ray& r, ISect& i ) const
+bool Square::intersectLocal(const Ray& r, ISect& i) const
 {
-	vec3f p = r.getPosition();
-	vec3f d = r.getDirection();
+	auto p = r.getPosition();
+	auto d = r.getDirection();
 
-	if( d[2] == 0.0 ) {
+	if (d[2] == 0.0)
+	{
 		return false;
 	}
 
-	double t = -p[2]/d[2];
+	const auto t = -p[2] / d[2];
 
-	if( t <= RAY_EPSILON ) {
+	if (t <= RAY_EPSILON)
+	{
 		return false;
 	}
 
-	vec3f P = r.at( t );
+	auto pp = r.at(t);
 
-	if( P[0] < -0.5 || P[0] > 0.5 ) {	
+	if (pp[0] < -0.5 || pp[0] > 0.5)
+	{
 		return false;
 	}
 
-	if( P[1] < -0.5 || P[1] > 0.5 ) {	
+	if (pp[1] < -0.5 || pp[1] > 0.5)
+	{
 		return false;
 	}
 
 	i.obj = this;
 	i.t = t;
-	if( d[2] > 0.0 ) {
-		i.N = vec3f( 0.0, 0.0, -1.0 );
-	} else {
-		i.N = vec3f( 0.0, 0.0, 1.0 );
+	if (d[2] > 0.0)
+	{
+		i.N = Eigen::Vector3d(0.0, 0.0, -1.0);
+	}
+	else
+	{
+		i.N = Eigen::Vector3d(0.0, 0.0, 1.0);
 	}
 
 	return true;

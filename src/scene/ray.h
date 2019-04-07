@@ -7,7 +7,8 @@
 #ifndef RAY_H_
 #define RAY_H_
 
-#include "../vecmath/vecmath.h"
+#include <utility>
+#include "Eigen/Dense"
 #include "material.h"
 
 class SceneObject;
@@ -18,8 +19,8 @@ class SceneObject;
 class Ray
 {
 public:
-	Ray(const vec3f& pp, const vec3f& dd)
-		: p(pp), d(dd)
+	Ray(Eigen::Vector3d pp, Eigen::Vector3d dd)
+		: p(std::move(pp)), d(std::move(dd))
 	{
 	}
 
@@ -29,17 +30,17 @@ public:
 	Ray& operator =(const Ray& other)
 	= default;
 
-	vec3f at(const double t) const
+	Eigen::Vector3d at(const double t) const
 	{
 		return p + t * d;
 	}
 
-	vec3f getPosition() const { return p; }
-	vec3f getDirection() const { return d; }
+	Eigen::Vector3d getPosition() const { return p; }
+	Eigen::Vector3d getDirection() const { return d; }
 
 protected:
-	vec3f p;
-	vec3f d;
+	Eigen::Vector3d p;
+	Eigen::Vector3d d;
 };
 
 // The description of an intersection point.
@@ -59,7 +60,7 @@ public:
 
 	void setObject(SceneObject* o) { obj = o; }
 	void setT(const double tt) { t = tt; }
-	void setN(const vec3f& n) { N = n; }
+	void setN(const Eigen::Vector3d& n) { N = n; }
 
 	void setMaterial(Material* m)
 	{
@@ -90,10 +91,9 @@ public:
 		return *this;
 	}
 
-public:
 	const SceneObject* obj;
 	double t;
-	vec3f N;
+	Eigen::Vector3d N;
 	Material* material; // if this intersection has its own material
 	// (as opposed to one in its associated object)
 	// as in the case where the material was interpolated

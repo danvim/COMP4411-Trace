@@ -8,10 +8,10 @@ Camera::Camera()
     aspectRatio = 1;
     normalizedHeight = 1;
     
-    eye = vec3f(0,0,0);
-    u = vec3f( 1,0,0 );
-    v = vec3f( 0,1,0 );
-    look = vec3f( 0,0,-1 );
+    eye = Eigen::Vector3d(0,0,0);
+    u = Eigen::Vector3d( 1,0,0 );
+    v = Eigen::Vector3d( 0,1,0 );
+    look = Eigen::Vector3d( 0,0,-1 );
 }
 
 void
@@ -21,12 +21,12 @@ Camera::rayThrough( double x, double y, Ray &r ) const
 {
     x -= 0.5;
     y -= 0.5;
-    auto dir = look + x * u + y * v;
-    r = Ray( eye, dir.normalize() );
+    Eigen::Vector3d dir = look + x * u + y * v;
+    r = Ray( eye, dir.normalized() );
 }
 
 void
-Camera::setEye( const vec3f &eye )
+Camera::setEye( const Eigen::Vector3d &eye )
 {
     this->eye = eye;
 }
@@ -39,29 +39,29 @@ Camera::setLook( double r, double i, double j, double k )
 // quaternion r i j k.
 {
                                 // set look matrix
-    m[0][0] = 1.0 - 2.0 * (i * i + j * j);
-    m[0][1] = 2.0 * (r * i - j * k);
-    m[0][2] = 2.0 * (j * r + i * k);
-    
-    m[1][0] = 2.0 * (r * i + j * k);
-    m[1][1]= 1.0 - 2.0 * (j * j + r * r);
-    m[1][2] = 2.0 * (i * j - r * k);
-    
-    m[2][0] = 2.0 * (j * r - i * k);
-    m[2][1] = 2.0 * (i * j + r * k);
-    m[2][2] = 1.0 - 2.0 * (i * i + r * r);
+	Eigen::Matrix3d mm;
+
+	mm << 1.0 - 2.0 * (i * i + j * j), 2.0 * (r * i - j * k), 2.0 * (j * r + i * k),
+		2.0 * (r * i + j * k), 1.0 - 2.0 * (j * j + r * r), 2.0 * (i * j - r * k),
+		2.0 * (j * r - i * k), 2.0 * (i * j + r * k), 1.0 - 2.0 * (i * i + r * r);
+
+	m = mm;
 
     update();
 }
 
 void
-Camera::setLook( const vec3f &viewDir, const vec3f &upDir )
+Camera::setLook( const Eigen::Vector3d &viewDir, const Eigen::Vector3d &upDir )
 {
 	const auto z = -viewDir;          // this is where the z axis should end up
     const auto& y = upDir;      // where the y axis should end up
 	const auto x = y.cross(z);               // lah,
 
-    m = mat3f( x,y,z ).transpose();
+	Eigen::Matrix3d m;
+
+	m << x, y, z;
+
+	m.transposeInPlace();
 
     update();
 }
@@ -76,7 +76,7 @@ Camera::setFov( double fov )
 }
 
 void
-Camera::setAspectRatio( double ar )
+Camera::setAspectRatio(const double ar )
 // ar - ratio of width to height
 {
     aspectRatio = ar;
@@ -86,9 +86,9 @@ Camera::setAspectRatio( double ar )
 void
 Camera::update()
 {
-    u = m * vec3f( 1,0,0 ) * normalizedHeight*aspectRatio;
-    v = m * vec3f( 0,1,0 ) * normalizedHeight;
-    look = m * vec3f( 0,0,-1 );
+    u = m * Eigen::Vector3d( 1,0,0 ) * (normalizedHeight * aspectRatio);
+    v = m * Eigen::Vector3d( 0,1,0 ) * normalizedHeight;
+    look = m * Eigen::Vector3d( 0,0,-1 );
 }
 
 

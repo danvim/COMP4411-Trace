@@ -23,13 +23,13 @@ public:
 	bool intersectLocal(const Ray& r, ISect& i) const override;
 	bool hasBoundingBoxCapability() const override { return true; }
 
-	BoundingBox ComputeLocalBoundingBox() override
+	BoundingBox computeLocalBoundingBox() override
 	{
 		BoundingBox localBounds;
 		const auto biggestRadius = bRadius > tRadius ? bRadius : tRadius;
 
-		localBounds.min = vec3f(-biggestRadius, -biggestRadius, height < 0.0f ? height : 0.0f);
-		localBounds.max = vec3f(biggestRadius, biggestRadius, height < 0.0f ? 0.0f : height);
+		localBounds.min = Eigen::Vector3d(-biggestRadius, -biggestRadius, height < 0.0f ? height : 0.0f);
+		localBounds.max = Eigen::Vector3d(biggestRadius, biggestRadius, height < 0.0f ? 0.0f : height);
 		return localBounds;
 	}
 

@@ -8,23 +8,23 @@ class Camera
 public:
     Camera();
     void rayThrough( double x, double y, Ray &r ) const;
-    void setEye( const vec3f &eye );
+    void setEye( const Eigen::Vector3d &eye );
     void setLook( double, double, double, double );
-    void setLook( const vec3f &viewDir, const vec3f &upDir );
+    void setLook( const Eigen::Vector3d &viewDir, const Eigen::Vector3d &upDir );
     void setFov( double );
     void setAspectRatio( double );
 
     double getAspectRatio() const { return aspectRatio; }
 private:
-    mat3f m;                     // rotation matrix
+    Eigen::Matrix3d m;                     // rotation matrix
     double normalizedHeight;    // dimensions of image place at unit dist from eye
     double aspectRatio;
     
     void update();              // using the above three values calculate look,u,v
     
-    vec3f eye;
-    vec3f look;                  // direction to look
-    vec3f u,v;                   // u and v in the 
+    Eigen::Vector3d eye;
+    Eigen::Vector3d look;                  // direction to look
+    Eigen::Vector3d u,v;                   // u and v in the 
 };
 
 #endif

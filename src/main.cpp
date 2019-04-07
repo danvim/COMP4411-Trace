@@ -29,13 +29,13 @@
 //                          |           |
 //                          |           +- <Geometry>::intersectLocal
 //                          |
-//                          +- isect::getMaterial
+//                          +- ISect::getMaterial
 //                          |
 //                          +- Material::shade
 //
 // The loadScene and traceSetup methods load a file and set up all the internal
 // buffers necessary to render the scene.  The traceLines method begins the
-// process of actually rendering the image, one scanline at a time.  It does
+// process of actually rendering the image, one scan line at a time.  It does
 // this by calling tracePixel for each pixel in the image.  tracePixel is given
 // a coordinate pair which is converted into an (x,y) screen coordinate and
 // passed to trace.  The trace method calculates a ray from the camera position
@@ -68,10 +68,10 @@
 #include "fileio/bitmap.h"
 
 // ***********************************************************
-// from getopt.cpp 
+// from getOpt.cpp 
 // it should be put in an include file.
 //
-extern int getopt(int argc, char** argv, char* optString);
+extern int getOpt(int argc, char** argv, char* optString);
 extern char* optArg;
 extern int optInd, optErr, optOpt;
 // ***********************************************************
@@ -100,11 +100,14 @@ void usage()
 #endif
 }
 
-bool processArgs(int argc, char** argv)
+bool processArgs(const int argc, char** argv)
 {
 	int i;
 
-	while ((i = getopt(argc, argv, "tr:w:h:")) != EOF)
+	std::string optString = "tr:w:h:";
+	std::vector<char> optStringC(optString.c_str(), optString.c_str() + optString.size() + 1u);
+
+	while ((i = getOpt(argc, argv, &optStringC[0])) != EOF)
 	{
 		switch (i)
 		{
@@ -144,12 +147,12 @@ bool processArgs(int argc, char** argv)
 // usage : ray [option] in.ray out.bmp
 // Simply keying in ray will invoke a graphics mode version.
 // Use "ray --help" to see the detailed usage.
-// OK. I am lying. any illegal option such as "ray blahbalh" will print
+// OK. I am lying. any illegal option such as "ray ..." will print
 // out the usage
 //
 // Graphics mode will be substantially slower than text mode because of
 // event handling overhead.
-int main(int argc, char** argv)
+int main(const int argc, char** argv)
 {
 	progName = argv[0];
 
@@ -167,15 +170,15 @@ int main(int argc, char** argv)
 
 		if (theRayTracer->sceneLoaded())
 		{
-			gHeight = int(gWidth / theRayTracer->aspectRatio() + 0.5);
+			gHeight = int(roundl(gWidth / theRayTracer->aspectRatio()));
 
 			theRayTracer->traceSetup(gWidth, gHeight);
 
-			clock_t start = clock();
+			const auto start = clock();
 
 			theRayTracer->traceLines(0, gHeight);
 
-			clock_t end = clock();
+			const auto end = clock();
 
 			// save image
 			unsigned char* buf;
@@ -186,7 +189,7 @@ int main(int argc, char** argv)
 
 			if (bReport)
 			{
-				double t = double(end - start) / CLOCKS_PER_SEC;
+				const auto t = double(end - start) / CLOCKS_PER_SEC;
 #ifdef WIN32
 				fl_message("total time = %.3f seconds\n", t);
 #else

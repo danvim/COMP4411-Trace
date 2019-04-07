@@ -15,11 +15,11 @@ public:
 	bool intersectLocal( const Ray& r, ISect& i ) const override;
 	bool hasBoundingBoxCapability() const override { return true; }
 
-	BoundingBox ComputeLocalBoundingBox() override
+	BoundingBox computeLocalBoundingBox() override
     {
         BoundingBox localBounds;
-        localBounds.max = vec3f(0.5, 0.5, 0.5);
-		localBounds.min = vec3f(-0.5, -0.5, -0.5);
+        localBounds.max = Eigen::Vector3d(0.5, 0.5, 0.5);
+		localBounds.min = Eigen::Vector3d(-0.5, -0.5, -0.5);
         return localBounds;
     }
 };

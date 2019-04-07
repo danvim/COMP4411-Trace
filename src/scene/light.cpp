@@ -1,31 +1,31 @@
 #include "light.h"
 
-double DirectionalLight::distanceAttenuation( const vec3f& p ) const
+double DirectionalLight::distanceAttenuation( const Eigen::Vector3d& p ) const
 {
 	// distance to light is infinite, so f(di) goes to 0.  Return 1.
 	return 1.0;
 }
 
 
-vec3f DirectionalLight::shadowAttenuation( const vec3f& p ) const
+Eigen::Vector3d DirectionalLight::shadowAttenuation( const Eigen::Vector3d& p ) const
 {
     // YOUR CODE HERE:
     // You should implement shadow-handling code here.
-    return vec3f(1,1,1);
+    return Eigen::Vector3d(1,1,1);
 }
 
-vec3f DirectionalLight::getColor( const vec3f& p ) const
+Eigen::Vector3d DirectionalLight::getColor( const Eigen::Vector3d& p ) const
 {
 	// Color doesn't depend on P 
 	return color;
 }
 
-vec3f DirectionalLight::getDirection( const vec3f& p ) const
+Eigen::Vector3d DirectionalLight::getDirection( const Eigen::Vector3d& p ) const
 {
 	return -orientation;
 }
 
-double PointLight::distanceAttenuation( const vec3f& p ) const
+double PointLight::distanceAttenuation( const Eigen::Vector3d& p ) const
 {
 	// YOUR CODE HERE
 
@@ -35,21 +35,21 @@ double PointLight::distanceAttenuation( const vec3f& p ) const
 	return 1.0;
 }
 
-vec3f PointLight::getColor( const vec3f& p ) const
+Eigen::Vector3d PointLight::getColor( const Eigen::Vector3d& p ) const
 {
 	// Color doesn't depend on P 
 	return color;
 }
 
-vec3f PointLight::getDirection( const vec3f& p ) const
+Eigen::Vector3d PointLight::getDirection( const Eigen::Vector3d& p ) const
 {
-	return (position - p).normalize();
+	return (position - p).normalized();
 }
 
 
-vec3f PointLight::shadowAttenuation(const vec3f& p) const
+Eigen::Vector3d PointLight::shadowAttenuation(const Eigen::Vector3d& p) const
 {
     // YOUR CODE HERE:
     // You should implement shadow-handling code here.
-    return vec3f(1,1,1);
+    return Eigen::Vector3d(1,1,1);
 }

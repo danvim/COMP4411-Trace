@@ -2,8 +2,8 @@
 #include "material.h"
 #include "scene.h"
 
-const Material &
+const Material&
 ISect::getMaterial() const
 {
-    return material ? *material : obj->getMaterial();
+	return material ? *material : obj->getMaterial();
 }

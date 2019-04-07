@@ -8,6 +8,7 @@
 #define MATERIAL_H_
 
 #include "../vecmath/vecmath.h"
+#include <Eigen/Dense>
 
 class Scene;
 class Ray;
@@ -19,27 +20,27 @@ public:
 	virtual ~Material() = default;
 
 	Material()
-        : ke( vec3f( 0.0, 0.0, 0.0 ) )
-        , ka( vec3f( 0.0, 0.0, 0.0 ) )
-        , ks( vec3f( 0.0, 0.0, 0.0 ) )
-        , kd( vec3f( 0.0, 0.0, 0.0 ) )
-        , kr( vec3f( 0.0, 0.0, 0.0 ) )
-        , kt( vec3f( 0.0, 0.0, 0.0 ) )
+        : ke( Eigen::Vector3d( 0.0, 0.0, 0.0 ) )
+        , ka( Eigen::Vector3d( 0.0, 0.0, 0.0 ) )
+        , ks( Eigen::Vector3d( 0.0, 0.0, 0.0 ) )
+        , kd( Eigen::Vector3d( 0.0, 0.0, 0.0 ) )
+        , kr( Eigen::Vector3d( 0.0, 0.0, 0.0 ) )
+        , kt( Eigen::Vector3d( 0.0, 0.0, 0.0 ) )
         , shininess( 0.0 ) 
 		, index(1.0) {}
 
-    Material( const vec3f& e, const vec3f& a, const vec3f& s, 
-              const vec3f& d, const vec3f& r, const vec3f& t, double sh, double in)
+    Material( const Eigen::Vector3d& e, const Eigen::Vector3d& a, const Eigen::Vector3d& s, 
+              const Eigen::Vector3d& d, const Eigen::Vector3d& r, const Eigen::Vector3d& t, double sh, double in)
         : ke( e ), ka( a ), ks( s ), kd( d ), kr( r ), kt( t ), shininess( sh ), index( in ) {}
 
-	virtual vec3f shade( Scene *scene, const Ray& r, const ISect& i ) const;
+	virtual Eigen::Vector3d shade(Scene* scene, const Ray& r, const ISect& i) const;
 
-    vec3f ke;                    // emissive
-    vec3f ka;                    // ambient
-    vec3f ks;                    // specular
-    vec3f kd;                    // diffuse
-    vec3f kr;                    // reflective
-    vec3f kt;                    // transmissive
+    Eigen::Vector3d ke;                    // emissive
+    Eigen::Vector3d ka;                    // ambient
+    Eigen::Vector3d ks;                    // specular
+    Eigen::Vector3d kd;                    // diffuse
+    Eigen::Vector3d kr;                    // reflective
+    Eigen::Vector3d kt;                    // transmissive
     
     double shininess;
     double index;               // index of refraction

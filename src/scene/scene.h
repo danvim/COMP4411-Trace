@@ -12,7 +12,7 @@
 #include "ray.h"
 #include "material.h"
 #include "camera.h"
-#include "../vecmath/vecmath.h"
+#include <Eigen/Dense>
 
 class Light;
 class Scene;
@@ -35,16 +35,16 @@ protected:
 class BoundingBox
 {
 public:
-	vec3f min;
-	vec3f max;
+	Eigen::Vector3d min;
+	Eigen::Vector3d max;
 
-	BoundingBox& operator=(const BoundingBox& target);
+	BoundingBox& operator=(const BoundingBox& target) = default;
 
 	// Does this bounding box intersect the target?
 	bool intersects(const BoundingBox& target) const;
 
 	// does the box contain this point?
-	bool intersects(const vec3f& point) const;
+	bool intersects(const Eigen::Vector3d& point) const;
 
 	// if the ray hits the box, put the "t" value of the intersection
 	// closest to the origin in tMin and the "t" value of the far intersection
@@ -57,9 +57,9 @@ class TransformNode
 protected:
 
 	// information about this node's transformation
-	mat4f xform;
-	mat4f inverse;
-	mat3f normi;
+	Eigen::Matrix4d xform;
+	Eigen::Matrix4d inverse;
+	Eigen::Matrix3d normi;
 
 	// information about parent & children
 	TransformNode* parent;
@@ -75,7 +75,7 @@ public:
 			delete (*c);
 	}
 
-	TransformNode* createChild(const mat4f& xform)
+	TransformNode* createChild(const Eigen::Matrix4d& xform)
 	{
 		auto* child = new TransformNode(this, xform);
 		children.push_back(child);
@@ -83,31 +83,31 @@ public:
 	}
 
 	// Coordinate-Space transformation
-	vec3f globalToLocalCoords(const vec3f& v) const
+	Eigen::Vector3d globalToLocalCoords(const Eigen::Vector3d& v) const
 	{
-		return inverse * v;
+		return inverse.block<3,3>(1,1) * v;
 	}
 
-	vec3f localToGlobalCoords(const vec3f& v) const
+	Eigen::Vector3d localToGlobalCoords(const Eigen::Vector3d& v) const
 	{
-		return xform * v;
+		return xform.block<3, 3>(1, 1) * v;
 	}
 
-	vec4f localToGlobalCoords(const vec4f& v) const
+	Eigen::Vector4d localToGlobalCoords(const Eigen::Vector4d& v) const
 	{
-		return xform * v;
+		return xform.block<3, 3>(1, 1) * v;
 	}
 
-	vec3f localToGlobalCoordsNormal(const vec3f& v) const
+	Eigen::Vector3d localToGlobalCoordsNormal(const Eigen::Vector3d& v) const
 	{
-		return (normi * v).normalize();
+		return (normi * v).normalized();
 	}
 
 protected:
 	// protected so that users can't directly construct one of these...
 	// force them to use the createChild() method.  Note that they CAN
 	// directly create a TransformRoot object.
-	TransformNode(TransformNode* parent, const mat4f& xform)
+	TransformNode(TransformNode* parent, const Eigen::Matrix4d& xform)
 	{
 		this->parent = parent;
 		if (parent == nullptr)
@@ -116,7 +116,7 @@ protected:
 			this->xform = parent->xform * xform;
 
 		inverse = this->xform.inverse();
-		normi = this->xform.upper33().inverse().transpose();
+		normi = this->xform.block<3,3>(1,1).inverse().transpose();
 	}
 };
 
@@ -124,7 +124,7 @@ class TransformRoot : public TransformNode
 {
 public:
 	TransformRoot()
-		: TransformNode(nullptr, mat4f())
+		: TransformNode(nullptr, Eigen::Matrix4d())
 	{
 	}
 };
@@ -152,43 +152,43 @@ public:
 		// take the object's local bounding box, transform all 8 points on it,
 		// and use those to find a new bounding box.
 
-		const auto localBounds = ComputeLocalBoundingBox();
+		const auto localBounds = computeLocalBoundingBox();
 
 		auto min = localBounds.min;
 		auto max = localBounds.max;
 
-		auto v = transform->localToGlobalCoords(vec4f(min[0], min[1], min[2], 1));
+		auto v = transform->localToGlobalCoords(Eigen::Vector4d(min[0], min[1], min[2], 1));
 		auto newMax = v;
 		auto newMin = v;
-		v = transform->localToGlobalCoords(vec4f(max[0], min[1], min[2], 1));
-		newMax = maximum(newMax, v);
-		newMin = minimum(newMin, v);
-		v = transform->localToGlobalCoords(vec4f(min[0], max[1], min[2], 1));
-		newMax = maximum(newMax, v);
-		newMin = minimum(newMin, v);
-		v = transform->localToGlobalCoords(vec4f(max[0], max[1], min[2], 1));
-		newMax = maximum(newMax, v);
-		newMin = minimum(newMin, v);
-		v = transform->localToGlobalCoords(vec4f(min[0], min[1], max[2], 1));
-		newMax = maximum(newMax, v);
-		newMin = minimum(newMin, v);
-		v = transform->localToGlobalCoords(vec4f(max[0], min[1], max[2], 1));
-		newMax = maximum(newMax, v);
-		newMin = minimum(newMin, v);
-		v = transform->localToGlobalCoords(vec4f(min[0], max[1], max[2], 1));
-		newMax = maximum(newMax, v);
-		newMin = minimum(newMin, v);
-		v = transform->localToGlobalCoords(vec4f(max[0], max[1], max[2], 1));
-		newMax = maximum(newMax, v);
-		newMin = minimum(newMin, v);
+		v = transform->localToGlobalCoords(Eigen::Vector4d(max[0], min[1], min[2], 1));
+		newMax = newMax.cwiseMax(v);
+		newMin = newMin.cwiseMin(v);
+		v = transform->localToGlobalCoords(Eigen::Vector4d(min[0], max[1], min[2], 1));
+		newMax = newMax.cwiseMax(v);
+		newMin = newMin.cwiseMin(v);
+		v = transform->localToGlobalCoords(Eigen::Vector4d(max[0], max[1], min[2], 1));
+		newMax = newMax.cwiseMax(v);
+		newMin = newMin.cwiseMin(v);
+		v = transform->localToGlobalCoords(Eigen::Vector4d(min[0], min[1], max[2], 1));
+		newMax = newMax.cwiseMax(v);
+		newMin = newMin.cwiseMin(v);
+		v = transform->localToGlobalCoords(Eigen::Vector4d(max[0], min[1], max[2], 1));
+		newMax = newMax.cwiseMax(v);
+		newMin = newMin.cwiseMin(v);
+		v = transform->localToGlobalCoords(Eigen::Vector4d(min[0], max[1], max[2], 1));
+		newMax = newMax.cwiseMax(v);
+		newMin = newMin.cwiseMin(v);
+		v = transform->localToGlobalCoords(Eigen::Vector4d(max[0], max[1], max[2], 1));
+		newMax = newMax.cwiseMax(v);
+		newMin = newMin.cwiseMin(v);
 
-		bounds.max = vec3f(newMax);
-		bounds.min = vec3f(newMin);
+		bounds.max = Eigen::Vector3d(newMax);
+		bounds.min = Eigen::Vector3d(newMin);
 	}
 
 	// default method for ComputeLocalBoundingBox returns a bogus bounding box;
 	// this should be overridden if hasBoundingBoxCapability() is true.
-	virtual BoundingBox ComputeLocalBoundingBox() { return BoundingBox(); }
+	virtual BoundingBox computeLocalBoundingBox() { return BoundingBox(); }
 
 	void setTransform(TransformNode* transform) { this->transform = transform; };
 

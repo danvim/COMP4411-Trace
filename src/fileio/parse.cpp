@@ -1,4 +1,4 @@
-// Stupid MSVC complains (for like 1 million lines) that the ugly identifiers for templated
+// Stupid MSVC complains (for like 1 million lines) that the ugly identifiers for template
 // classes are truncated.  Not my problem, eh?
 #ifdef WIN32
 #pragma warning( disable : 4786 )
@@ -157,7 +157,7 @@ static Obj *readScalar( std::istream& is )
 	std::string ret;
 
 	while( true ) {
-		auto ch = is.peek();
+		const auto ch = is.peek();
 		if( (ch == '-') || (ch == '.') || (ch == 'e') || (ch == 'E')
 				|| (ch >= '0' && ch <= '9') ) {
 			ret += char( ch );
@@ -180,7 +180,7 @@ static Obj *readTuple( std::istream& is )
 		eat( is );
 		ret.push_back( readObject( is ) );	
 		eat( is );
-		auto ch = is.get();
+		const auto ch = is.get();
 		if( ch == ')' ) {
 			return new TupleObj( ret );
 		}
@@ -210,7 +210,7 @@ static Obj *readDict( std::istream& is )
 		auto* rhs = readObject(is);
 		ret[ lhs ] = rhs;
 		eat( is );
-		auto ch = is.peek();
+		const auto ch = is.peek();
 		if( ch == ';' ) {
 			is.get();
 		} else if( ch != '}' ) {
@@ -225,7 +225,7 @@ static Obj *readObject( std::istream& is )
 		return nullptr;
 	}
 
-	auto ch = is.peek();
+	const auto ch = is.peek();
 
 	if( (ch == '-') || (ch >= '0' && ch <= '9') ) {
 		return readScalar( is );
@@ -241,13 +241,3 @@ static Obj *readObject( std::istream& is )
 	}
 	return readName( is );
 }
-
-/*
-int main( void )
-{
-	Obj *o = readFile( cin );
-	o->printOn( cout );
-	delete o;
-	return 0;
-}
-*/
