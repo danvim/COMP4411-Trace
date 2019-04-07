@@ -68,7 +68,7 @@ bool Cylinder::intersectBody(const Ray& r, ISect& i) const
 		{
 			// It's okay.
 			i.t = t1;
-			i.N = Eigen::Vector3d(p[0], p[1], 0.0).normalized();
+			i.n = Eigen::Vector3d(p[0], p[1], 0.0).normalized();
 			return true;
 		}
 	}
@@ -86,7 +86,7 @@ bool Cylinder::intersectBody(const Ray& r, ISect& i) const
 		if (!capped && normal.dot(r.getDirection()) > 0)
 			normal = -normal;
 
-		i.N = normal.normalized();
+		i.n = normal.normalized();
 		return true;
 	}
 
@@ -136,11 +136,11 @@ bool Cylinder::intersectCaps(const Ray& r, ISect& i) const
 			if (dz > 0.0)
 			{
 				// Intersection with cap at z = 0.
-				i.N = Eigen::Vector3d(0.0, 0.0, -1.0);
+				i.n = Eigen::Vector3d(0.0, 0.0, -1.0);
 			}
 			else
 			{
-				i.N = Eigen::Vector3d(0.0, 0.0, 1.0);
+				i.n = Eigen::Vector3d(0.0, 0.0, 1.0);
 			}
 			return true;
 		}
@@ -153,11 +153,11 @@ bool Cylinder::intersectCaps(const Ray& r, ISect& i) const
 		if (dz > 0.0)
 		{
 			// Intersection with cap at z = 1.
-			i.N = Eigen::Vector3d(0.0, 0.0, 1.0);
+			i.n = Eigen::Vector3d(0.0, 0.0, 1.0);
 		}
 		else
 		{
-			i.N = Eigen::Vector3d(0.0, 0.0, -1.0);
+			i.n = Eigen::Vector3d(0.0, 0.0, -1.0);
 		}
 		return true;
 	}

@@ -33,11 +33,11 @@ bool Square::intersectLocal(const Ray& r, ISect& i) const
 	i.t = t;
 	if (d[2] > 0.0)
 	{
-		i.N = Eigen::Vector3d(0.0, 0.0, -1.0);
+		i.n = Eigen::Vector3d(0.0, 0.0, -1.0);
 	}
 	else
 	{
-		i.N = Eigen::Vector3d(0.0, 0.0, 1.0);
+		i.n = Eigen::Vector3d(0.0, 0.0, 1.0);
 	}
 
 	return true;
