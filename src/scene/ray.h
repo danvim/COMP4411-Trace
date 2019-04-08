@@ -60,7 +60,7 @@ public:
 
 	void setObject(SceneObject* o) { obj = o; }
 	void setT(const double tt) { t = tt; }
-	void setN(const Eigen::Vector3d& n) { n = n; }
+	void setN(const Eigen::Vector3d& nn) { n = nn; }
 
 	void setMaterial(Material* m)
 	{

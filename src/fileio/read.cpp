@@ -265,16 +265,11 @@ static void processGeometry(const std::string& name, Obj* child, Scene* scene,
 		                    Eigen::Vector3d(tup[0]->getScalar(),
 		                                    tup[1]->getScalar(),
 		                                    tup[2]->getScalar()));
-		Eigen::Matrix4d rot;
-		Eigen::Matrix3d m = a.matrix();
-		rot << m(0, 0), m(0, 1), m(0, 2), 0,
-			m(1, 0), m(1, 1), m(1, 2), 0,
-			m(2, 0), m(2, 1), m(2, 2), 0,
-			0, 0, 0, 1;
+		auto aa = Eigen::Affine3d(a.matrix());
 		processGeometry(tup[4],
 		                scene,
 		                materials,
-		                transform->createChild(rot));
+		                transform->createChild(aa.matrix()));
 	}
 	else if (name == "scale")
 	{
