@@ -41,7 +41,7 @@ vec3f Material::shade( Scene *scene, const Ray& r, const ISect& i ) const
 		specular = pow(specAngle, shininess * 128);
 
 		vec3f ret = prod(distAtte *(specular * ks + diffuse * kd), intensity);
-		// ret = prod(ret, shadowAtte);
+		ret = prod(ret, shadowAtte);
 		color += ret;
 	}
 

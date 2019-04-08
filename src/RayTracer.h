@@ -27,6 +27,8 @@ public:
 
 	Scene* getScene() { return scene; }
 
+	int maxDepth = 0;
+
 private:
 	unsigned char *buffer;
 	int bufferWidth, bufferHeight;
