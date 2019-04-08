@@ -26,6 +26,9 @@ public:
 
 	Fl_Slider* mSizeSlider{};
 	Fl_Slider* mDepthSlider{};
+	Fl_Slider* mDistAtteASlider{};
+	Fl_Slider* mDistAtteBSlider{};
+	Fl_Slider* mDistAtteCSlider{};
 
 	Fl_Button* mRenderButton;
 	Fl_Button* mStopButton;
@@ -60,6 +63,9 @@ private:
 
 	static Fl_Callback cbSizeSlides;
 	static Fl_Callback cbDepthSlides;
+	static Fl_Callback cbDistAtteASlides;
+	static Fl_Callback cbDistAtteBSlides;
+	static Fl_Callback cbDistAtteCSlides;
 
 	static Fl_Callback cbRender;
 	static Fl_Callback cbStop;
