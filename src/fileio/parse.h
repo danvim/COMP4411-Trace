@@ -206,7 +206,7 @@ public:
 	{
 		for (auto i = val.begin(); i != val.end(); ++i)
 		{
-			delete (*i);
+			delete *i;
 		}
 	}
 
@@ -250,7 +250,7 @@ public:
 	{
 		for (auto i = val.begin(); i != val.end(); ++i)
 		{
-			delete ((*i).second);
+			delete (*i).second;
 		}
 	}
 

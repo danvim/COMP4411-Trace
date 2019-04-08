@@ -101,11 +101,11 @@ bool Cylinder::intersectCaps( const Ray& r, ISect& i ) const
 	double t2;
 
 	if( dz > 0.0 ) {
-		t1 = (-pz)/dz;
+		t1 = -pz/dz;
 		t2 = (1.0-pz)/dz;
 	} else {
 		t1 = (1.0-pz)/dz;
-		t2 = (-pz)/dz;
+		t2 = -pz/dz;
 	}
 
 	if( t2 < RAY_EPSILON ) {
@@ -114,7 +114,7 @@ bool Cylinder::intersectCaps( const Ray& r, ISect& i ) const
 
 	if( t1 >= RAY_EPSILON ) {
 		vec3f p( r.at( t1 ) );
-		if( (p[0]*p[0] + p[1]*p[1]) <= 1.0 ) {
+		if( p[0]*p[0] + p[1]*p[1] <= 1.0 ) {
 			i.t = t1;
 			if( dz > 0.0 ) {
 				// Intersection with cap at z = 0.
@@ -127,7 +127,7 @@ bool Cylinder::intersectCaps( const Ray& r, ISect& i ) const
 	}
 
 	vec3f p( r.at( t2 ) );
-	if( (p[0]*p[0] + p[1]*p[1]) <= 1.0 ) {
+	if( p[0]*p[0] + p[1]*p[1] <= 1.0 ) {
 		i.t = t2;
 		if( dz > 0.0 ) {
 			// Intersection with cap at z = 1.

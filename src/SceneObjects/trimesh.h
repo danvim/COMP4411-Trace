@@ -34,7 +34,7 @@ public:
 
     bool addFace( int a, int b, int c );
 
-    char *doubleCheck();
+    std::string doubleCheck() const;
     
     void generateNormals();
 };

@@ -157,9 +157,9 @@ static Obj *readScalar( std::istream& is )
 	std::string ret;
 
 	while( true ) {
-		auto ch = is.peek();
-		if( (ch == '-') || (ch == '.') || (ch == 'e') || (ch == 'E')
-				|| (ch >= '0' && ch <= '9') ) {
+		const auto ch = is.peek();
+		if( ch == '-' || ch == '.' || ch == 'e' || ch == 'E'
+				|| ch >= '0' && ch <= '9' ) {
 			ret += char( ch );
 			is.get();
 		} else {
@@ -227,7 +227,7 @@ static Obj *readObject( std::istream& is )
 
 	auto ch = is.peek();
 
-	if( (ch == '-') || (ch >= '0' && ch <= '9') ) {
+	if( ch == '-' || ch >= '0' && ch <= '9' ) {
 		return readScalar( is );
 	}
 	if( ch == '"' ) {

@@ -72,7 +72,7 @@ public:
 	~TransformNode()
 	{
 		for (auto c = children.begin(); c != children.end(); ++c)
-			delete (*c);
+			delete *c;
 	}
 
 	TransformNode* createChild(const mat4f& xform)

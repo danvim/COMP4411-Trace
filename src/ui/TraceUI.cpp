@@ -135,7 +135,7 @@ void TraceUi::cbRender(Fl_Widget* o, void* v)
 				const auto now = clock();
 
 				// check event every 1/2 second
-				if ((double(now - prev) / CLOCKS_PER_SEC) > 0.5)
+				if (double(now - prev) / CLOCKS_PER_SEC > 0.5)
 				{
 					prev = now;
 

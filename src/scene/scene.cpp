@@ -2,6 +2,8 @@
 
 #include "scene.h"
 #include "../ui/TraceUI.h"
+// ReSharper disable once CppUnusedIncludeDirective
+#include "light.h"
 extern TraceUi* traceUi;
 
 BoundingBox& BoundingBox::operator=(const BoundingBox& target)
@@ -15,16 +17,16 @@ BoundingBox& BoundingBox::operator=(const BoundingBox& target)
 // Does this bounding box intersect the target?
 bool BoundingBox::intersects(const BoundingBox &target) const
 {
-	return ((target.min[0] - RAY_EPSILON <= max[0]) && (target.max[0] + RAY_EPSILON >= min[0]) &&
-			(target.min[1] - RAY_EPSILON <= max[1]) && (target.max[1] + RAY_EPSILON >= min[1]) &&
-			(target.min[2] - RAY_EPSILON <= max[2]) && (target.max[2] + RAY_EPSILON >= min[2]));
+	return target.min[0] - RAY_EPSILON <= max[0] && target.max[0] + RAY_EPSILON >= min[0] &&
+		target.min[1] - RAY_EPSILON <= max[1] && target.max[1] + RAY_EPSILON >= min[1] &&
+		target.min[2] - RAY_EPSILON <= max[2] && target.max[2] + RAY_EPSILON >= min[2];
 }
 
 // does the box contain this point?
 bool BoundingBox::intersects(const vec3f& point) const
 {
-	return ((point[0] + RAY_EPSILON >= min[0]) && (point[1] + RAY_EPSILON >= min[1]) && (point[2] + RAY_EPSILON >= min[2]) &&
-		 (point[0] - RAY_EPSILON <= max[0]) && (point[1] - RAY_EPSILON <= max[1]) && (point[2] - RAY_EPSILON <= max[2]));
+	return point[0] + RAY_EPSILON >= min[0] && point[1] + RAY_EPSILON >= min[1] && point[2] + RAY_EPSILON >= min[2] &&
+		point[0] - RAY_EPSILON <= max[0] && point[1] - RAY_EPSILON <= max[1] && point[2] - RAY_EPSILON <= max[2];
 }
 
 // if the ray hits the box, put the "t" value of the intersection
@@ -118,19 +120,19 @@ Scene::~Scene()
     GeometryIter g;
 
     for( g = objects.begin(); g != objects.end(); ++g ) {
-		delete (*g);
+		delete *g;
 	}
 
 	for( g = boundedObjects.begin(); g != boundedObjects.end(); ++g ) {
-		delete (*g);
+		delete *g;
 	}
 
 	for( g = unboundedObjects.begin(); g != boundedObjects.end(); ++g ) {
-		delete (*g);
+		delete *g;
 	}
 
 	for( LightIter l = lights.begin(); l != lights.end(); ++l ) {
-		delete (*l);
+		delete *l;
 	}
 }
 
@@ -147,7 +149,7 @@ bool Scene::intersect( const Ray& r, ISect& i ) const
 	// try the non-bounded objects
 	for( j = unboundedObjects.begin(); j != unboundedObjects.end(); ++j ) {
 		if( (*j)->intersect( r, cur ) ) {
-			if( !have_one || (cur.t < i.t) ) {
+			if( !have_one || cur.t < i.t ) {
 				i = cur;
 				have_one = true;
 			}
@@ -157,7 +159,7 @@ bool Scene::intersect( const Ray& r, ISect& i ) const
 	// try the bounded objects
 	for( j = boundedObjects.begin(); j != boundedObjects.end(); ++j ) {
 		if( (*j)->intersect( r, cur ) ) {
-			if( !have_one || (cur.t < i.t) ) {
+			if( !have_one || cur.t < i.t ) {
 				i = cur;
 				have_one = true;
 			}

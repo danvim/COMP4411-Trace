@@ -33,7 +33,7 @@ vec3f Material::shade( Scene *scene, const Ray& r, const ISect& i ) const
 		double diffuse = std::max(0.0, N.dot(L));
 
 		double specular = 0;
-		vec3f R = L - (2 * L.dot(N)) * N;
+		vec3f R = L - 2 * L.dot(N) * N;
 		R = R.normalize();
 		double specAngle = std::max(R.dot(V), 0.0);
 		specular = pow(specAngle, shininess * 128);

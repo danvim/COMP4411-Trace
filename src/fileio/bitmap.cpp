@@ -25,11 +25,11 @@ unsigned char* readBmp(char* fName, int& width, int& height)
 		return nullptr;
 
 	//	I am doing f read( &fileHeader, sizeof(BmpBitmapInfoHeader), 1, file ) in a safe way. :}
-	fread(&(fileHeader.bfType), 2, 1, file);
-	fread(&(fileHeader.bfSize), 4, 1, file);
-	fread(&(fileHeader.bfReserved1), 2, 1, file);
-	fread(&(fileHeader.bfReserved2), 2, 1, file);
-	fread(&(fileHeader.bfOffBits), 4, 1, file);
+	fread(&fileHeader.bfType, 2, 1, file);
+	fread(&fileHeader.bfSize, 4, 1, file);
+	fread(&fileHeader.bfReserved1, 2, 1, file);
+	fread(&fileHeader.bfReserved2, 2, 1, file);
+	fread(&fileHeader.bfOffBits, 4, 1, file);
 
 	const auto pos = fileHeader.bfOffBits;
 
@@ -57,7 +57,7 @@ unsigned char* readBmp(char* fName, int& width, int& height)
 	auto pad = 0;
 	if (padWidth % 4 != 0)
 	{
-		pad = 4 - (padWidth % 4);
+		pad = 4 - padWidth % 4;
 		padWidth += pad;
 	}
 	const auto bytes = height * padWidth;
@@ -98,7 +98,7 @@ unsigned char* readBmp(char* fName, int& width, int& height)
 void writeBmp(char* iName, const int width, const int height, unsigned char* data)
 {
 	auto bytes = width * 3;
-	const auto pad = (bytes % 4) ? 4 - (bytes % 4) : 0;
+	const auto pad = bytes % 4 ? 4 - bytes % 4 : 0;
 	bytes += pad;
 	bytes *= height;
 
@@ -126,11 +126,11 @@ void writeBmp(char* iName, const int width, const int height, unsigned char* dat
 	fopen_s(&foo, iName, "wb");
 
 	//	f write(&fileHeader, sizeof(BmpBitmapInfoHeader), 1, foo);
-	fwrite(&(fileHeader.bfType), 2, 1, foo);
-	fwrite(&(fileHeader.bfSize), 4, 1, foo);
-	fwrite(&(fileHeader.bfReserved1), 2, 1, foo);
-	fwrite(&(fileHeader.bfReserved2), 2, 1, foo);
-	fwrite(&(fileHeader.bfOffBits), 4, 1, foo);
+	fwrite(&fileHeader.bfType, 2, 1, foo);
+	fwrite(&fileHeader.bfSize, 4, 1, foo);
+	fwrite(&fileHeader.bfReserved1, 2, 1, foo);
+	fwrite(&fileHeader.bfReserved2, 2, 1, foo);
+	fwrite(&fileHeader.bfOffBits, 4, 1, foo);
 
 	fwrite(&infoHeader, sizeof(BmpBitmapInfoHeader), 1, foo);
 

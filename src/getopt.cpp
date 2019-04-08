@@ -68,7 +68,7 @@ int GetOption (
 
     if (iArg < argc)
     {
-        char* psz = &(argv[iArg][0]);
+        char* psz = &argv[iArg][0];
         if (*psz == '-' || *psz == '/')
         {
             // we have an option specifier
@@ -83,13 +83,13 @@ int GetOption (
                     if (psz[1] == ':')
                     {
                         // option can have a parameter
-                        psz = &(argv[iArg][2]);
+                        psz = &argv[iArg][2];
                         if (*psz == '\0')
                         {
                             // must look at next argv for param
                             if (iArg+1 < argc)
                             {
-                                psz = &(argv[iArg+1][0]);
+                                psz = &argv[iArg+1][0];
                                 if (*psz == '-' || *psz == '/')
                                 {
                                     // next argv is a new option, so param
@@ -123,7 +123,7 @@ int GetOption (
                 {
                     // option specified is not in list of valid options
                     chOpt = -1;
-                    pszParam = &(argv[iArg][0]);
+                    pszParam = &argv[iArg][0];
                 }
             }
             else
@@ -131,14 +131,14 @@ int GetOption (
                 // though option specifier was given, option character
                 // is not alpha or was was not specified
                 chOpt = -1;
-                pszParam = &(argv[iArg][0]);
+                pszParam = &argv[iArg][0];
             }
         }
         else
         {
             // standalone arg given with no option specifier
             chOpt = 1;
-            pszParam = &(argv[iArg][0]);
+            pszParam = &argv[iArg][0];
         }
     }
     else
@@ -150,7 +150,7 @@ int GetOption (
     iArg++;
     *ppszParam = pszParam;
 	optInd = iArg-1;
-    return (chOpt);
+    return chOpt;
 }
 
 int getopt(const int argc, char **argv, char *optString)

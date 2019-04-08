@@ -5,7 +5,7 @@
 #include <cmath>
 #include <cstring>
 #include <fstream>
-#include <strstream>
+#include <sstream>
 
 #include <vector>
 
@@ -89,7 +89,7 @@ Scene* readScene(std::istream& is)
 
 	if (version != 1.0)
 	{
-		std::ostrstream oss;
+		std::ostringstream oss;
 		oss << "Input is version " << version << ", need version 1.0" << std::ends;
 
 		throw ParseError(std::string(oss.str()));
@@ -196,7 +196,7 @@ static void processGeometry(Obj* obj, Scene* scene,
 	}
 	else
 	{
-		std::ostrstream oss;
+		std::ostringstream oss;
 		oss << "Unknown input object ";
 		obj->printOn(oss);
 
@@ -235,7 +235,7 @@ static void verifyTuple(const MyTuple& tup, size_t size)
 {
 	if (tup.size() != size)
 	{
-		std::ostrstream oss;
+		std::ostringstream oss;
 		oss << "Bad tuple size " << tup.size() << ", expected " << size;
 
 		throw ParseError(std::string(oss.str()));
@@ -430,9 +430,9 @@ static void processTrimesh(std::string name, Obj* child, Scene* scene,
 			tmesh->addNormal(tupleToVec(*ni));
 	}
 
-	char* error;
-	if ((error = tmesh->doubleCheck()))
-		throw ParseError(error);
+	std::string error;
+	if (!(error = tmesh->doubleCheck()).empty())
+		throw ParseError(error.c_str());
 
 	scene->add(tmesh);
 }
@@ -545,7 +545,7 @@ processCamera(Obj* child, Scene* scene)
 	{
 		const auto& quaternion = getField(child, "quaternion")->getTuple();
 		if (quaternion.size() != 4)
-			throw(ParseError("Bogus quaternion."));
+			throw ParseError("Bogus quaternion.");
 		scene->getCamera()->setLook(quaternion[0]->getScalar(),
 		                            quaternion[1]->getScalar(),
 		                            quaternion[2]->getScalar(),
@@ -580,7 +580,7 @@ static void processObject(Obj* obj, Scene* scene, MMap& materials)
 	}
 	else
 	{
-		std::ostrstream oss;
+		std::ostringstream oss;
 		oss << "Unknown input object ";
 		obj->printOn(oss);
 
