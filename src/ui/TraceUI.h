@@ -42,6 +42,7 @@ public:
 
 	int getSize() const;
 	int getDepth() const;
+	double distAtteA = 0, distAtteB = 0, distAtteC = 0;
 
 private:
 	RayTracer* rayTracer{};

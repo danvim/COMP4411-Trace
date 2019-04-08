@@ -100,17 +100,17 @@ void TraceUi::cbDepthSlides(Fl_Widget* o, void* v)
 
 void TraceUi::cbDistAtteASlides(Fl_Widget* o, void* v)
 {
-	static_cast<TraceUi*>(o->user_data())->rayTracer->getScene()->distAtteA = double(dynamic_cast<Fl_Slider *>(o)->value());
+	static_cast<TraceUi*>(o->user_data())->distAtteA = double(dynamic_cast<Fl_Slider *>(o)->value());
 }
 
 void TraceUi::cbDistAtteBSlides(Fl_Widget* o, void* v)
 {
-	static_cast<TraceUi*>(o->user_data())->rayTracer->getScene()->distAtteB = double(dynamic_cast<Fl_Slider *>(o)->value());
+	static_cast<TraceUi*>(o->user_data())->distAtteB = double(dynamic_cast<Fl_Slider *>(o)->value());
 }
 
 void TraceUi::cbDistAtteCSlides(Fl_Widget* o, void* v)
 {
-	static_cast<TraceUi*>(o->user_data())->rayTracer->getScene()->distAtteC = double(dynamic_cast<Fl_Slider *>(o)->value());
+	static_cast<TraceUi*>(o->user_data())->distAtteC = double(dynamic_cast<Fl_Slider *>(o)->value());
 }
 
 void TraceUi::cbRender(Fl_Widget* o, void* v)
@@ -128,6 +128,10 @@ void TraceUi::cbRender(Fl_Widget* o, void* v)
 		pUi->mTraceGlWindow->show();
 
 		pUi->rayTracer->traceSetup(width, height);
+		pUi->rayTracer->maxDepth = pUi->mNDepth;
+		pUi->rayTracer->getScene()->distAtteA = pUi->distAtteA;
+		pUi->rayTracer->getScene()->distAtteB = pUi->distAtteB;
+		pUi->rayTracer->getScene()->distAtteC = pUi->distAtteC;
 
 		// Save the window label
 		const auto* oldLabel = pUi->mTraceGlWindow->label();

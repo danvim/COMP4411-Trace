@@ -6,6 +6,7 @@
 #include <cstring>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 #include <vector>
 
@@ -608,6 +609,10 @@ static void processObject(Obj* obj, Scene* scene, MMap& materials)
 		scene->add(new PointLight(scene,
 		                          tupleToVec(getField(child, "position")),
 		                          tupleToVec(getColorField(child))));
+	}
+	else if (name == "ambient_light") {
+		vec3f color = tupleToVec(getField(child, "color"));
+		scene->ambientLight = color;
 	}
 	else if (name == "sphere" ||
 		name == "box" ||

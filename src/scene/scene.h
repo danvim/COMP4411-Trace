@@ -278,6 +278,7 @@ public:
 	Camera* getCamera() { return &camera; }
 
 	double distAtteA = 0, distAtteB = 0, distAtteC = 0;
+	vec3f ambientLight = vec3f(0, 0, 0);
 private:
 	std::list<Geometry*> objects;
 	std::list<Geometry*> unboundedObjects;
