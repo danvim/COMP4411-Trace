@@ -12,7 +12,7 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
   - [x] Directional light
   - [x] Point light
 - [x] Shadow attenuation
-- [ ] Reflection
+- [x] Reflection
 - [ ] Refraction
 
 ## Bonus

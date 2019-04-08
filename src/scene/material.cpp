@@ -23,7 +23,7 @@ vec3f Material::shade( Scene *scene, const Ray& r, const ISect& i ) const
 	vec3f V = r.getDirection();
 	vec3f N = i.N;
 	vec3f P = r.at(i.t);
-	vec3f color = ke+ka;
+	vec3f color = ke+prod(ka, scene->ambientLight);
 
 	for (std::list<Light*>::const_iterator l = scene->beginLights(); l != scene->endLights(); ++l) {
 		Light *pLight = *l;
