@@ -25,6 +25,8 @@ public:
 
 	bool sceneLoaded() const;
 
+	Scene* getScene() { return scene; }
+
 private:
 	unsigned char *buffer;
 	int bufferWidth, bufferHeight;

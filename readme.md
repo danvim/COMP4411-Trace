@@ -6,12 +6,12 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
 
 - [x] Box intersection
 - [x] Phong specular-reflection
-- [ ] Light sources
-  - [ ] Multiple light sources
-  - [ ] Distance attenuation
-  - [ ] Directional light
-  - [ ] Point light
-- [ ] Shadow attenuation
+- [x] Light sources
+  - [x] Multiple light sources
+  - [x] Distance attenuation
+  - [x] Directional light
+  - [x] Point light
+- [x] Shadow attenuation
 - [ ] Reflection
 - [ ] Refraction
 
