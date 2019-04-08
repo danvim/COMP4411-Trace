@@ -39,6 +39,9 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		// Instead of just returning the result of shade(), add some
 		// more steps: add in the contributions from reflected and refracted
 		// rays.
+
+
+		//reflection
 		vec3f N = i.N;
 		vec3f V = r.getDirection();
 		vec3f P = r.at(i.t);
@@ -49,8 +52,14 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 
 		Ray reflectRay(P, R);
 		vec3f reflectColor = traceRay(scene, reflectRay, thresh, depth + 1);
-
 		reflectColor = prod(reflectColor, m.kr);
+
+		vec3f refractColor(0, 0, 0);
+		if(m.kt.length()>0)
+		{
+			
+		}
+
 		return phongColor + reflectColor;
 	}
 	// No intersection.  This ray travels to infinity, so we color
@@ -58,6 +67,21 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 	// is just black.
 
 	return vec3f(0.0, 0.0, 0.0);
+}
+
+// math from https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
+vec3f RayTracer::refraction(vec3f i, vec3f n, double n1, double n2)
+{
+	if (n1 == n2)return i;
+	double thetaI = acos(i.dot(n));
+	//total internal reflection
+	if (n2>n1 && sin(thetaI) > n2 / n1)
+	{
+		return vec3f(0, 0, 0);
+	}
+	double sinSqThetaT = pow(n1 / n2, 2) * (1 - pow(n.dot(i), 2));
+	vec3f t = (n1 / n2)*i + (n1 / n2 * n.dot(i) - sqrt(1 - sinSqThetaT))*n;
+	return t.normalize();
 }
 
 RayTracer::RayTracer()

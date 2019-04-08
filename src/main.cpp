@@ -66,6 +66,7 @@
 #include "RayTracer.h"
 
 #include "fileio/bitmap.h"
+#include <sstream>
 
 double diff(double a, double b)
 {
@@ -156,6 +157,12 @@ bool processArgs(int argc, char** argv)
 // event handling overhead.
 int main(int argc, char** argv)
 {
+	RayTracer rt;
+	std::stringstream ss;
+	ss<<rt.refraction(vec3f(1, 2, 3).normalize(), vec3f(1, 1, 1).normalize(), 1, 1.33)<<std::endl;
+	ss<<rt.refraction(vec3f(1, 2, 3).normalize(), vec3f(1, 1, 1).normalize(), 1.33, 1)<<std::endl;
+	OutputDebugString(ss.str().c_str());
+	return 0;
 	progName = argv[0];
 
 	if (argc != 1)
