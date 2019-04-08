@@ -1,3 +1,5 @@
+#include <cmath>
+#include <algorithm>
 #include "ray.h"
 #include "material.h"
 #include "light.h"
@@ -18,5 +20,28 @@ vec3f Material::shade( Scene *scene, const Ray& r, const ISect& i ) const
     // You will need to call both distanceAttenuation() and shadowAttenuation()
     // somewhere in your code in order to compute shadows and light falloff.
 
-	return kd;
+	vec3f V = r.getDirection();
+	vec3f N = i.N;
+	vec3f P = r.at(i.t);
+	vec3f color = ke+ka;
+
+	for (std::list<Light*>::const_iterator l = scene->beginLights(); l != scene->endLights(); ++l) {
+		Light *pLight = *l;
+		vec3f L = pLight->getDirection(P);
+		vec3f intensity = pLight->getColor(P);
+
+		double diffuse = std::max(0.0, N.dot(L));
+
+		double specular = 0;
+		vec3f R = L - (2 * L.dot(N)) * N;
+		R = R.normalize();
+		double specAngle = std::max(R.dot(V), 0.0);
+		specular = pow(specAngle, shininess * 128);
+
+		color += prod(specular * ks + diffuse * kd, intensity);
+	}
+
+
+	for (int i = 0; i < 3; i++) color[i] = std::min(color[i], 1.0);
+	return color;
 }

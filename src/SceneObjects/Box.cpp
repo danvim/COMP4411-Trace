@@ -8,26 +8,6 @@ bool Box::intersectLocal( const Ray& r, ISect& i ) const
     // Add box intersection code here.
 	// it currently ignores all boxes and just returns false.
 
-	// BoundingBox box;
-	// vec3f min(-0.5, -0.5, -0.5);
-	// vec3f max(0.5, 0.5, 0.5);
-	// box.min = min;
-	// box.max = max;
-	//
-	// double tMin, tMax;
-	// if (!box.intersect(r, tMin, tMax))
-	// 	return false;
-	//
-	//
-	// if (tMin <= RAY_EPSILON) {//the origin of the ray is inside the box or on one side of the box
-	// 	tMin = tMax;
-	// }
-	// if (tMax <= RAY_EPSILON)//the origin of the ray is really on the box
-	// 	return false;
-	//
-	// if (tMax - tMin <= RAY_EPSILON)//the ray is tanget to the box
-	// 	return false;
-
 	BoundingBox b = ComputeLocalBoundingBox();
 	double tMin, tMax;
 	if(!b.intersect(r, tMin, tMax))
