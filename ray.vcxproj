@@ -175,6 +175,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="src\scene\lights\SpotLight.cpp" />
     <ClCompile Include="src\ui\TraceGLWindow.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -280,11 +281,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\RayTracer.h" />
+    <ClInclude Include="src\scene\lights\SpotLight.h" />
     <ClInclude Include="src\ui\TraceGLWindow.h" />
     <ClInclude Include="src\ui\TraceUI.h" />
     <ClInclude Include="src\fileio\bitmap.h" />
     <ClInclude Include="src\fileio\parse.h" />
     <ClInclude Include="src\fileio\read.h" />
+    <ClInclude Include="src\utils.h" />
     <ClInclude Include="src\vecmath\vecmath.h" />
     <ClInclude Include="src\scene\camera.h" />
     <ClInclude Include="src\scene\light.h" />
@@ -300,6 +303,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
+    <None Include="readme.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

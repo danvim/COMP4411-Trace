@@ -56,7 +56,11 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		vec3f R = V - 2 * V.dot(N) * N;
 		R = R.normalize();
 		vec3f phongColor = m.shade(scene, r, i);
-
+		//Dynamic threshold
+		if (scene->terminationThreshold > phongColor.length())
+		{
+			return phongColor;
+		}
 		Ray reflectRay(P, R);
 		vec3f reflectColor = traceRay(scene, reflectRay, thresh, depth + 1, materials);
 		reflectColor = prod(reflectColor, m.kr);
@@ -211,8 +215,10 @@ bool RayTracer::loadScene(char* fn)
 	return true;
 }
 
-void RayTracer::traceSetup(int w, int h)
+void RayTracer::traceSetup(const int w, const int h, const int superSample)
 {
+	this->superSample = superSample;
+
 	if (bufferWidth != w || bufferHeight != h)
 	{
 		bufferWidth = w;
@@ -238,7 +244,7 @@ void RayTracer::traceLines(const int start, int stop)
 			tracePixel(i, j);
 }
 
-void RayTracer::tracePixel(int i, int j)
+void RayTracer::tracePixel(const int i, const int j)
 {
 	if (!scene)
 		return;
@@ -246,7 +252,20 @@ void RayTracer::tracePixel(int i, int j)
 	const auto x = double(i) / double(bufferWidth);
 	const auto y = double(j) / double(bufferHeight);
 
-	auto col = trace(scene, x, y);
+	const auto widthInterval = 1.0 / bufferWidth / superSample;
+	const auto heightInterval = 1.0 / bufferHeight / superSample;
+
+	auto sum = vec3f(0, 0, 0);
+
+	for (auto jj = 0; jj < superSample; jj++)
+	{
+		for (auto ii = 0; ii < superSample; ii++)
+		{
+			sum += trace(scene, x + ii * widthInterval, y + jj * heightInterval);
+		}
+	}
+
+	auto col = sum / (superSample * superSample);
 
 	auto* pixel = buffer + (i + j * bufferWidth) * 3;
 

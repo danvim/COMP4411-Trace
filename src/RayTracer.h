@@ -28,15 +28,15 @@ public:
 
 	void getBuffer( unsigned char *&buf, int &w, int &h ) const;
 	double aspectRatio() const;
-	void traceSetup( int w, int h );
+	void traceSetup(int w, int h, const int superSample);
 	void traceLines( int start = 0, int stop = 10000000 );
-	void tracePixel( int i, int j );
+	void tracePixel(int i, int j);
 
 	bool loadScene( char* fn );
 
 	bool sceneLoaded() const;
 
-	Scene* getScene() { return scene; }
+	Scene* getScene() const { return scene; }
 
 	int maxDepth = 0;
 	std::stack<double> refractiveIndex;
@@ -45,7 +45,8 @@ public:
 private:
 	unsigned char *buffer;
 	int bufferWidth, bufferHeight;
-	int bufferSize{};
+	int bufferSize;
+	int superSample;
 	Scene *scene;
 
 	bool mBSceneLoaded;

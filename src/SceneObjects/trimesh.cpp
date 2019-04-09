@@ -50,7 +50,7 @@ std::string Trimesh::doubleCheck() const
 	if (!normals.empty() && normals.size() != vertices.size())
 		return "Bad Trimesh: Wrong number of normals.";
 
-	return nullptr;
+	return "";
 }
 
 // Intersect ray r with the triangle abc.  If it hits returns true,
