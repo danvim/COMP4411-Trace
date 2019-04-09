@@ -118,6 +118,12 @@ void TraceUi::cbTerminationThresholdSlides(Fl_Widget* o, void* v)
 	static_cast<TraceUi*>(o->user_data())->terminationThreshold = dynamic_cast<Fl_Slider *>(o)->value();
 }
 
+void TraceUi::cbSuperSampleSlides(Fl_Widget* o, void*)
+{
+	static_cast<TraceUi*>(o->user_data())->superSample = int(dynamic_cast<Fl_Slider *>(o)->value());
+}
+
+
 void TraceUi::cbRender(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -132,7 +138,7 @@ void TraceUi::cbRender(Fl_Widget* o, void* v)
 
 		pUi->mTraceGlWindow->show();
 
-		pUi->rayTracer->traceSetup(width, height);
+		pUi->rayTracer->traceSetup(width, height, pUi->superSample);
 		pUi->rayTracer->maxDepth = pUi->mNDepth;
 		pUi->rayTracer->getScene()->distAtteA = pUi->distAtteA;
 		pUi->rayTracer->getScene()->distAtteB = pUi->distAtteB;
@@ -330,6 +336,18 @@ TraceUi::TraceUi()
 	mTerminationThresholdSlider->value(0.9);
 	mTerminationThresholdSlider->align(FL_ALIGN_RIGHT);
 	mTerminationThresholdSlider->callback(cbTerminationThresholdSlides);
+
+	mSuperSampleSlider = new Fl_Value_Slider(10, 155, 180, 20, "Super Sampling Factor");
+	mSuperSampleSlider->user_data(static_cast<void*>(this));
+	mSuperSampleSlider->type(FL_HOR_NICE_SLIDER);
+	mSuperSampleSlider->labelfont(FL_COURIER);
+	mSuperSampleSlider->labelsize(12);
+	mSuperSampleSlider->minimum(1.0);
+	mSuperSampleSlider->maximum(10.0);
+	mSuperSampleSlider->step(1.0);
+	mSuperSampleSlider->value(1.0);
+	mSuperSampleSlider->align(FL_ALIGN_RIGHT);
+	mSuperSampleSlider->callback(cbSuperSampleSlides);
 
 	mRenderButton = new Fl_Button(240, 27, 70, 25, "&Render");
 	mRenderButton->user_data(static_cast<void*>(this));

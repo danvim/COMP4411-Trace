@@ -174,7 +174,7 @@ int main(int argc, char** argv)
 		{
 			gHeight = int(gWidth / theRayTracer->aspectRatio() + 0.5);
 
-			theRayTracer->traceSetup(gWidth, gHeight);
+			theRayTracer->traceSetup(gWidth, gHeight, 0);
 
 			clock_t start = clock();
 
