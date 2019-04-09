@@ -19,13 +19,13 @@ vec3f RayTracer::trace(Scene* scene, double x, double y)
 	scene->getCamera()->rayThrough(x, y, r);
 	materials = std::stack<Material>();
 	materials.push(Material::getAir());
-	return traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0).clamp();
+	return traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, materials).clamp();
 }
 
 // Do recursive ray tracing!  You'll want to insert a lot of code here
 // (or places called from here) to handle reflection, refraction, etc etc.
 vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
-                          const vec3f& thresh, int depth)
+                          const vec3f& thresh, int depth, std::stack<Material> materials)
 {
 	ISect i;
 	if (depth > maxDepth)return vec3f(0, 0, 0);
@@ -58,7 +58,7 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		vec3f phongColor = m.shade(scene, r, i);
 
 		Ray reflectRay(P, R);
-		vec3f reflectColor = traceRay(scene, reflectRay, thresh, depth + 1);
+		vec3f reflectColor = traceRay(scene, reflectRay, thresh, depth + 1, materials);
 		reflectColor = prod(reflectColor, m.kr);
 
 		vec3f refractColor(0, 0, 0);
@@ -67,16 +67,18 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 			double n1 = materials.top().index, n2;
 			if(materials.top().id == m.id)
 			{
+				//leaving current
 				materials.pop();
 				n2 = materials.top().index;
 			}else
 			{
+				//entering m
+				materials.push(m);
 				n2 = m.index;
 			}
 			vec3f T = refraction(V, N, n1, n2);
 			Ray refractRay(P, T);
-			materials.push(m);
-			refractColor = traceRay(scene, refractRay, thresh, depth + 1);
+			refractColor = traceRay(scene, refractRay, thresh, depth + 1, materials);
 		}
 
 		refractColor = prod(refractColor, m.kt);
@@ -122,11 +124,10 @@ vec3f RayTracer::refraction(vec3f i, vec3f n, double n1, double n2)
 		double fac = sinTheta2 / sinTheta3;
 		return (i * fac + (-n)).normalize();
 	}
-
 	// if (n1 == n2)return i;
 	// double thetaI = acos(i.dot(n));
 	// //total internal reflection
-	// if (n2>n1 && sin(thetaI) > n2 / n1)
+	// if (sin(thetaI) > n2 / n1)
 	// {
 	// 	return vec3f(0, 0, 0);
 	// }

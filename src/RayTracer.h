@@ -13,7 +13,8 @@ public:
     ~RayTracer();
 
     vec3f trace( Scene *scene, double x, double y );
-	vec3f traceRay( Scene *scene, const Ray& r, const vec3f& thresh, int depth);
+    vec3f traceRay(Scene* scene, const Ray& r, const vec3f& thresh, int depth, std::stack<Material> materials);
+    vec3f traceRay( Scene *scene, const Ray& r, const vec3f& thresh, int depth);
     vec3f refractionDirection(vec3f& normal, vec3f& dir, double indexFrom, double indexTo);
     /**
 	 * i incidence vector
