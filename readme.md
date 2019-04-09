@@ -17,8 +17,8 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
 
 ## Bonus
 
-- [ ] (1W) Adaptive termination (slider control the contribution threshold)
-  - [ ] (1W) Antialiasing by super sample then averaging down
+- [X] (1W) Adaptive termination (slider control the contribution threshold)
+  - [X] (1W) Antialiasing by super sample then averaging down
 - [X] (1B) Spot lights
   - [ ] (1B) Background image
 - [ ] (1B) accelerate shadow attenuation
