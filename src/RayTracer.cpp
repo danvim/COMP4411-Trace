@@ -76,7 +76,12 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 				materials.push(m);
 				n2 = m.index;
 			}
-			vec3f T = refraction(V, N, n1, n2);
+			vec3f T = refraction2(V, N, n1, n2);
+			// if((T - A).length() > RAY_EPSILON)
+			// {
+			// 	std::cout << V<<std::endl<<N<<std::endl<<n1<<" "<<n2<<std::endl<<T << std::endl << A << std::endl;
+			// }
+			// T = A;
 			Ray refractRay(P, T);
 			refractColor = traceRay(scene, refractRay, thresh, depth + 1, materials);
 		}
@@ -92,8 +97,7 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 	return vec3f(0.0, 0.0, 0.0);
 }
 
-// math from https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
-vec3f RayTracer::refraction(vec3f i, vec3f n, double n1, double n2)
+vec3f RayTracer::refraction2(vec3f i, vec3f n, double n1, double n2)
 {
 	if (abs(abs(n * i) - 1) < RAY_EPSILON)
 		return i;
@@ -107,34 +111,40 @@ vec3f RayTracer::refraction(vec3f i, vec3f n, double n1, double n2)
 	if (n1 == n2) {
 		return i;
 	}
-	else if (n1 > n2) {//currentIndex is greater than the next index,should consider total inner reflection
-		double critical = n2 / n1;//the value if sine,not radian or degree
+	else if (n1 > n2) {
+		double critical = n2 / n1;
 	
 		if (critical - sinTheta1 > RAY_EPSILON) {
 			double sinAlpha = sin(3.1416 - theta2);
-			double fac = sinAlpha / sinTheta3;//by sine rule
+			double fac = sinAlpha / sinTheta3;
 	
 			return -(-i * fac + (-n)).normalize();
 		}
-		else {//total inner reflection,no refraction at all
+		else {//TIR
 			return vec3f(0.0, 0.0, 0.0);
 		}
 	}
-	else {//indexTo > indexFrom
+	else {
 		double fac = sinTheta2 / sinTheta3;
 		return (i * fac + (-n)).normalize();
 	}
-	// if (n1 == n2)return i;
-	// double thetaI = acos(i.dot(n));
-	// //total internal reflection
-	// if (sin(thetaI) > n2 / n1)
-	// {
-	// 	return vec3f(0, 0, 0);
-	// }
-	// double sinSqThetaT = pow(n1 / n2, 2) * (1 - pow(n.dot(i), 2));
-	// vec3f t = (n1 / n2)*i + (n1 / n2 * n.dot(i) - sqrt(1 - sinSqThetaT))*n;
-	// return t.normalize();
-
+}
+// math from https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
+vec3f RayTracer::refraction(vec3f i, vec3f n, double n1, double n2)
+{
+	if (n1 == n2)return i;
+	double thetaI = acos(i.dot(n));
+	//total internal reflection
+	if (sin(thetaI) > n2 / n1)
+	{
+		return vec3f(0, 0, 0);
+	}
+	double sinSqThetaT = pow(n1 / n2, 2) * (1 - pow(n.dot(i), 2));
+	vec3f t = (n1 / n2)*i + (n1 / n2 * n.dot(i) - sqrt(1 - sinSqThetaT))*n;
+	// vec3f t = n1 / n2 * (
+	// 	(sqrt(pow(n.dot(i), 2) + pow(n2 / n1, 2) - 1) - n.dot(i)) * n + i
+	// 	);
+	return t;// .normalize();
 }
 
 RayTracer::RayTracer()

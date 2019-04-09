@@ -68,6 +68,10 @@
 #include "fileio/bitmap.h"
 #include <sstream>
 
+#ifndef M_PI
+#define M_PI  3.14159265358979323846
+#endif
+
 double diff(double a, double b)
 {
 	return abs(a - b);
@@ -157,6 +161,15 @@ bool processArgs(int argc, char** argv)
 // event handling overhead.
 int main(int argc, char** argv)
 {
+	// RayTracer rt;
+	// std::stringstream ss;
+	// ss << rt.refraction(vec3f(cos(M_PI / 6), sin(M_PI / 6), 0), vec3f(0, 1, 0), 1, 1.33).normalize() << std::endl;
+	// ss << rt.refraction(vec3f(cos(M_PI / 6), sin(M_PI / 6), 0), vec3f(0, 1, 0), 1.33, 1).normalize() << std::endl;
+	// ss << rt.refraction(vec3f(cos(M_PI / 3), sin(M_PI / 3), 0), vec3f(0, 1, 0), 1, 1.33).normalize() << std::endl;
+	// ss << rt.refraction(vec3f(cos(M_PI / 3), sin(M_PI / 3), 0), vec3f(0, 1, 0),  1.33, 1).normalize() << std::endl;
+	// OutputDebugString(ss.str().c_str());
+	// return 0;
+
 	progName = argv[0];
 
 	if (argc != 1)
