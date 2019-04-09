@@ -3,8 +3,7 @@
 
 #include "scene.h"
 
-class Light
-	: public SceneElement
+class Light : public SceneElement
 {
 public:
 	virtual vec3f shadowAttenuation(const vec3f& p) const = 0;
@@ -21,8 +20,7 @@ protected:
 	vec3f color;
 };
 
-class DirectionalLight
-	: public Light
+class DirectionalLight : public Light
 {
 public:
 	DirectionalLight(Scene* scene, const vec3f& orien, const vec3f& color)
@@ -39,8 +37,7 @@ protected:
 	vec3f orientation;
 };
 
-class PointLight
-	: public Light
+class PointLight : public Light
 {
 public:
 	PointLight(Scene* scene, const vec3f& pos, const vec3f& color)
