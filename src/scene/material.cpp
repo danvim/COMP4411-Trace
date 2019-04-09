@@ -23,7 +23,8 @@ vec3f Material::shade( Scene *scene, const Ray& r, const ISect& i ) const
 	vec3f V = r.getDirection();
 	vec3f N = i.N;
 	vec3f P = r.at(i.t);
-	vec3f color = ke+prod(ka, scene->ambientLight);
+	vec3f transparent = vec3f(1, 1, 1) - kt;
+	vec3f color = ke+ prod(ka, scene->ambientLight);
 
 	for (std::list<Light*>::const_iterator l = scene->beginLights(); l != scene->endLights(); ++l) {
 		Light *pLight = *l;
@@ -40,7 +41,7 @@ vec3f Material::shade( Scene *scene, const Ray& r, const ISect& i ) const
 		double specAngle = std::max(R.dot(V), 0.0);
 		specular = pow(specAngle, shininess * 128);
 
-		vec3f ret = prod(distAtte *(specular * ks + diffuse * kd), intensity);
+		vec3f ret = prod(distAtte *(specular * ks + prod(diffuse * kd,transparent)), intensity);
 		ret = prod(ret, shadowAtte);
 		color += ret;
 	}
@@ -49,3 +50,6 @@ vec3f Material::shade( Scene *scene, const Ray& r, const ISect& i ) const
 	for (int i = 0; i < 3; i++) color[i] = std::min(color[i], 1.0);
 	return color;
 }
+
+
+int Material::cnt = 0;

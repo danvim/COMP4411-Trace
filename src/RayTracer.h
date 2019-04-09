@@ -4,6 +4,7 @@
 // The main ray tracer.
 
 #include "scene/scene.h"
+#include <stack>
 
 class RayTracer
 {
@@ -12,8 +13,9 @@ public:
     ~RayTracer();
 
     vec3f trace( Scene *scene, double x, double y );
-	vec3f traceRay( Scene *scene, const Ray& r, const vec3f& thresh, int depth );
-	/**
+	vec3f traceRay( Scene *scene, const Ray& r, const vec3f& thresh, int depth);
+    vec3f refractionDirection(vec3f& normal, vec3f& dir, double indexFrom, double indexTo);
+    /**
 	 * i incidence vector
 	 * n normal vector
 	 * n1 source refraction index
@@ -35,6 +37,8 @@ public:
 	Scene* getScene() { return scene; }
 
 	int maxDepth = 0;
+	std::stack<double> refractiveIndex;
+	std::stack<Material> materials;
 
 private:
 	unsigned char *buffer;

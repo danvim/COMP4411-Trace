@@ -17,6 +17,8 @@ vec3f RayTracer::trace(Scene* scene, double x, double y)
 {
 	Ray r(vec3f(0, 0, 0), vec3f(0, 0, 0));
 	scene->getCamera()->rayThrough(x, y, r);
+	refractiveIndex.empty();
+	refractiveIndex.push(1);
 	return traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0).clamp();
 }
 
@@ -45,9 +47,14 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		vec3f N = i.N;
 		vec3f V = r.getDirection();
 		vec3f P = r.at(i.t);
-		vec3f R = V - 2 * V.dot(N) * N;
-		R = R.normalize();
+		vec3f N_ = N;
 		const auto& m = i.getMaterial();
+		if(!materials.empty() && materials.top().id == m.id)
+		{
+			N_ = -N;
+		}
+		vec3f R = V - 2 * V.dot(N_) * N_;
+		R = R.normalize();
 		vec3f phongColor = m.shade(scene, r, i);
 
 		Ray reflectRay(P, R);
@@ -55,12 +62,58 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		reflectColor = prod(reflectColor, m.kr);
 
 		vec3f refractColor(0, 0, 0);
-		if(m.kt.length()>0)
-		{
-			
+		// if(m.kt.length()>0)
+		// {
+		// 	double n1 = refractiveIndex.top();
+		// 	double n2 = m.index;
+		// 	vec3f N_ = -N;
+		// 	if(N.dot(V) > 0) //leaving object
+		// 	{
+		// 		n1 = m.index;
+		// 		n2 = refractiveIndex.top();
+		// 		N_ = N;
+		// 	}
+		// 	vec3f T = refraction(V, N_, n1, n2);
+		// 	Ray refractionRay(T, P);
+		// 	refractiveIndex.push(n2);
+		// 	if(T.length() != 0)
+		// 		refractColor = traceRay(scene, refractionRay, thresh, depth + 1);
+		// 	refractColor = prod(refractColor, m.kt);
+		// 	refractiveIndex.pop();
+		// }
+		if (m.kt.length() > RAY_EPSILON) {
+			vec3f newDir, normal = N, dir = V, pos = P;
+			//stack is empty, air -> outermost object
+			if (materials.empty()) {
+				materials.push(m);
+				//cout << m.id << ",";
+				newDir = refraction(V, N, 1.0, m.index);
+			}
+			else {//not empty, obj -> obj, obj->air
+				Material& material = materials.top();
+				if (material.id != m.id) {//differect object,the ray must be go the inner object
+					materials.push(m);
+					newDir = refraction(V, N, material.index, m.index);
+				}
+				else {//the same object,the ray escape from the inner object to outer object or to the air
+					materials.pop();
+					if (materials.empty()) {//current object is the outermost object,obj -> air
+						newDir = refraction(V, -N, material.index, 1.0);
+					}
+					else {//not the outermost object,inner object -> outer object
+						Material& outer = materials.top();
+						newDir = refraction(V, -N, material.index, outer.index);
+					}
+				}
+			}
+			Ray newRay(pos, newDir);
+			if (newDir.length() > RAY_EPSILON)//no inner reflection
+				refractColor = traceRay(scene, newRay, thresh, depth + 1);
 		}
 
-		return phongColor + reflectColor;
+		refractColor = prod(refractColor, m.kt);
+
+		return phongColor + reflectColor + refractColor;
 	}
 	// No intersection.  This ray travels to infinity, so we color
 	// it according to the background color, which in this (simple) case
@@ -72,16 +125,47 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 // math from https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
 vec3f RayTracer::refraction(vec3f i, vec3f n, double n1, double n2)
 {
-	if (n1 == n2)return i;
-	double thetaI = acos(i.dot(n));
-	//total internal reflection
-	if (n2>n1 && sin(thetaI) > n2 / n1)
-	{
-		return vec3f(0, 0, 0);
+	if (abs(abs(n * i) - 1) < RAY_EPSILON)
+		return i;
+	
+	double sinTheta1 = sqrt(1 - pow(n * i, 2));
+	double sinTheta2 = (n1 * sinTheta1) / n2;
+	double theta1 = asin(sinTheta1);
+	double theta2 = asin(sinTheta2);
+	double sinTheta3 = sin(abs(theta1 - theta2));
+	
+	if (n1 == n2) {
+		return i;
 	}
-	double sinSqThetaT = pow(n1 / n2, 2) * (1 - pow(n.dot(i), 2));
-	vec3f t = (n1 / n2)*i + (n1 / n2 * n.dot(i) - sqrt(1 - sinSqThetaT))*n;
-	return t.normalize();
+	else if (n1 > n2) {//currentIndex is greater than the next index,should consider total inner reflection
+		double critical = n2 / n1;//the value if sine,not radian or degree
+	
+		if (critical - sinTheta1 > RAY_EPSILON) {
+			double sinAlpha = sin(3.1416 - theta2);
+			double fac = sinAlpha / sinTheta3;//by sine rule
+	
+			return -(-i * fac + (-n)).normalize();
+		}
+		else {//total inner reflection,no refraction at all
+			return vec3f(0.0, 0.0, 0.0);
+		}
+	}
+	else {//indexTo > indexFrom
+		double fac = sinTheta2 / sinTheta3;
+		return (i * fac + (-n)).normalize();
+	}
+
+	// if (n1 == n2)return i;
+	// double thetaI = acos(i.dot(n));
+	// //total internal reflection
+	// if (n2>n1 && sin(thetaI) > n2 / n1)
+	// {
+	// 	return vec3f(0, 0, 0);
+	// }
+	// double sinSqThetaT = pow(n1 / n2, 2) * (1 - pow(n.dot(i), 2));
+	// vec3f t = (n1 / n2)*i + (n1 / n2 * n.dot(i) - sqrt(1 - sinSqThetaT))*n;
+	// return t.normalize();
+
 }
 
 RayTracer::RayTracer()
