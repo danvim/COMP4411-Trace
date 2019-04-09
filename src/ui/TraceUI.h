@@ -46,6 +46,7 @@ public:
 	int getDepth() const;
 	double distAtteA = 0, distAtteB = 0, distAtteC = 0;
 	double terminationThreshold = 0.9;
+	int superSample = 1;
 
 private:
 	RayTracer* rayTracer{};
