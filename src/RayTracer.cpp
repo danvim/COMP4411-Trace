@@ -46,11 +46,16 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		R = R.normalize();
 		const auto& m = i.getMaterial();
 		vec3f phongColor = m.shade(scene, r, i);
+		vec3f reflectColor;
 
-		Ray reflectRay(P, R);
-		vec3f reflectColor = traceRay(scene, reflectRay, thresh, depth + 1);
+		//Dynamic threshold
+		if (1 - scene->terminationThreshold < phongColor.length())
+		{
+			const Ray reflectRay(P, R);
+			reflectColor = traceRay(scene, reflectRay, thresh, depth + 1);
+			reflectColor = prod(reflectColor, m.kr);
+		}
 
-		reflectColor = prod(reflectColor, m.kr);
 		return phongColor + reflectColor;
 	}
 	// No intersection.  This ray travels to infinity, so we color

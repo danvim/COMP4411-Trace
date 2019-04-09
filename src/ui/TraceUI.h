@@ -29,6 +29,8 @@ public:
 	Fl_Slider* mDistAtteASlider{};
 	Fl_Slider* mDistAtteBSlider{};
 	Fl_Slider* mDistAtteCSlider{};
+	Fl_Slider* mTerminationThresholdSlider{};
+	Fl_Slider* mSuperSampleSlider{};
 
 	Fl_Button* mRenderButton;
 	Fl_Button* mStopButton;
@@ -43,6 +45,7 @@ public:
 	int getSize() const;
 	int getDepth() const;
 	double distAtteA = 0, distAtteB = 0, distAtteC = 0;
+	double terminationThreshold = 0.9;
 
 private:
 	RayTracer* rayTracer{};
@@ -67,6 +70,8 @@ private:
 	static Fl_Callback cbDistAtteASlides;
 	static Fl_Callback cbDistAtteBSlides;
 	static Fl_Callback cbDistAtteCSlides;
+	static Fl_Callback cbTerminationThresholdSlides;
+	static Fl_Callback cbSuperSampleSlides;
 
 	static Fl_Callback cbRender;
 	static Fl_Callback cbStop;

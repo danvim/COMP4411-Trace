@@ -113,6 +113,11 @@ void TraceUi::cbDistAtteCSlides(Fl_Widget* o, void* v)
 	static_cast<TraceUi*>(o->user_data())->distAtteC = double(dynamic_cast<Fl_Slider *>(o)->value());
 }
 
+void TraceUi::cbTerminationThresholdSlides(Fl_Widget* o, void* v)
+{
+	static_cast<TraceUi*>(o->user_data())->terminationThreshold = dynamic_cast<Fl_Slider *>(o)->value();
+}
+
 void TraceUi::cbRender(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -132,6 +137,7 @@ void TraceUi::cbRender(Fl_Widget* o, void* v)
 		pUi->rayTracer->getScene()->distAtteA = pUi->distAtteA;
 		pUi->rayTracer->getScene()->distAtteB = pUi->distAtteB;
 		pUi->rayTracer->getScene()->distAtteC = pUi->distAtteC;
+		pUi->rayTracer->getScene()->terminationThreshold = pUi->terminationThreshold;
 
 		// Save the window label
 		const auto* oldLabel = pUi->mTraceGlWindow->label();
@@ -312,6 +318,18 @@ TraceUi::TraceUi()
 	mDistAtteCSlider->value(0);
 	mDistAtteCSlider->align(FL_ALIGN_RIGHT);
 	mDistAtteCSlider->callback(cbDistAtteCSlides);
+
+	mTerminationThresholdSlider = new Fl_Value_Slider(10, 135, 180, 20, "Term. Threshold");
+	mTerminationThresholdSlider->user_data(static_cast<void*>(this));
+	mTerminationThresholdSlider->type(FL_HOR_NICE_SLIDER);
+	mTerminationThresholdSlider->labelfont(FL_COURIER);
+	mTerminationThresholdSlider->labelsize(12);
+	mTerminationThresholdSlider->minimum(0.0);
+	mTerminationThresholdSlider->maximum(1.0);
+	mTerminationThresholdSlider->step(0.01);
+	mTerminationThresholdSlider->value(0.9);
+	mTerminationThresholdSlider->align(FL_ALIGN_RIGHT);
+	mTerminationThresholdSlider->callback(cbTerminationThresholdSlides);
 
 	mRenderButton = new Fl_Button(240, 27, 70, 25, "&Render");
 	mRenderButton->user_data(static_cast<void*>(this));
