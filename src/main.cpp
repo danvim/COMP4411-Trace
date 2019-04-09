@@ -67,6 +67,7 @@
 
 #include "fileio/bitmap.h"
 #include <sstream>
+#include <vector>
 
 #ifndef M_PI
 #define M_PI  3.14159265358979323846
@@ -89,6 +90,7 @@ extern int optInd, optErr, optOpt;
 RayTracer* theRayTracer;
 TraceUi* traceUi;
 
+std::stringstream ss;
 //
 // options from program parameters
 //
@@ -151,6 +153,55 @@ bool processArgs(int argc, char** argv)
 	return true;
 }
 
+float frand()
+{
+	return (float)rand() / RAND_MAX;
+}
+
+int irand(int max)
+{
+	return rand() % max;
+}
+
+double degToRad(double deg)
+{
+	return deg * 2 * M_PI / 360.0f;
+}
+
+double radToDeg(double rad)
+{
+	return rad / 2.f / M_PI * 360.0f;
+}
+
+std::vector<vec3f> sampleDistributed(vec3f c, double r, int count)
+{
+	vec3f up = vec3f(0, 1, 0);
+	if((c.normalize()-up).length() < RAY_EPSILON)
+	{
+		up = vec3f(0, 0, 1);
+	}
+	vec3f u = (c.cross(up)).normalize();
+	vec3f v = (u.cross(c)).normalize();
+	u = (c.cross(v)).normalize();
+
+	// double d1 = c.dot(u), d2 = c.dot(v), d3 = u.dot(v);
+	// if(d1>RAY_EPSILON||d2 > RAY_EPSILON ||d3 > RAY_EPSILON)
+	// {
+	// 	std::cout << d1 << d2 << d3<<u<<v<<up;
+	// }
+
+	std::vector<vec3f> vecs;
+	for(int i=0;i<count;i++)
+	{
+		double x = frand() * 2 * r - r;
+		double y = frand() * 2 * r - r;
+		vec3f t = c + x*u + y*v;
+		t = t.normalize();
+		vecs.push_back(t);
+	}
+	return vecs;
+}
+
 // usage : ray [option] in.ray out.bmp
 // Simply keying in ray will invoke a graphics mode version.
 // Use "ray --help" to see the detailed usage.
@@ -162,7 +213,7 @@ bool processArgs(int argc, char** argv)
 int main(int argc, char** argv)
 {
 	// RayTracer rt;
-	// std::stringstream ss;
+	// sampleDistributed({ 1,0,0 }, 0.05, 1);
 	// ss << rt.refraction(vec3f(cos(M_PI / 6), sin(M_PI / 6), 0), vec3f(0, 1, 0), 1, 1.33).normalize() << std::endl;
 	// ss << rt.refraction(vec3f(cos(M_PI / 6), sin(M_PI / 6), 0), vec3f(0, 1, 0), 1.33, 1).normalize() << std::endl;
 	// ss << rt.refraction(vec3f(cos(M_PI / 3), sin(M_PI / 3), 0), vec3f(0, 1, 0), 1, 1.33).normalize() << std::endl;
