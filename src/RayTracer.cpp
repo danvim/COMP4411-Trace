@@ -17,8 +17,8 @@ vec3f RayTracer::trace(Scene* scene, double x, double y)
 {
 	Ray r(vec3f(0, 0, 0), vec3f(0, 0, 0));
 	scene->getCamera()->rayThrough(x, y, r);
-	refractiveIndex.empty();
-	refractiveIndex.push(1);
+	materials = std::stack<Material>();
+	materials.push(Material::getAir());
 	return traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0).clamp();
 }
 
@@ -49,11 +49,11 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		vec3f P = r.at(i.t);
 		vec3f N_ = N;
 		const auto& m = i.getMaterial();
-		if(!materials.empty() && materials.top().id == m.id)
+		if(materials.top().id == m.id)
 		{
-			N_ = -N;
+			N = -N;
 		}
-		vec3f R = V - 2 * V.dot(N_) * N_;
+		vec3f R = V - 2 * V.dot(N) * N;
 		R = R.normalize();
 		vec3f phongColor = m.shade(scene, r, i);
 
@@ -62,53 +62,21 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		reflectColor = prod(reflectColor, m.kr);
 
 		vec3f refractColor(0, 0, 0);
-		// if(m.kt.length()>0)
-		// {
-		// 	double n1 = refractiveIndex.top();
-		// 	double n2 = m.index;
-		// 	vec3f N_ = -N;
-		// 	if(N.dot(V) > 0) //leaving object
-		// 	{
-		// 		n1 = m.index;
-		// 		n2 = refractiveIndex.top();
-		// 		N_ = N;
-		// 	}
-		// 	vec3f T = refraction(V, N_, n1, n2);
-		// 	Ray refractionRay(T, P);
-		// 	refractiveIndex.push(n2);
-		// 	if(T.length() != 0)
-		// 		refractColor = traceRay(scene, refractionRay, thresh, depth + 1);
-		// 	refractColor = prod(refractColor, m.kt);
-		// 	refractiveIndex.pop();
-		// }
-		if (m.kt.length() > RAY_EPSILON) {
-			vec3f newDir, normal = N, dir = V, pos = P;
-			//stack is empty, air -> outermost object
-			if (materials.empty()) {
-				materials.push(m);
-				//cout << m.id << ",";
-				newDir = refraction(V, N, 1.0, m.index);
+		if(m.kt.length()>0)
+		{
+			double n1 = materials.top().index, n2;
+			if(materials.top().id == m.id)
+			{
+				materials.pop();
+				n2 = materials.top().index;
+			}else
+			{
+				n2 = m.index;
 			}
-			else {//not empty, obj -> obj, obj->air
-				Material& material = materials.top();
-				if (material.id != m.id) {//differect object,the ray must be go the inner object
-					materials.push(m);
-					newDir = refraction(V, N, material.index, m.index);
-				}
-				else {//the same object,the ray escape from the inner object to outer object or to the air
-					materials.pop();
-					if (materials.empty()) {//current object is the outermost object,obj -> air
-						newDir = refraction(V, -N, material.index, 1.0);
-					}
-					else {//not the outermost object,inner object -> outer object
-						Material& outer = materials.top();
-						newDir = refraction(V, -N, material.index, outer.index);
-					}
-				}
-			}
-			Ray newRay(pos, newDir);
-			if (newDir.length() > RAY_EPSILON)//no inner reflection
-				refractColor = traceRay(scene, newRay, thresh, depth + 1);
+			vec3f T = refraction(V, N, n1, n2);
+			Ray refractRay(P, T);
+			materials.push(m);
+			refractColor = traceRay(scene, refractRay, thresh, depth + 1);
 		}
 
 		refractColor = prod(refractColor, m.kt);

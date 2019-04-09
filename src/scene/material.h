@@ -37,6 +37,11 @@ public:
 		id = cnt++;
 	}
 
+	static Material getAir()
+	{
+		return Material({ 0,0,0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 }, { 1,1,1 }, 0, 1);
+	}
+
 	virtual vec3f shade( Scene *scene, const Ray& r, const ISect& i ) const;
 
     vec3f ke;                    // emissive
