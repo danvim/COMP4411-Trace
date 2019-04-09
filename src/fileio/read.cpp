@@ -2,6 +2,10 @@
 #pragma warning( disable : 4786 )
 #endif
 
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+
 #include <cmath>
 #include <cstring>
 #include <fstream>
@@ -21,6 +25,7 @@
 #include "../SceneObjects/Sphere.h"
 #include "../SceneObjects/Square.h"
 #include "../scene/light.h"
+#include "../scene/lights/SpotLight.h"
 
 typedef std::map<std::string, Material*> MMap;
 
@@ -609,6 +614,21 @@ static void processObject(Obj* obj, Scene* scene, MMap& materials)
 		scene->add(new PointLight(scene,
 		                          tupleToVec(getField(child, "position")),
 		                          tupleToVec(getColorField(child))));
+	}
+	else if (name == "spot_light")
+	{
+		if (child == nullptr)
+		{
+			throw ParseError("No info for spot_light");
+		}
+
+		scene->add(new SpotLight(scene,
+			tupleToVec(getColorField(child)),
+			tupleToVec(getField(child, "position")),
+			tupleToVec(getField(child, "direction")).normalize(),
+			getField(child, "size")->getScalar() * M_PI / 180,
+			getField(child, "blend")->getScalar()
+			));
 	}
 	else if (name == "ambient_light") {
 		vec3f color = tupleToVec(getField(child, "color"));

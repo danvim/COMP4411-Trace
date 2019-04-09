@@ -52,6 +52,12 @@
       <UniqueIdentifier>{2a500cad-34e4-4544-a082-ff2e3169691d}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Source Files\scene\lights">
+      <UniqueIdentifier>{a6f14a49-41af-4d84-9248-abfd14e917ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\scene.\lights">
+      <UniqueIdentifier>{ad0bcef3-d692-4b30-9819-84b21a2832b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\getopt.cpp">
@@ -114,6 +120,9 @@
     <ClCompile Include="src\SceneObjects\trimesh.cpp">
       <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\lights\SpotLight.cpp">
+      <Filter>Source Files\scene\lights</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\RayTracer.h">
@@ -170,8 +179,15 @@
     <ClInclude Include="src\SceneObjects\trimesh.h">
       <Filter>Header Files\SceneObjects.</Filter>
     </ClInclude>
+    <ClInclude Include="src\scene\lights\SpotLight.h">
+      <Filter>Header Files\scene.\lights</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
+    <None Include="readme.md" />
   </ItemGroup>
 </Project>
