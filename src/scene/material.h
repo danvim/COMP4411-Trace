@@ -13,6 +13,7 @@ class Scene;
 class Ray;
 class ISect;
 
+
 class Material
 {
 public:
@@ -26,11 +27,20 @@ public:
         , kr( vec3f( 0.0, 0.0, 0.0 ) )
         , kt( vec3f( 0.0, 0.0, 0.0 ) )
         , shininess( 0.0 ) 
-		, index(1.0) {}
+		, index(1.0) {
+		id = cnt++;
+	}
 
     Material( const vec3f& e, const vec3f& a, const vec3f& s, 
               const vec3f& d, const vec3f& r, const vec3f& t, double sh, double in)
-        : ke( e ), ka( a ), ks( s ), kd( d ), kr( r ), kt( t ), shininess( sh ), index( in ) {}
+		: ke(e), ka(a), ks(s), kd(d), kr(r), kt(t), shininess(sh), index(in) {
+		id = cnt++;
+	}
+
+	static Material getAir()
+	{
+		return Material({ 0,0,0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 }, { 1,1,1 }, 0, 1);
+	}
 
 	virtual vec3f shade( Scene *scene, const Ray& r, const ISect& i ) const;
 
@@ -65,6 +75,8 @@ public:
     }
 
     friend Material operator*( double d, Material m );
+	int id;
+	static int cnt;
 };
 
 inline Material

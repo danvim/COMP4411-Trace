@@ -333,7 +333,7 @@ TraceUi::TraceUi()
 	mTerminationThresholdSlider->minimum(0.0);
 	mTerminationThresholdSlider->maximum(1.0);
 	mTerminationThresholdSlider->step(0.01);
-	mTerminationThresholdSlider->value(0.9);
+	mTerminationThresholdSlider->value(0);
 	mTerminationThresholdSlider->align(FL_ALIGN_RIGHT);
 	mTerminationThresholdSlider->callback(cbTerminationThresholdSlides);
 
