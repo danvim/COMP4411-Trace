@@ -31,6 +31,7 @@ public:
 	Fl_Slider* mDistAtteCSlider{};
 	Fl_Slider* mTerminationThresholdSlider{};
 	Fl_Slider* mSuperSampleSlider{};
+	Fl_Slider* mBackgroundSlider{};
 
 	Fl_Button* mRenderButton;
 	Fl_Button* mStopButton;
@@ -50,10 +51,17 @@ public:
 	double distAtteA = 0, distAtteB = 0, distAtteC = 0;
 	double terminationThreshold = 0;
 	int superSample = 1;
+	bool isUsingBackground = false;
+
+	unsigned char* backgroundPtr = nullptr;
+	int backgroundWidth = 0;
+	int backgroundHeight = 0;
+
+	static char* scenePath;
 	bool softShadow = false, glossyReflection = false, motionBlur = false;
 
 private:
-	RayTracer* rayTracer{};
+	RayTracer* rayTracer = nullptr;
 
 	int mNSize;
 	int mNDepth;
@@ -64,6 +72,7 @@ private:
 	static TraceUi* whoami(Fl_Menu_* o);
 
 	static Fl_Callback cbLoadScene;
+	static Fl_Callback cbLoadBackground;
 	static Fl_Callback cbSaveImage;
 	static Fl_Callback cbExit;
 	static Fl_Callback cbAbout;
@@ -77,6 +86,7 @@ private:
 	static Fl_Callback cbDistAtteCSlides;
 	static Fl_Callback cbTerminationThresholdSlides;
 	static Fl_Callback cbSuperSampleSlides;
+	static Fl_Callback cbBackgroundSlides;
 
 	static Fl_Callback cbRender;
 	static Fl_Callback cbStop;

@@ -49,7 +49,6 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		vec3f N = i.N;
 		vec3f V = r.getDirection();
 		vec3f P = r.at(i.t);
-		vec3f N_ = N;
 		const auto& m = i.getMaterial();
 		if(materials.top().id == m.id)
 		{
@@ -69,11 +68,11 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		if(getScene()->glossyReflection)
 		{
 			std::vector<vec3f> vecs = sampleDistributed(R, 0.05, 49);
-			double depthR = std::max(depth + 1, maxDepth - 1);
+			int depthR = std::max(depth + 1, maxDepth - 1);
 			for(vec3f v: vecs)
 			{
-				Ray reflectRay(P, v);
-				reflectColor += prod(traceRay(scene, reflectRay, thresh, depthR, materials), m.kr);
+				Ray reflectRayL(P, v);
+				reflectColor += prod(traceRay(scene, reflectRayL, thresh, depthR, materials), m.kr);
 			}
 			reflectColor /= 50.f;
 		}

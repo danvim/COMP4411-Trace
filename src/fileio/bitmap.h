@@ -39,7 +39,7 @@ typedef struct
 } BmpBitmapInfoHeader;
 
 // global I/O routines
-extern unsigned char* readBmp(char* fName, int& width, int& height);
+extern unsigned char* readBmp(const char* fName, int& width, int& height);
 extern void writeBmp(char* iName, int width, int height, unsigned char* data);
 
 #endif

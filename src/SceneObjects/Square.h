@@ -15,6 +15,8 @@ public:
 	bool intersectLocal( const Ray& r, ISect& i ) const override;
 	bool hasBoundingBoxCapability() const override { return true; }
 
+	std::pair<double, double> getUV(const Ray& r, const ISect& i) const override;
+
 	BoundingBox ComputeLocalBoundingBox() const override
     {
         BoundingBox localBounds;
@@ -22,6 +24,8 @@ public:
 		localBounds.max = vec3f(0.5f, 0.5f, RAY_EPSILON);
         return localBounds;
     }
+
+	static vec3f getP(const Ray& r, const ISect& i);
 };
 
 #endif // SQUARE_H_

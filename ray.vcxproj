@@ -176,6 +176,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="src\scene\lights\SpotLight.cpp" />
+    <ClCompile Include="src\scene\Texture.cpp" />
     <ClCompile Include="src\ui\TraceGLWindow.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -282,6 +283,7 @@
   <ItemGroup>
     <ClInclude Include="src\RayTracer.h" />
     <ClInclude Include="src\scene\lights\SpotLight.h" />
+    <ClInclude Include="src\scene\Texture.h" />
     <ClInclude Include="src\ui\TraceGLWindow.h" />
     <ClInclude Include="src\ui\TraceUI.h" />
     <ClInclude Include="src\fileio\bitmap.h" />

@@ -45,8 +45,8 @@ public:
 private:
 	unsigned char *buffer;
 	int bufferWidth, bufferHeight;
-	int bufferSize;
-	int superSample;
+	int bufferSize{};
+	int superSample{};
 	Scene *scene;
 
 	bool mBSceneLoaded;

@@ -90,7 +90,6 @@ public:
 		return *this;
 	}
 
-public:
 	const SceneObject* obj;
 	double t;
 	vec3f N;

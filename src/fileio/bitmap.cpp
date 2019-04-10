@@ -16,7 +16,7 @@
 BmpBitmapFileHeader fileHeader;
 BmpBitmapInfoHeader infoHeader;
 
-unsigned char* readBmp(char* fName, int& width, int& height)
+unsigned char* readBmp(const char* fName, int& width, int& height)
 {
 	FILE* file;
 	fopen_s(&file, fName, "rb");

@@ -11,8 +11,10 @@
 
 #include "TraceUI.h"
 #include "../RayTracer.h"
+#include "../fileio/bitmap.h"
 
 static bool done;
+char* TraceUi::scenePath = nullptr;
 
 //------------------------------------- Help Functions --------------------------------------------
 TraceUi* TraceUi::whoami(Fl_Menu_* o) // from menu item back to UI itself
@@ -23,9 +25,10 @@ TraceUi* TraceUi::whoami(Fl_Menu_* o) // from menu item back to UI itself
 //--------------------------------- Callback Functions --------------------------------------------
 void TraceUi::cbLoadScene(Fl_Widget* o, void* v)
 {
-	auto pUi = whoami(dynamic_cast<Fl_Menu_*>(o));
+	auto* pUi = whoami(dynamic_cast<Fl_Menu_*>(o));
 
 	auto* newFile = fl_file_chooser("Open Scene?", "*.ray", nullptr);
+	scenePath = newFile;
 
 	if (newFile != nullptr)
 	{
@@ -45,9 +48,27 @@ void TraceUi::cbLoadScene(Fl_Widget* o, void* v)
 	}
 }
 
+void TraceUi::cbLoadBackground(Fl_Widget* o, void*)
+{
+	auto* pUi = whoami(dynamic_cast<Fl_Menu_*>(o));
+
+	auto* newBackgroundFileName = fl_file_chooser("Open Background Image?", "*.bmp", nullptr);
+
+	if (newBackgroundFileName != nullptr)
+	{
+		delete[] pUi->backgroundPtr;
+		pUi->backgroundPtr = readBmp(newBackgroundFileName, pUi->backgroundWidth, pUi->backgroundHeight);
+	}
+	else
+	{
+		fl_alert("Background not loaded!");
+	}
+}
+
+
 void TraceUi::cbSaveImage(Fl_Widget* o, void* v)
 {
-	auto pUi = whoami(dynamic_cast<Fl_Menu_*>(o));
+	auto* pUi = whoami(dynamic_cast<Fl_Menu_*>(o));
 
 	auto* saveFile = fl_file_chooser("Save Image?", "*.bmp", "save.bmp");
 	if (saveFile != nullptr)
@@ -121,6 +142,11 @@ void TraceUi::cbTerminationThresholdSlides(Fl_Widget* o, void* v)
 void TraceUi::cbSuperSampleSlides(Fl_Widget* o, void*)
 {
 	static_cast<TraceUi*>(o->user_data())->superSample = int(dynamic_cast<Fl_Slider *>(o)->value());
+}
+
+void TraceUi::cbBackgroundSlides(Fl_Widget* o, void*)
+{
+	static_cast<TraceUi*>(o->user_data())->isUsingBackground = dynamic_cast<Fl_Slider *>(o)->value() > 0.5;
 }
 
 void TraceUi::cbSoftShadow(Fl_Widget* o, void*)
@@ -259,6 +285,7 @@ int TraceUi::getDepth() const
 Fl_Menu_Item TraceUi::menuItems[] = {
 	{"&File", 0, nullptr, nullptr, FL_SUBMENU},
 	{"&Load Scene...", FL_ALT + 'l', cbLoadScene},
+	{"Load &Background...", FL_ALT + 'b', cbLoadBackground},
 	{"&Save Image...", FL_ALT + 's', cbSaveImage},
 	{"&Exit", FL_ALT + 'e', cbExit},
 	{nullptr},
@@ -275,7 +302,7 @@ TraceUi::TraceUi()
 	// init.
 	mNDepth = 0;
 	mNSize = 150;
-	mMainWindow = new Fl_Window(100, 40, 320, 200, "Ray <Not Loaded>");
+	mMainWindow = new Fl_Window(100, 40, 350, 250, "Ray <Not Loaded>");
 	mMainWindow->user_data(static_cast<void*>(this)); // record self to be used by static callback functions
 	// install menu bar
 	mMenuBar = new Fl_Menu_Bar(0, 0, 320, 25);
@@ -367,6 +394,18 @@ TraceUi::TraceUi()
 	mSuperSampleSlider->align(FL_ALIGN_RIGHT);
 	mSuperSampleSlider->callback(cbSuperSampleSlides);
 
+	mBackgroundSlider = new Fl_Value_Slider(10, 175, 180, 20, "Using BG Image");
+	mBackgroundSlider->user_data(static_cast<void*>(this));
+	mBackgroundSlider->type(FL_HOR_NICE_SLIDER);
+	mBackgroundSlider->labelfont(FL_COURIER);
+	mBackgroundSlider->labelsize(12);
+	mBackgroundSlider->minimum(0.0);
+	mBackgroundSlider->maximum(1.0);
+	mBackgroundSlider->step(1.0);
+	mBackgroundSlider->value(0.0);
+	mBackgroundSlider->align(FL_ALIGN_RIGHT);
+	mBackgroundSlider->callback(cbBackgroundSlides);
+
 	mRenderButton = new Fl_Button(240, 27, 70, 25, "&Render");
 	mRenderButton->user_data(static_cast<void*>(this));
 	mRenderButton->callback(cbRender);
@@ -375,17 +414,17 @@ TraceUi::TraceUi()
 	mStopButton->user_data(static_cast<void*>(this));
 	mStopButton->callback(cbStop);
 
-	mSoftShadowButton = new Fl_Check_Button(10, 175, 60, 20, "Soft shadow");
+	mSoftShadowButton = new Fl_Check_Button(10, 195, 60, 20, "Soft shadow");
 	mSoftShadowButton->user_data(static_cast<void*>(this));
 	mSoftShadowButton->value(false);
 	mSoftShadowButton->callback(cbSoftShadow);
 
-	mMotionBlurButton = new Fl_Check_Button(100, 175, 60, 20, "Motion Blur");
+	mMotionBlurButton = new Fl_Check_Button(100, 195, 60, 20, "Motion Blur");
 	mMotionBlurButton->user_data(static_cast<void*>(this));
 	mMotionBlurButton->value(false);
 	mMotionBlurButton->callback(cbMotionBlur);
 
-	mGlossyReflectionButton = new Fl_Check_Button(200, 175, 60, 20, "Glossy Reflection");
+	mGlossyReflectionButton = new Fl_Check_Button(200, 195, 60, 20, "Glossy Reflection");
 	mGlossyReflectionButton->user_data(static_cast<void*>(this));
 	mGlossyReflectionButton->value(false);
 	mGlossyReflectionButton->callback(cbGlossyReflection);
