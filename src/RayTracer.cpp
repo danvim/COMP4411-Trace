@@ -21,7 +21,29 @@ vec3f RayTracer::trace(Scene* scene, double x, double y)
 	scene->getCamera()->rayThrough(x, y, r);
 	materials = std::stack<Material>();
 	materials.push(Material::getAir());
-	return traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, materials).clamp();
+	vec3f color = traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, materials).clamp();
+	if (getScene()->motionBlur)
+	{
+		// std::vector<vec3f> vecs = sampleDistributed(r.getDirection(), 0.05, 49);
+		vec3f c = r.getDirection();
+		vec3f up = vec3f(0, 1, 0);
+		if ((c.normalize() - up).length() < RAY_EPSILON)
+		{
+			up = vec3f(0, 0, 1);
+		}
+		vec3f u = (c.cross(up)).normalize();
+		vec3f v = (u.cross(c)).normalize();
+		u = (c.cross(v)).normalize();
+		vec3f dir = c;
+		for (int i=0; i<10; i++)
+		{
+			dir += 0.005 * v;
+			Ray ray(r.getPosition(), dir.normalize());
+			color += traceRay(scene, ray, vec3f(1.0, 1.0, 1.0), 0, materials);
+		}
+		color /= 10.f;
+	}
+	return color;
 }
 
 // Do recursive ray tracing!  You'll want to insert a lot of code here
