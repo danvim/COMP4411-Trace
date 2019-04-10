@@ -142,7 +142,7 @@ bool TrimeshFace::intersectLocal(const Ray& r, ISect& i) const
 }
 
 void Trimesh::generateNormals()
-// Once you've loaded all the verts and faces, we can generate per
+// Once you've loaded all the vertices and faces, we can generate per
 // vertex normals by averaging the normals of the neighboring faces.
 {
 	int cnt = vertices.size();

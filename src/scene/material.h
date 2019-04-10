@@ -8,6 +8,7 @@
 #define MATERIAL_H_
 
 #include "../vecmath/vecmath.h"
+#include "Texture.h"
 
 class Scene;
 class Ray;
@@ -42,56 +43,45 @@ public:
 		return Material({ 0,0,0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 }, { 1,1,1 }, 0, 1);
 	}
 
-	virtual vec3f shade( Scene *scene, const Ray& r, const ISect& i ) const;
+	vec3f ke; // emissive
+	vec3f ka; // ambient
+	vec3f ks; // specular
+	vec3f kd; // diffuse
+	vec3f kr; // reflective
+	vec3f kt; // transmissive
+	double shininess;
+	double index; // index of refraction
+	Texture* diffuseTexturePtr = nullptr;
+	Texture* specularTexturePtr = nullptr;
+	Texture* normalTexturePtr = nullptr;
+	Texture* displacementTexturePtr = nullptr;
 
-    vec3f ke;                    // emissive
-    vec3f ka;                    // ambient
-    vec3f ks;                    // specular
-    vec3f kd;                    // diffuse
-    vec3f kr;                    // reflective
-    vec3f kt;                    // transmissive
-    
-    double shininess;
-    double index;               // index of refraction
+	virtual vec3f shade(Scene* scene, const Ray& r, const ISect& i) const;
 
-    
-                                // material with zero coeffs for everything
-                                // as opposed to the "default" material which is
-                                // a pleasant blue.
-    static const Material ZERO;
+	Material&
+	operator+=(const Material& m);
 
-    Material &
-    operator+=( const Material &m )
-    {
-        ke += m.ke;
-        ka += m.ka;
-        ks += m.ks;
-        kd += m.kd;
-        kr += m.kr;
-        kt += m.kt;
-        index += m.index;
-        shininess += m.shininess;
-        return *this;
-    }
 
-    friend Material operator*( double d, Material m );
+	friend Material operator*(double d, Material m);
+
 	int id;
 	static int cnt;
+
 };
 
-inline Material
-operator*(const double d, Material m )
+inline Material operator*(const double d, Material m)
 {
-    m.ke *= d;
-    m.ka *= d;
-    m.ks *= d;
-    m.kd *= d;
-    m.kr *= d;
-    m.kt *= d;
-    m.index *= d;
-    m.shininess *= d;
-    return m;
+	m.ke *= d;
+	m.ka *= d;
+	m.ks *= d;
+	m.kd *= d;
+	m.kr *= d;
+	m.kt *= d;
+	m.index *= d;
+	m.shininess *= d;
+	return m;
 }
+
 // extern Material THE_DEFAULT_MATERIAL;
 
 #endif // MATERIAL_H_

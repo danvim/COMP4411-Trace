@@ -11,8 +11,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
 #include <vector>
+#include <filesystem>
 
 #include "read.h"
 #include "parse.h"
@@ -26,6 +26,7 @@
 #include "../SceneObjects/Square.h"
 #include "../scene/light.h"
 #include "../scene/lights/SpotLight.h"
+#include "../ui/TraceUI.h"
 
 typedef std::map<std::string, Material*> MMap;
 
@@ -340,7 +341,7 @@ static void processGeometry(const std::string& name, Obj* child, Scene* scene,
 		SceneObject* obj = nullptr;
 
 		//if( hasField( child, "material" ) )
-		auto mat = getMaterial(getField(child, "material"), materials);
+		const auto mat = getMaterial(getField(child, "material"), materials);
 		//else
 		//    mat = new Material();
 
@@ -426,19 +427,19 @@ static void processTrimesh(std::string name, Obj* child, Scene* scene,
 	if (hasField(child, "materials"))
 	{
 		const auto& mats = getField(child, "materials")->getTuple();
-		for (auto mi = mats.begin(); mi != mats.end(); ++mi)
-			tmesh->addMaterial(getMaterial(*mi, materials));
+		for (auto material : mats)
+			tmesh->addMaterial(getMaterial(material, materials));
 	}
 	if (hasField(child, "normals"))
 	{
 		const auto& norms = getField(child, "normals")->getTuple();
-		for (auto ni = norms.begin(); ni != norms.end(); ++ni)
-			tmesh->addNormal(tupleToVec(*ni));
+		for (auto norm : norms)
+			tmesh->addNormal(tupleToVec(norm));
 	}
 
 	std::string error;
 	if (!(error = tmesh->doubleCheck()).empty())
-		throw ParseError(error.c_str());
+		throw ParseError(error);
 
 	scene->add(tmesh);
 }
@@ -466,6 +467,13 @@ static Material* getMaterial(Obj* child, const MMap& bindings)
 	return processMaterial(child);
 }
 
+static Texture* loadTexture(const char* textureFileName, const Texture::UV uv)
+{
+	const auto scenePath = std::filesystem::path(TraceUi::scenePath).parent_path();
+	auto texturePath = scenePath / textureFileName;
+	return new Texture(texturePath.string().c_str(), uv);
+}
+
 static Material* processMaterial(Obj* child, MMap* bindings)
 // Generate a material from a parse sub-tree
 //
@@ -489,7 +497,15 @@ static Material* processMaterial(Obj* child, MMap* bindings)
 	}
 	if (hasField(child, "diffuse"))
 	{
-		mat->kd = tupleToVec(getField(child, "diffuse"));
+		auto* fieldPtr = getField(child, "diffuse");
+		if (fieldPtr->getTypeName() == "std::string")
+		{
+			mat->diffuseTexturePtr = loadTexture(fieldPtr->getString().c_str(), Texture::UV::Square);
+		}
+		else
+		{
+			mat->kd = tupleToVec(fieldPtr);
+		}
 	}
 	if (hasField(child, "reflective"))
 	{

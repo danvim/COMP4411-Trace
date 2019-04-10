@@ -123,6 +123,9 @@
     <ClCompile Include="src\scene\lights\SpotLight.cpp">
       <Filter>Source Files\scene\lights</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\Texture.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\RayTracer.h">
@@ -184,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="src\utils.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\Texture.h">
+      <Filter>Header Files\scene.</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
