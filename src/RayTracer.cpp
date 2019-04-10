@@ -9,6 +9,8 @@
 #include "fileio/read.h"
 #include "fileio/parse.h"
 
+extern std::vector<vec3f> sampleDistributed(vec3f c, double r, int count);
+
 // Trace a top-level ray through normalized window coordinates (x,y)
 // through the projection plane, and out into the scene.  All we do is
 // enter the main ray-tracing method, getting things started by plugging
@@ -17,13 +19,15 @@ vec3f RayTracer::trace(Scene* scene, double x, double y)
 {
 	Ray r(vec3f(0, 0, 0), vec3f(0, 0, 0));
 	scene->getCamera()->rayThrough(x, y, r);
-	return traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0).clamp();
+	materials = std::stack<Material>();
+	materials.push(Material::getAir());
+	return traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, materials).clamp();
 }
 
 // Do recursive ray tracing!  You'll want to insert a lot of code here
 // (or places called from here) to handle reflection, refraction, etc etc.
 vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
-                          const vec3f& thresh, int depth)
+                          const vec3f& thresh, int depth, std::stack<Material> materials)
 {
 	ISect i;
 	if (depth > maxDepth)return vec3f(0, 0, 0);
@@ -39,30 +43,125 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		// Instead of just returning the result of shade(), add some
 		// more steps: add in the contributions from reflected and refracted
 		// rays.
+
+
+		//reflection
 		vec3f N = i.N;
 		vec3f V = r.getDirection();
 		vec3f P = r.at(i.t);
+		vec3f N_ = N;
+		const auto& m = i.getMaterial();
+		if(materials.top().id == m.id)
+		{
+			N = -N;
+		}
 		vec3f R = V - 2 * V.dot(N) * N;
 		R = R.normalize();
-		const auto& m = i.getMaterial();
 		vec3f phongColor = m.shade(scene, r, i);
-		vec3f reflectColor;
-
 		//Dynamic threshold
-		if (1 - scene->terminationThreshold < phongColor.length())
+		if (scene->terminationThreshold > phongColor.length())
 		{
-			const Ray reflectRay(P, R);
-			reflectColor = traceRay(scene, reflectRay, thresh, depth + 1);
-			reflectColor = prod(reflectColor, m.kr);
+			return phongColor;
+		}
+		Ray reflectRay(P, R);
+		vec3f reflectColor = traceRay(scene, reflectRay, thresh, depth + 1, materials);
+		reflectColor = prod(reflectColor, m.kr);
+		if(getScene()->glossyReflection)
+		{
+			std::vector<vec3f> vecs = sampleDistributed(R, 0.05, 49);
+			double depthR = std::max(depth + 1, maxDepth - 1);
+			for(vec3f v: vecs)
+			{
+				Ray reflectRay(P, v);
+				reflectColor += prod(traceRay(scene, reflectRay, thresh, depthR, materials), m.kr);
+			}
+			reflectColor /= 50.f;
 		}
 
-		return phongColor + reflectColor;
+		vec3f refractColor(0, 0, 0);
+		if(m.kt.length()>0)
+		{
+			double n1 = materials.top().index, n2;
+			if(materials.top().id == m.id)
+			{
+				//leaving current
+				materials.pop();
+				n2 = materials.top().index;
+			}else
+			{
+				//entering m
+				materials.push(m);
+				n2 = m.index;
+			}
+			vec3f T = refraction2(V, N, n1, n2);
+			// if((T - A).length() > RAY_EPSILON)
+			// {
+			// 	std::cout << V<<std::endl<<N<<std::endl<<n1<<" "<<n2<<std::endl<<T << std::endl << A << std::endl;
+			// }
+			// T = A;
+			Ray refractRay(P, T);
+			refractColor = traceRay(scene, refractRay, thresh, depth + 1, materials);
+		}
+
+		refractColor = prod(refractColor, m.kt);
+
+		return phongColor + reflectColor + refractColor;
 	}
 	// No intersection.  This ray travels to infinity, so we color
 	// it according to the background color, which in this (simple) case
 	// is just black.
 
 	return vec3f(0.0, 0.0, 0.0);
+}
+
+vec3f RayTracer::refraction2(vec3f i, vec3f n, double n1, double n2)
+{
+	if (abs(abs(n * i) - 1) < RAY_EPSILON)
+		return i;
+	
+	double sinTheta1 = sqrt(1 - pow(n * i, 2));
+	double sinTheta2 = (n1 * sinTheta1) / n2;
+	double theta1 = asin(sinTheta1);
+	double theta2 = asin(sinTheta2);
+	double sinTheta3 = sin(abs(theta1 - theta2));
+	
+	if (n1 == n2) {
+		return i;
+	}
+	else if (n1 > n2) {
+		double critical = n2 / n1;
+	
+		if (critical - sinTheta1 > RAY_EPSILON) {
+			double sinAlpha = sin(3.1416 - theta2);
+			double fac = sinAlpha / sinTheta3;
+	
+			return -(-i * fac + (-n)).normalize();
+		}
+		else {//TIR
+			return vec3f(0.0, 0.0, 0.0);
+		}
+	}
+	else {
+		double fac = sinTheta2 / sinTheta3;
+		return (i * fac + (-n)).normalize();
+	}
+}
+// math from https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
+vec3f RayTracer::refraction(vec3f i, vec3f n, double n1, double n2)
+{
+	if (n1 == n2)return i;
+	double thetaI = acos(i.dot(n));
+	//total internal reflection
+	if (sin(thetaI) > n2 / n1)
+	{
+		return vec3f(0, 0, 0);
+	}
+	double sinSqThetaT = pow(n1 / n2, 2) * (1 - pow(n.dot(i), 2));
+	vec3f t = (n1 / n2)*i + (n1 / n2 * n.dot(i) - sqrt(1 - sinSqThetaT))*n;
+	// vec3f t = n1 / n2 * (
+	// 	(sqrt(pow(n.dot(i), 2) + pow(n2 / n1, 2) - 1) - n.dot(i)) * n + i
+	// 	);
+	return t;// .normalize();
 }
 
 RayTracer::RayTracer()

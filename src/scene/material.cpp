@@ -4,23 +4,6 @@
 #include "material.h"
 #include "light.h"
 
-Material::Material(): ke(vec3f(0.0, 0.0, 0.0))
-                      , ka(vec3f(0.0, 0.0, 0.0))
-                      , ks(vec3f(0.0, 0.0, 0.0))
-                      , kd(vec3f(0.0, 0.0, 0.0))
-                      , kr(vec3f(0.0, 0.0, 0.0))
-                      , kt(vec3f(0.0, 0.0, 0.0))
-                      , shininess(0.0)
-                      , index(1.0)
-{
-}
-
-// Apply the phong model to this point on the surface of the object, returning
-Material::Material(const vec3f& e, const vec3f& a, const vec3f& s, const vec3f& d, const vec3f& r, const vec3f& t,
-                   double sh, double in): ke(e), ka(a), ks(s), kd(d), kr(r), kt(t), shininess(sh), index(in)
-{
-}
-
 // the color of that point.
 vec3f Material::shade( Scene *scene, const Ray& r, const ISect& i ) const
 {
@@ -39,7 +22,8 @@ vec3f Material::shade( Scene *scene, const Ray& r, const ISect& i ) const
 	vec3f V = r.getDirection();
 	vec3f N = i.N;
 	vec3f P = r.at(i.t);
-	vec3f color = ke+prod(ka, scene->ambientLight);
+	vec3f transparent = vec3f(1, 1, 1) - kt;
+	vec3f color = ke+ prod(ka, scene->ambientLight);
 
 	auto diffuseColor = kd;
 
@@ -70,7 +54,7 @@ vec3f Material::shade( Scene *scene, const Ray& r, const ISect& i ) const
 		const double specAngle = std::max(R.dot(V), 0.0);
 		specular = pow(specAngle, shininess * 128);
 
-		vec3f ret = prod(distAtte *(specular * ks + diffuse * diffuseColor), intensity);
+		vec3f ret = prod(distAtte *(specular * ks + prod(diffuse * diffuseColor, transparent)), intensity);
 		ret = prod(ret, shadowAtte);
 		color += ret;
 	}
@@ -92,3 +76,5 @@ Material& Material::operator+=(const Material& m)
 	shininess += m.shininess;
 	return *this;
 }
+
+int Material::cnt = 0;

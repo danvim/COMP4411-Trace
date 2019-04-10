@@ -1,4 +1,7 @@
 #include "light.h"
+#include <vector>
+
+extern std::vector<vec3f> sampleDistributed(vec3f c, double r, int count);
 
 double DirectionalLight::distanceAttenuation( const vec3f& p ) const
 {
@@ -11,6 +14,7 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& p ) const
 {
     // YOUR CODE HERE:
     // You should implement shadow-handling code here.
+
 	Scene* pScene = getScene();
 	vec3f d = getDirection(p);
 	ISect i;
@@ -18,7 +22,25 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& p ) const
 	vec3f ret = color;
 	if(pScene->intersect(r, i))
 	{
-		ret = i.getMaterial().kt;
+		ret = prod(color, i.getMaterial().kt);
+	}
+	if (getScene()->softShadow)
+	{
+		std::vector<vec3f> vecs = sampleDistributed(d, 0.05, 49);
+		for (vec3f v : vecs)
+		{
+			Ray r(p, v);
+			ISect i;
+			if (scene->intersect(r, i))
+			{
+				ret += prod(color, i.getMaterial().kt);
+			}
+			else
+			{
+				ret += color;
+			}
+		}
+		ret /= 50.0;
 	}
     return ret;
 }
@@ -71,7 +93,25 @@ vec3f PointLight::shadowAttenuation(const vec3f& p) const
 	vec3f ret = color;
 	if (pScene->intersect(r, i))
 	{
-		ret = i.getMaterial().kt;
+		ret = prod(color,i.getMaterial().kt);
+	}
+	if (getScene()->softShadow)
+	{
+		std::vector<vec3f> vecs = sampleDistributed(d, 0.05, 49);
+		for (vec3f v : vecs)
+		{
+			Ray r(p, v);
+			ISect i;
+			if (scene->intersect(r, i))
+			{
+				ret += prod(color, i.getMaterial().kt);
+			}
+			else
+			{
+				ret += color;
+			}
+		}
+		ret /= 50.0;
 	}
 	return ret;
 }

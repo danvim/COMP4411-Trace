@@ -35,6 +35,9 @@ public:
 
 	Fl_Button* mRenderButton;
 	Fl_Button* mStopButton;
+	Fl_Check_Button* mSoftShadowButton;
+	Fl_Check_Button* mGlossyReflectionButton;
+	Fl_Check_Button* mMotionBlurButton;
 
 	TraceGLWindow* mTraceGlWindow;
 
@@ -46,7 +49,7 @@ public:
 	int getSize() const;
 	int getDepth() const;
 	double distAtteA = 0, distAtteB = 0, distAtteC = 0;
-	double terminationThreshold = 0.9;
+	double terminationThreshold = 0;
 	int superSample = 1;
 	bool isUsingBackground = false;
 
@@ -55,6 +58,7 @@ public:
 	int backgroundHeight = 0;
 
 	static char* scenePath;
+	bool softShadow = false, glossyReflection = false, motionBlur = false;
 
 private:
 	RayTracer* rayTracer = nullptr;
@@ -86,6 +90,10 @@ private:
 
 	static Fl_Callback cbRender;
 	static Fl_Callback cbStop;
+
+	static Fl_Callback cbSoftShadow;
+	static Fl_Callback cbGlossyReflection;
+	static Fl_Callback cbMotionBlur;
 };
 
 #endif
