@@ -14,7 +14,6 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& p ) const
 {
     // YOUR CODE HERE:
     // You should implement shadow-handling code here.
-    bool softShadow = true;
 
 	Scene* pScene = getScene();
 	vec3f d = getDirection(p);
@@ -25,7 +24,7 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& p ) const
 	{
 		ret = prod(color, i.getMaterial().kt);
 	}
-	if (softShadow)
+	if (getScene()->softShadow)
 	{
 		std::vector<vec3f> vecs = sampleDistributed(d, 0.05, 49);
 		for (vec3f v : vecs)
@@ -85,7 +84,6 @@ vec3f PointLight::getDirection( const vec3f& p ) const
 
 vec3f PointLight::shadowAttenuation(const vec3f& p) const
 {
-    bool softShadow = true;
     // YOUR CODE HERE:
     // You should implement shadow-handling code here.
 	Scene* pScene = getScene();
@@ -97,7 +95,7 @@ vec3f PointLight::shadowAttenuation(const vec3f& p) const
 	{
 		ret = prod(color,i.getMaterial().kt);
 	}
-	if (softShadow)
+	if (getScene()->softShadow)
 	{
 		std::vector<vec3f> vecs = sampleDistributed(d, 0.05, 49);
 		for (vec3f v : vecs)

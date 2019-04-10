@@ -123,6 +123,21 @@ void TraceUi::cbSuperSampleSlides(Fl_Widget* o, void*)
 	static_cast<TraceUi*>(o->user_data())->superSample = int(dynamic_cast<Fl_Slider *>(o)->value());
 }
 
+void TraceUi::cbSoftShadow(Fl_Widget* o, void*)
+{
+	static_cast<TraceUi*>(o->user_data())->softShadow = bool(dynamic_cast<Fl_Check_Button *>(o)->value());
+}
+
+void TraceUi::cbMotionBlur(Fl_Widget* o, void*)
+{
+	static_cast<TraceUi*>(o->user_data())->motionBlur = bool(dynamic_cast<Fl_Check_Button *>(o)->value());
+}
+
+void TraceUi::cbGlossyReflection(Fl_Widget* o, void*)
+{
+	static_cast<TraceUi*>(o->user_data())->glossyReflection = bool(dynamic_cast<Fl_Check_Button *>(o)->value());
+}
+
 
 void TraceUi::cbRender(Fl_Widget* o, void* v)
 {
@@ -143,6 +158,9 @@ void TraceUi::cbRender(Fl_Widget* o, void* v)
 		pUi->rayTracer->getScene()->distAtteA = pUi->distAtteA;
 		pUi->rayTracer->getScene()->distAtteB = pUi->distAtteB;
 		pUi->rayTracer->getScene()->distAtteC = pUi->distAtteC;
+		pUi->rayTracer->getScene()->motionBlur = pUi->motionBlur;
+		pUi->rayTracer->getScene()->glossyReflection = pUi->glossyReflection;
+		pUi->rayTracer->getScene()->softShadow = pUi->softShadow;
 		pUi->rayTracer->getScene()->terminationThreshold = pUi->terminationThreshold;
 
 		// Save the window label
@@ -356,6 +374,21 @@ TraceUi::TraceUi()
 	mStopButton = new Fl_Button(240, 55, 70, 25, "&Stop");
 	mStopButton->user_data(static_cast<void*>(this));
 	mStopButton->callback(cbStop);
+
+	mSoftShadowButton = new Fl_Check_Button(10, 175, 60, 20, "Soft shadow");
+	mSoftShadowButton->user_data(static_cast<void*>(this));
+	mSoftShadowButton->value(false);
+	mSoftShadowButton->callback(cbSoftShadow);
+
+	mMotionBlurButton = new Fl_Check_Button(100, 175, 60, 20, "Motion Blur");
+	mMotionBlurButton->user_data(static_cast<void*>(this));
+	mMotionBlurButton->value(false);
+	mMotionBlurButton->callback(cbMotionBlur);
+
+	mGlossyReflectionButton = new Fl_Check_Button(200, 175, 60, 20, "Glossy Reflection");
+	mGlossyReflectionButton->user_data(static_cast<void*>(this));
+	mGlossyReflectionButton->value(false);
+	mGlossyReflectionButton->callback(cbGlossyReflection);
 
 	mMainWindow->callback(cbExit2);
 	mMainWindow->when(FL_HIDE);

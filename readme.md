@@ -13,7 +13,7 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
   - [x] Point light
 - [x] Shadow attenuation
 - [x] Reflection
-- [ ] Refraction
+- [X] Refraction
 
 ## Bonus
 
@@ -32,7 +32,7 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
     - [ ] (2B) Height fields
       - [ ] distribution ray tracing
         - [ ] depth of field
-        - [ ] soft shawdow
+        - [X] soft shawdow
         - [ ] motion blur
         - [ ] glossy reflection
 - [ ] (3B) higher level geometry (rotation/ extrusion/ metaballs)
