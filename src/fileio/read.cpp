@@ -27,6 +27,7 @@
 #include "../scene/light.h"
 #include "../scene/lights/SpotLight.h"
 #include "../ui/TraceUI.h"
+#include "../Marble.h"
 
 typedef std::map<std::string, Material*> MMap;
 
@@ -474,6 +475,17 @@ static Texture* loadTexture(const char* textureFileName, const Texture::UV uv)
 	return new Texture(texturePath.string().c_str(), uv);
 }
 
+static Marble* processMarble(Obj* child)
+{
+	const auto color = tupleToVec(getColorField(child));
+	const auto frequency = getField(child, "frequency")->getScalar();
+	const auto lightness = getField(child, "lightness")->getScalar();
+	const auto contrast = getField(child, "contrast")->getScalar();
+	const auto scale = tupleToVec(getField(child, "scale"));
+	const auto depth = getField(child, "depth")->getScalar();
+	return new Marble(color, frequency, lightness, contrast, scale, depth);
+}
+
 static Material* processMaterial(Obj* child, MMap* bindings)
 // Generate a material from a parse sub-tree
 //
@@ -490,7 +502,7 @@ static Material* processMaterial(Obj* child, MMap* bindings)
 		{
 			t = loadTexture(fieldPtr->getString().c_str(), Texture::UV::Square);
 		}
-		else
+		else if (fieldPtr->getTypeName() == "tuple")
 		{
 			s = tupleToVec(fieldPtr);
 		}
@@ -513,6 +525,11 @@ static Material* processMaterial(Obj* child, MMap* bindings)
 	if (hasField(child, "diffuse"))
 	{
 		setPropFunc("diffuse", mat->kd, mat->diffuseTexturePtr);
+		auto* fieldPtr = getField(child, "diffuse");
+		if (fieldPtr->getTypeName() == "named" && fieldPtr->getName() == "marble")
+		{
+			mat->diffuseMarblePtr = processMarble(fieldPtr->getChild());
+		}
 	}
 	if (hasField(child, "normal"))
 	{

@@ -169,6 +169,8 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="src\Marble.cpp" />
+    <ClCompile Include="src\PerlinNoise.cpp" />
     <ClCompile Include="src\RayTracer.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -281,6 +283,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Marble.h" />
+    <ClInclude Include="src\PerlinNoise.h" />
     <ClInclude Include="src\RayTracer.h" />
     <ClInclude Include="src\scene\lights\SpotLight.h" />
     <ClInclude Include="src\scene\Texture.h" />

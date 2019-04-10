@@ -126,6 +126,12 @@
     <ClCompile Include="src\scene\Texture.cpp">
       <Filter>Source Files\scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\PerlinNoise.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Marble.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\RayTracer.h">
@@ -190,6 +196,12 @@
     </ClInclude>
     <ClInclude Include="src\scene\Texture.h">
       <Filter>Header Files\scene.</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PerlinNoise.h">
+      <Filter>Header Files\ui.</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Marble.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
