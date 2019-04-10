@@ -9,6 +9,7 @@
 
 #include "../vecmath/vecmath.h"
 #include "Texture.h"
+#include "../Marble.h"
 
 class Scene;
 class Ray;
@@ -51,6 +52,7 @@ public:
 	vec3f kt; // transmissive
 	double shininess;
 	double index; // index of refraction
+
 	Texture* diffuseTexturePtr = nullptr;
 	Texture* specularTexturePtr = nullptr;
 	Texture* emissionTexturePtr = nullptr;
@@ -59,6 +61,8 @@ public:
 	Texture* normalTexturePtr = nullptr;
 	Texture* ambientTexturePtr = nullptr;
 	Texture* displacementTexturePtr = nullptr;
+
+	Marble* diffuseMarblePtr = nullptr;
 
 	virtual vec3f shade(Scene* scene, const Ray& r, const ISect& i) const;
 
