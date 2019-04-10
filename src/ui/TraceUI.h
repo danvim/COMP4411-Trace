@@ -48,7 +48,7 @@ public:
 	int getSize() const;
 	int getDepth() const;
 	double distAtteA = 0, distAtteB = 0, distAtteC = 0;
-	double terminationThreshold = 0.9;
+	double terminationThreshold = 0;
 	int superSample = 1;
 	bool softShadow = false, glossyReflection = false, motionBlur = false;
 

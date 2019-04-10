@@ -9,6 +9,8 @@
 #include "fileio/read.h"
 #include "fileio/parse.h"
 
+extern std::vector<vec3f> sampleDistributed(vec3f c, double r, int count);
+
 // Trace a top-level ray through normalized window coordinates (x,y)
 // through the projection plane, and out into the scene.  All we do is
 // enter the main ray-tracing method, getting things started by plugging
@@ -64,6 +66,17 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		Ray reflectRay(P, R);
 		vec3f reflectColor = traceRay(scene, reflectRay, thresh, depth + 1, materials);
 		reflectColor = prod(reflectColor, m.kr);
+		if(getScene()->glossyReflection)
+		{
+			std::vector<vec3f> vecs = sampleDistributed(R, 0.05, 49);
+			double depthR = std::max(depth + 1, maxDepth - 1);
+			for(vec3f v: vecs)
+			{
+				Ray reflectRay(P, v);
+				reflectColor += prod(traceRay(scene, reflectRay, thresh, depthR, materials), m.kr);
+			}
+			reflectColor /= 50.f;
+		}
 
 		vec3f refractColor(0, 0, 0);
 		if(m.kt.length()>0)

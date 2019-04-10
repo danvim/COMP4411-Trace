@@ -34,7 +34,7 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
         - [ ] depth of field
         - [X] soft shawdow
         - [ ] motion blur
-        - [ ] glossy reflection
+        - [x] glossy reflection
 - [ ] (3B) higher level geometry (rotation/ extrusion/ metaballs)
 - [ ] (3B) ray intersection optimization
   - [ ] (4B) more realistic shading model
