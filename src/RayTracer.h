@@ -29,7 +29,8 @@ public:
 	double aspectRatio() const;
 	void traceSetup(int w, int h, const int superSample);
 	void traceLines( int start = 0, int stop = 10000000 );
-	void tracePixel(int i, int j);
+    vec3f adaptiveSampling(double i, double j, double w, double h, int depth);
+    void tracePixel(int i, int j);
 
 	bool loadScene( char* fn );
 
@@ -38,6 +39,8 @@ public:
 	Scene* getScene() const { return scene; }
 
 	int maxDepth = 0;
+	bool isAdaptiveSuper = false;
+	bool isAdaptiveIllustrate = false;
 	std::stack<double> refractiveIndex;
 	std::stack<Material> materials;
 
