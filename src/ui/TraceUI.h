@@ -32,12 +32,15 @@ public:
 	Fl_Slider* mTerminationThresholdSlider{};
 	Fl_Slider* mSuperSampleSlider{};
 	Fl_Slider* mBackgroundSlider{};
+	Fl_Slider* mFocalLengthSlider{};
+	Fl_Slider* mApertureSlider{};
 
 	Fl_Button* mRenderButton;
 	Fl_Button* mStopButton;
 	Fl_Check_Button* mSoftShadowButton;
 	Fl_Check_Button* mGlossyReflectionButton;
 	Fl_Check_Button* mMotionBlurButton;
+	Fl_Check_Button* mFodButton;
 
 	TraceGLWindow* mTraceGlWindow;
 
@@ -58,7 +61,8 @@ public:
 	int backgroundHeight = 0;
 
 	static char* scenePath;
-	bool softShadow = false, glossyReflection = false, motionBlur = false;
+	bool softShadow = false, glossyReflection = false, motionBlur = false, fod = false;
+	double focalLength = 1, aperture = 1;
 
 private:
 	RayTracer* rayTracer = nullptr;
@@ -87,6 +91,8 @@ private:
 	static Fl_Callback cbTerminationThresholdSlides;
 	static Fl_Callback cbSuperSampleSlides;
 	static Fl_Callback cbBackgroundSlides;
+	static Fl_Callback cbFocalLengthSlides;
+	static Fl_Callback cbApertureSlides;
 
 	static Fl_Callback cbRender;
 	static Fl_Callback cbStop;
@@ -94,6 +100,7 @@ private:
 	static Fl_Callback cbSoftShadow;
 	static Fl_Callback cbGlossyReflection;
 	static Fl_Callback cbMotionBlur;
+	static Fl_Callback cbFod;
 };
 
 #endif
