@@ -302,28 +302,73 @@ void RayTracer::traceLines(const int start, int stop)
 			tracePixel(i, j);
 }
 
+vec3f RayTracer::adaptiveSampling(const double i, const double j, const double w, const double h, int depth)
+{
+	if (depth >= 3)return trace(scene, i, j);
+	double x0 = i - w / 2.f, x1 = i + w / 2.f;
+	double y0 = j - h / 2.f, y1 = j + h / 2.f;
+	vec3f c00 = trace(scene, x0, y0),
+		c01 = trace(scene, x0, y1),
+		c10 = trace(scene, x1, y0),
+		c11 = trace(scene,x1, y1),
+	c = trace(scene,i,j);
+	vec3f color = c;
+	int total = 1;
+	if((c00-c).length() > 0.1)
+	{
+		color += adaptiveSampling(i - w / 4.f, j - h / 4.f, w / 2.f, h / 2.f, depth + 1);
+		++total;
+	}
+	if((c01-c).length() > 0.1)
+	{
+		color += adaptiveSampling(i - w / 4.f, j + h / 4.f, w / 2.f, h / 2.f, depth + 1);
+		++total;
+	}
+	if ((c11 - c).length() > 0.1)
+	{
+		color += adaptiveSampling(i + w / 4.f, j + h / 4.f, w / 2.f, h / 2.f, depth + 1);
+		++total;
+	}
+	if ((c10 - c).length() > 0.1)
+	{
+		color += adaptiveSampling(i + w / 4.f, j - h / 4.f, w / 2.f, h / 2.f, depth + 1);
+		++total;
+	}
+	if (isAdaptiveIllustrate && total != 1)color = vec3f(0, 0, 1);
+	return color / total;
+}
+
 void RayTracer::tracePixel(const int i, const int j)
 {
 	if (!scene)
 		return;
 
+	vec3f sum, col;
 	const auto x = double(i) / double(bufferWidth);
 	const auto y = double(j) / double(bufferHeight);
 
-	const auto widthInterval = 1.0 / bufferWidth / superSample;
-	const auto heightInterval = 1.0 / bufferHeight / superSample;
-
-	auto sum = vec3f(0, 0, 0);
-
-	for (auto jj = 0; jj < superSample; jj++)
+	if(!isAdaptiveSuper)
 	{
-		for (auto ii = 0; ii < superSample; ii++)
+
+		const auto widthInterval = 1.0 / bufferWidth / superSample;
+		const auto heightInterval = 1.0 / bufferHeight / superSample;
+
+
+		for (auto jj = 0; jj < superSample; jj++)
 		{
-			sum += trace(scene, x + ii * widthInterval, y + jj * heightInterval);
+			for (auto ii = 0; ii < superSample; ii++)
+			{
+				sum += trace(scene, x + ii * widthInterval, y + jj * heightInterval);
+			}
 		}
+
+		col = sum / (superSample * superSample);
+	} else
+	{
+		col = adaptiveSampling(x, y, 1.0 / bufferWidth, 1.0 / bufferHeight, 0);
 	}
 
-	auto col = sum / (superSample * superSample);
+	
 
 	auto* pixel = buffer + (i + j * bufferWidth) * 3;
 

@@ -179,6 +179,16 @@ void TraceUi::cbFod(Fl_Widget* o, void*)
 	static_cast<TraceUi*>(o->user_data())->fod = bool(dynamic_cast<Fl_Check_Button *>(o)->value());
 }
 
+void TraceUi::cbAdaptive(Fl_Widget* o, void*)
+{
+	static_cast<TraceUi*>(o->user_data())->isAdaptiveSuper = bool(dynamic_cast<Fl_Check_Button *>(o)->value());
+}
+
+void TraceUi::cbIllustrateAdaptive(Fl_Widget* o, void*)
+{
+	static_cast<TraceUi*>(o->user_data())->isAdaptiveIllustrate = bool(dynamic_cast<Fl_Check_Button *>(o)->value());
+}
+
 
 void TraceUi::cbRender(Fl_Widget* o, void* v)
 {
@@ -196,6 +206,8 @@ void TraceUi::cbRender(Fl_Widget* o, void* v)
 
 		pUi->rayTracer->traceSetup(width, height, pUi->superSample);
 		pUi->rayTracer->maxDepth = pUi->mNDepth;
+		pUi->rayTracer->isAdaptiveSuper = pUi->isAdaptiveSuper;
+		pUi->rayTracer->isAdaptiveIllustrate = pUi->isAdaptiveIllustrate;
 		pUi->rayTracer->getScene()->distAtteA = pUi->distAtteA;
 		pUi->rayTracer->getScene()->distAtteB = pUi->distAtteB;
 		pUi->rayTracer->getScene()->distAtteC = pUi->distAtteC;
@@ -447,10 +459,20 @@ TraceUi::TraceUi()
 	mGlossyReflectionButton->value(false);
 	mGlossyReflectionButton->callback(cbGlossyReflection);
 
-	mFodButton = new Fl_Check_Button(10, 215, 60, 20, "depth of field");
+	mFodButton = new Fl_Check_Button(10, 215, 60, 20, "DOF");
 	mFodButton->user_data(static_cast<void*>(this));
 	mFodButton->value(false);
 	mFodButton->callback(cbFod);
+
+	mAdaptiveButton = new Fl_Check_Button(80, 215, 60, 20, "adaptive sampling");
+	mAdaptiveButton->user_data(static_cast<void*>(this));
+	mAdaptiveButton->value(false);
+	mAdaptiveButton->callback(cbAdaptive);
+
+	mIllustrateAdaptiveButton = new Fl_Check_Button(150, 215, 60, 20, "illustrate");
+	mIllustrateAdaptiveButton->user_data(static_cast<void*>(this));
+	mIllustrateAdaptiveButton->value(false);
+	mIllustrateAdaptiveButton->callback(cbIllustrateAdaptive);
 
 	mFocalLengthSlider = new Fl_Value_Slider(10, 235, 180, 20, "FocalLen");
 	mFocalLengthSlider->user_data(static_cast<void*>(this));

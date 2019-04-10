@@ -41,6 +41,8 @@ public:
 	Fl_Check_Button* mGlossyReflectionButton;
 	Fl_Check_Button* mMotionBlurButton;
 	Fl_Check_Button* mFodButton;
+	Fl_Check_Button* mAdaptiveButton;
+	Fl_Check_Button* mIllustrateAdaptiveButton;
 
 	TraceGLWindow* mTraceGlWindow;
 
@@ -55,6 +57,8 @@ public:
 	double terminationThreshold = 0;
 	int superSample = 1;
 	bool isUsingBackground = false;
+	bool isAdaptiveSuper = false;
+	bool isAdaptiveIllustrate = false;
 
 	unsigned char* backgroundPtr = nullptr;
 	int backgroundWidth = 0;
@@ -101,6 +105,8 @@ private:
 	static Fl_Callback cbGlossyReflection;
 	static Fl_Callback cbMotionBlur;
 	static Fl_Callback cbFod;
+	static Fl_Callback cbAdaptive;
+	static Fl_Callback cbIllustrateAdaptive;
 };
 
 #endif
