@@ -23,6 +23,7 @@ public:
 	UV uv = Square;
 
 	vec3f getColorByUV(double u, double v);
+	vec3f getNormalByUV(double u, double v);
 
 private:
 	vec3f getBoxColor(double u, double v);

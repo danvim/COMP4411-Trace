@@ -54,9 +54,27 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		{
 			N = -N;
 		}
+
+		// normal map
+		static const vec3f UP = { 0.0, 0.0, 1.0 };
+		auto* obj = dynamic_cast<const MaterialSceneObject*>(i.obj);
+		if (obj != nullptr)
+		{
+			auto& mNormal = obj->getMaterial();
+			auto[u, v] = obj->getUV(r, i);
+			if (mNormal.normalTexturePtr != nullptr)
+			{
+				const auto diffFromUp = N - UP;
+				const auto fakeNormal = mNormal.normalTexturePtr->getNormalByUV(u, v);
+				N = (fakeNormal + diffFromUp).normalize();
+			}
+		}
+		// ---
+
 		vec3f R = V - 2 * V.dot(N) * N;
 		R = R.normalize();
 		vec3f phongColor = m.shade(scene, r, i);
+
 		//Dynamic threshold
 		if (scene->terminationThreshold > phongColor.length())
 		{
