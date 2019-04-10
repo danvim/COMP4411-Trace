@@ -414,17 +414,17 @@ TraceUi::TraceUi()
 	mStopButton->user_data(static_cast<void*>(this));
 	mStopButton->callback(cbStop);
 
-	mSoftShadowButton = new Fl_Check_Button(10, 175, 60, 20, "Soft shadow");
+	mSoftShadowButton = new Fl_Check_Button(10, 195, 60, 20, "Soft shadow");
 	mSoftShadowButton->user_data(static_cast<void*>(this));
 	mSoftShadowButton->value(false);
 	mSoftShadowButton->callback(cbSoftShadow);
 
-	mMotionBlurButton = new Fl_Check_Button(100, 175, 60, 20, "Motion Blur");
+	mMotionBlurButton = new Fl_Check_Button(100, 195, 60, 20, "Motion Blur");
 	mMotionBlurButton->user_data(static_cast<void*>(this));
 	mMotionBlurButton->value(false);
 	mMotionBlurButton->callback(cbMotionBlur);
 
-	mGlossyReflectionButton = new Fl_Check_Button(200, 175, 60, 20, "Glossy Reflection");
+	mGlossyReflectionButton = new Fl_Check_Button(200, 195, 60, 20, "Glossy Reflection");
 	mGlossyReflectionButton->user_data(static_cast<void*>(this));
 	mGlossyReflectionButton->value(false);
 	mGlossyReflectionButton->callback(cbGlossyReflection);

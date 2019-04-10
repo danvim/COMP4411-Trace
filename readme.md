@@ -23,7 +23,7 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
   - [ ] (1B) Background image
 - [ ] (1B) accelerate shadow attenuation
   - [x] (1B) smart overlapping
-- [ ] (1B1W) Texture mapping
+- [X] (1B1W) Texture mapping
 - [ ] (1B1W) Antialiasing by adaptive supersampling
 - [ ] (1B1W) Warn model
   - [ ] (2B) bump mapping
