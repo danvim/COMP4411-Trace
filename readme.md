@@ -22,7 +22,7 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
 - [X] (1B) Spot lights
   - [ ] (1B) Background image
 - [ ] (1B) accelerate shadow attenuation
-  - [x] (1B) smart overlapping
+- [x] (1B) smart overlapping
 - [X] (1B1W) Texture mapping
 - [ ] (1B1W) Antialiasing by adaptive supersampling
 - [ ] (1B1W) Warn model
@@ -30,8 +30,8 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
 - [ ] (2B) Solid textures
   - [ ] (2B) New type of geometry
     - [ ] (2B) Height fields
-      - [ ] distribution ray tracing
-        - [ ] depth of field
+      - [X] (6B1W) distribution ray tracing
+        - [X] depth of field
         - [X] soft shawdow
         - [X] motion blur
         - [x] glossy reflection

@@ -15,7 +15,6 @@ public:
     vec3f trace( Scene *scene, double x, double y );
     vec3f traceRay(Scene* scene, const Ray& r, const vec3f& thresh, int depth, std::stack<Material> materials);
     vec3f refraction2(vec3f i, vec3f n, double n1, double n2);
-    vec3f traceRay( Scene *scene, const Ray& r, const vec3f& thresh, int depth);
     vec3f refractionDirection(vec3f& normal, vec3f& dir, double indexFrom, double indexTo);
     /**
 	 * i incidence vector

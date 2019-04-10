@@ -22,6 +22,30 @@ vec3f RayTracer::trace(Scene* scene, double x, double y)
 	materials = std::stack<Material>();
 	materials.push(Material::getAir());
 	vec3f color = traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, materials).clamp();
+
+	if(getScene()->fod)
+	{
+		double f = getScene()->focalLength;
+		vec3f fPt = r.getPosition() + f * r.getDirection();
+		std::vector<vec3f> vecs = sampleDistributed(r.getDirection(), 0.05*getScene()->aperture, 19);
+		for(vec3f v: vecs)
+		{
+			vec3f ro = fPt - f / (v.dot(r.getDirection())) * v;
+			color += traceRay(scene, Ray(ro, v), { 0,0,0 }, std::max(0,maxDepth),materials);
+		}
+		color /= 20.0;
+
+		// int amount = 20;
+		// double aperture = getScene()->aperture;
+		// for (int i = 0; i < amount; i++)
+		// {
+		// 	Ray ray({ 0,0,0 }, { 0,0,0 });
+		// 	float dx = frand()*aperture * 2 - aperture, dy = frand()*aperture * 2 - aperture;
+		// 	scene->getCamera()->rayThrough(x + dx, y + dy, ray);
+		// 	Ray
+		// }
+	}
+
 	if (getScene()->motionBlur)
 	{
 		// std::vector<vec3f> vecs = sampleDistributed(r.getDirection(), 0.05, 49);
