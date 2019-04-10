@@ -9,10 +9,10 @@
 
 #include <list>
 
-#include "ray.h"
 #include "material.h"
 #include "camera.h"
 #include "../vecmath/vecmath.h"
+#include <map>
 
 class Light;
 class Scene;
@@ -27,7 +27,8 @@ public:
 protected:
 	explicit SceneElement(Scene* s)
 		: scene(s)
-	{}
+	{
+	}
 
 	Scene* scene;
 };
@@ -231,6 +232,8 @@ public:
 	const Material& getMaterial() const override { return *material; }
 	void setMaterial(Material* m) override { material = m; }
 
+	virtual std::pair<double, double> getUV(const Ray& r, const ISect& i) const { return {}; }
+
 protected:
 	MaterialSceneObject(Scene* scene, Material* mat)
 		: SceneObject(scene), material(mat)
@@ -280,6 +283,9 @@ public:
 	double distAtteA = 0, distAtteB = 0, distAtteC = 0;
 	double terminationThreshold = 0.9;
 	vec3f ambientLight = vec3f(0, 0, 0);
+
+	std::map<std::string, Texture*> texturePool;
+
 private:
 	std::list<Geometry*> objects;
 	std::list<Geometry*> unboundedObjects;
