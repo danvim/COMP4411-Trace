@@ -53,7 +53,11 @@ public:
 	double index; // index of refraction
 	Texture* diffuseTexturePtr = nullptr;
 	Texture* specularTexturePtr = nullptr;
+	Texture* emissionTexturePtr = nullptr;
+	Texture* reflectivityTexturePtr = nullptr;
+	Texture* transmissionTexturePtr = nullptr;
 	Texture* normalTexturePtr = nullptr;
+	Texture* ambientTexturePtr = nullptr;
 	Texture* displacementTexturePtr = nullptr;
 
 	virtual vec3f shade(Scene* scene, const Ray& r, const ISect& i) const;

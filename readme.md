@@ -26,7 +26,7 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
 - [X] (1B1W) Texture mapping
 - [x] (1B1W) Antialiasing by adaptive supersampling
 - [ ] (1B1W) Warn model
-  - [ ] (2B) bump mapping
+  - [X] (2B) bump mapping
 - [ ] (2B) Solid textures
   - [ ] (2B) New type of geometry
     - [ ] (2B) Height fields

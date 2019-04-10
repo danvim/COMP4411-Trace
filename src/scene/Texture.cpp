@@ -34,3 +34,12 @@ vec3f Texture::getColorByUV(const double u, const double v)
 		return getSquareColor(u, v);
 	}
 }
+
+vec3f Texture::getNormalByUV(const double u, const double v)
+{
+	auto fakeNormal = getColorByUV(u, v);
+	fakeNormal[0] -= 0.5;
+	fakeNormal[1] -= 0.5;
+	fakeNormal[2] = 1.0 - (fakeNormal[2] - 0.5);
+	return fakeNormal;
+}
