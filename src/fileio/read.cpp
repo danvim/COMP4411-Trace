@@ -483,41 +483,49 @@ static Material* processMaterial(Obj* child, MMap* bindings)
 {
 	auto* mat = new Material();
 
-	if (hasField(child, "emissive"))
+	const auto setPropFunc = [&](const std::string n, vec3f& s, Texture*& t)
 	{
-		mat->ke = tupleToVec(getField(child, "emissive"));
-	}
-	if (hasField(child, "ambient"))
-	{
-		mat->ka = tupleToVec(getField(child, "ambient"));
-	}
-	if (hasField(child, "specular"))
-	{
-		mat->ks = tupleToVec(getField(child, "specular"));
-	}
-	if (hasField(child, "diffuse"))
-	{
-		auto* fieldPtr = getField(child, "diffuse");
+		auto* fieldPtr = getField(child, n);
 		if (fieldPtr->getTypeName() == "std::string")
 		{
-			mat->diffuseTexturePtr = loadTexture(fieldPtr->getString().c_str(), Texture::UV::Square);
+			t = loadTexture(fieldPtr->getString().c_str(), Texture::UV::Square);
 		}
 		else
 		{
-			mat->kd = tupleToVec(fieldPtr);
+			s = tupleToVec(fieldPtr);
 		}
+	};
+
+	if (hasField(child, "emissive"))
+	{
+		setPropFunc("emissive", mat->ke, mat->emissionTexturePtr);
+	}
+	if (hasField(child, "ambient"))
+	{
+		setPropFunc("ambient", mat->ka, mat->ambientTexturePtr);
+	}
+	if (hasField(child, "specular"))
+	{
+		setPropFunc("specular", mat->ks, mat->specularTexturePtr);
+		mat->kr = mat->ks; // defaults to ks if kr is not given.
+		mat->reflectivityTexturePtr = mat->specularTexturePtr;
+	}
+	if (hasField(child, "diffuse"))
+	{
+		setPropFunc("diffuse", mat->kd, mat->diffuseTexturePtr);
+	}
+	if (hasField(child, "normal"))
+	{
+		vec3f t{}; // trash
+		setPropFunc("normal", t, mat->normalTexturePtr);
 	}
 	if (hasField(child, "reflective"))
 	{
-		mat->kr = tupleToVec(getField(child, "reflective"));
-	}
-	else
-	{
-		mat->kr = mat->ks; // defaults to ks if none given.
+		setPropFunc("reflective", mat->kr, mat->reflectivityTexturePtr);
 	}
 	if (hasField(child, "transmissive"))
 	{
-		mat->kt = tupleToVec(getField(child, "transmissive"));
+		setPropFunc("transmissive", mat->kt, mat->transmissionTexturePtr);
 	}
 	if (hasField(child, "index"))
 	{
