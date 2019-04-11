@@ -43,6 +43,9 @@ public:
 	bool isAdaptiveIllustrate = false;
 	std::stack<double> refractiveIndex;
 	std::stack<Material> materials;
+	MaterialSceneObject* backgroundObjPtr = nullptr;
+	bool isUsingBackground = false;
+	Texture* backgroundTexturePtr = nullptr;
 
 private:
 	unsigned char *buffer;
@@ -52,6 +55,8 @@ private:
 	Scene *scene;
 
 	bool mBSceneLoaded;
+
+	void initializeBackgroundObj();
 };
 
 #endif // RAY_TRACER_H_

@@ -60,10 +60,8 @@ public:
 	bool isAdaptiveSuper = false;
 	bool isAdaptiveIllustrate = false;
 
-	unsigned char* backgroundPtr = nullptr;
+	Texture* backgroundTexturePtr = nullptr;
 	unsigned char* heightMapPtr = nullptr;
-	int backgroundWidth = 0;
-	int backgroundHeight = 0;
 	int heightMapWidth = 0;
 	int heightMapHeight = 0;
 
