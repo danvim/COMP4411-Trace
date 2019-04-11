@@ -8,6 +8,8 @@
 #include "scene/ray.h"
 #include "fileio/read.h"
 #include "fileio/parse.h"
+#include "SceneObjects/trimesh.h"
+#include "SceneObjects/Sphere.h"
 
 extern std::vector<vec3f> sampleDistributed(vec3f c, double r, int count);
 

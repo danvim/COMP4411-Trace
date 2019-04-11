@@ -61,8 +61,11 @@ public:
 	bool isAdaptiveIllustrate = false;
 
 	unsigned char* backgroundPtr = nullptr;
+	unsigned char* heightMapPtr = nullptr;
 	int backgroundWidth = 0;
 	int backgroundHeight = 0;
+	int heightMapWidth = 0;
+	int heightMapHeight = 0;
 
 	static char* scenePath;
 	bool softShadow = false, glossyReflection = false, motionBlur = false, fod = false;
@@ -81,6 +84,7 @@ private:
 
 	static Fl_Callback cbLoadScene;
 	static Fl_Callback cbLoadBackground;
+	static Fl_Callback cbLoadHeightMap;
 	static Fl_Callback cbSaveImage;
 	static Fl_Callback cbExit;
 	static Fl_Callback cbAbout;

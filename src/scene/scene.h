@@ -271,6 +271,7 @@ public:
 	{
 		lights.push_back(light);
 	}
+	void loadHeightMap(unsigned char* height_map_ptr, int w, int h);
 
 	bool intersect(const Ray& r, ISect& i) const;
 	void initScene();

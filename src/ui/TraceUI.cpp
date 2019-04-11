@@ -65,6 +65,24 @@ void TraceUi::cbLoadBackground(Fl_Widget* o, void*)
 	}
 }
 
+void TraceUi::cbLoadHeightMap(Fl_Widget* o, void*)
+{
+	auto* pUi = whoami(dynamic_cast<Fl_Menu_*>(o));
+
+	auto* newBackgroundFileName = fl_file_chooser("Open Height Map?", "*.bmp", nullptr);
+
+	if (newBackgroundFileName != nullptr)
+	{
+		delete[] pUi->heightMapPtr;
+		pUi->heightMapPtr = readBmp(newBackgroundFileName, pUi->heightMapWidth, pUi->heightMapHeight);
+		pUi->rayTracer->getScene()->loadHeightMap(pUi->heightMapPtr, pUi->heightMapWidth, pUi->heightMapHeight);
+	}
+	else
+	{
+		fl_alert("Height Map not loaded!");
+	}
+}
+
 
 void TraceUi::cbSaveImage(Fl_Widget* o, void* v)
 {
@@ -316,6 +334,7 @@ Fl_Menu_Item TraceUi::menuItems[] = {
 	{"&File", 0, nullptr, nullptr, FL_SUBMENU},
 	{"&Load Scene...", FL_ALT + 'l', cbLoadScene},
 	{"Load &Background...", FL_ALT + 'b', cbLoadBackground},
+	{"Load &Height Map...", FL_ALT + 'b', cbLoadHeightMap},
 	{"&Save Image...", FL_ALT + 's', cbSaveImage},
 	{"&Exit", FL_ALT + 'e', cbExit},
 	{nullptr},

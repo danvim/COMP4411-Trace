@@ -38,7 +38,7 @@ public:
 
 	Scene* getScene() const { return scene; }
 
-	int maxDepth = 0;
+    int maxDepth = 0;
 	bool isAdaptiveSuper = false;
 	bool isAdaptiveIllustrate = false;
 	std::stack<double> refractiveIndex;
