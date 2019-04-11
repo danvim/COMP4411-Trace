@@ -15,7 +15,7 @@ public:
     void setAspectRatio( double );
 
     double getAspectRatio() const { return aspectRatio; }
-private:
+
     mat3f m;                     // rotation matrix
     double normalizedHeight;    // dimensions of image place at unit dist from eye
     double aspectRatio;

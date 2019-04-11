@@ -9,7 +9,7 @@
 #include "fileio/read.h"
 #include "fileio/parse.h"
 #include "SceneObjects/trimesh.h"
-#include "SceneObjects/Sphere.h"
+#include "SceneObjects/Square.h"
 
 extern std::vector<vec3f> sampleDistributed(vec3f c, double r, int count);
 
@@ -25,15 +25,15 @@ vec3f RayTracer::trace(Scene* scene, double x, double y)
 	materials.push(Material::getAir());
 	vec3f color = traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, materials).clamp();
 
-	if(getScene()->fod)
+	if (getScene()->fod)
 	{
 		double f = getScene()->focalLength;
 		vec3f fPt = r.getPosition() + f * r.getDirection();
-		std::vector<vec3f> vecs = sampleDistributed(r.getDirection(), 0.05*getScene()->aperture, 19);
-		for(vec3f v: vecs)
+		std::vector<vec3f> vecs = sampleDistributed(r.getDirection(), 0.05 * getScene()->aperture, 19);
+		for (vec3f v : vecs)
 		{
 			vec3f ro = fPt - f / (v.dot(r.getDirection())) * v;
-			color += traceRay(scene, Ray(ro, v), { 0,0,0 }, std::max(0,maxDepth),materials);
+			color += traceRay(scene, Ray(ro, v), {0, 0, 0}, std::max(0, maxDepth), materials);
 		}
 		color /= 20.0;
 
@@ -61,7 +61,7 @@ vec3f RayTracer::trace(Scene* scene, double x, double y)
 		vec3f v = (u.cross(c)).normalize();
 		u = (c.cross(v)).normalize();
 		vec3f dir = c;
-		for (int i=0; i<10; i++)
+		for (int i = 0; i < 10; i++)
 		{
 			dir += 0.005 * v;
 			Ray ray(r.getPosition(), dir.normalize());
@@ -98,18 +98,18 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		vec3f V = r.getDirection();
 		vec3f P = r.at(i.t);
 		const auto& m = i.getMaterial();
-		if(materials.top().id == m.id)
+		if (materials.top().id == m.id)
 		{
 			N = -N;
 		}
 
 		// normal map
-		static const vec3f UP = { 0.0, 0.0, 1.0 };
+		static const vec3f UP = {0.0, 0.0, 1.0};
 		auto* obj = dynamic_cast<const MaterialSceneObject*>(i.obj);
 		if (obj != nullptr)
 		{
 			auto& mNormal = obj->getMaterial();
-			auto[u, v] = obj->getUV(r, i);
+			auto [u, v] = obj->getUV(r, i);
 			if (mNormal.normalTexturePtr != nullptr)
 			{
 				const auto diffFromUp = N - UP;
@@ -131,11 +131,11 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		Ray reflectRay(P, R);
 		vec3f reflectColor = traceRay(scene, reflectRay, thresh, depth + 1, materials);
 		reflectColor = prod(reflectColor, m.kr);
-		if(getScene()->glossyReflection)
+		if (getScene()->glossyReflection)
 		{
 			std::vector<vec3f> vecs = sampleDistributed(R, 0.05, 49);
 			int depthR = std::max(depth + 1, maxDepth - 1);
-			for(vec3f v: vecs)
+			for (vec3f v : vecs)
 			{
 				Ray reflectRayL(P, v);
 				reflectColor += prod(traceRay(scene, reflectRayL, thresh, depthR, materials), m.kr);
@@ -144,15 +144,16 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		}
 
 		vec3f refractColor(0, 0, 0);
-		if(m.kt.length()>0)
+		if (m.kt.length() > 0)
 		{
 			double n1 = materials.top().index, n2;
-			if(materials.top().id == m.id)
+			if (materials.top().id == m.id)
 			{
 				//leaving current
 				materials.pop();
 				n2 = materials.top().index;
-			}else
+			}
+			else
 			{
 				//entering m
 				materials.push(m);
@@ -183,34 +184,41 @@ vec3f RayTracer::refraction2(vec3f i, vec3f n, double n1, double n2)
 {
 	if (abs(abs(n * i) - 1) < RAY_EPSILON)
 		return i;
-	
+
 	double sinTheta1 = sqrt(1 - pow(n * i, 2));
 	double sinTheta2 = (n1 * sinTheta1) / n2;
 	double theta1 = asin(sinTheta1);
 	double theta2 = asin(sinTheta2);
 	double sinTheta3 = sin(abs(theta1 - theta2));
-	
-	if (n1 == n2) {
+
+	if (n1 == n2)
+	{
 		return i;
 	}
-	else if (n1 > n2) {
+	else if (n1 > n2)
+	{
 		double critical = n2 / n1;
-	
-		if (critical - sinTheta1 > RAY_EPSILON) {
+
+		if (critical - sinTheta1 > RAY_EPSILON)
+		{
 			double sinAlpha = sin(3.1416 - theta2);
 			double fac = sinAlpha / sinTheta3;
-	
+
 			return -(-i * fac + (-n)).normalize();
 		}
-		else {//TIR
+		else
+		{
+			//TIR
 			return vec3f(0.0, 0.0, 0.0);
 		}
 	}
-	else {
+	else
+	{
 		double fac = sinTheta2 / sinTheta3;
 		return (i * fac + (-n)).normalize();
 	}
 }
+
 // math from https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
 vec3f RayTracer::refraction(vec3f i, vec3f n, double n1, double n2)
 {
@@ -222,11 +230,11 @@ vec3f RayTracer::refraction(vec3f i, vec3f n, double n1, double n2)
 		return vec3f(0, 0, 0);
 	}
 	double sinSqThetaT = pow(n1 / n2, 2) * (1 - pow(n.dot(i), 2));
-	vec3f t = (n1 / n2)*i + (n1 / n2 * n.dot(i) - sqrt(1 - sinSqThetaT))*n;
+	vec3f t = (n1 / n2) * i + (n1 / n2 * n.dot(i) - sqrt(1 - sinSqThetaT)) * n;
 	// vec3f t = n1 / n2 * (
 	// 	(sqrt(pow(n.dot(i), 2) + pow(n2 / n1, 2) - 1) - n.dot(i)) * n + i
 	// 	);
-	return t;// .normalize();
+	return t; // .normalize();
 }
 
 RayTracer::RayTracer()
@@ -262,6 +270,33 @@ bool RayTracer::sceneLoaded() const
 	return mBSceneLoaded;
 }
 
+void RayTracer::initializeBackgroundObj()
+{
+	static const vec3f ONES = {1.0, 1.0, 1.0};
+	auto* backgroundMaterialPtr = new Material();
+	backgroundMaterialPtr->ke = ONES;
+	backgroundMaterialPtr->kd = ONES;
+	backgroundMaterialPtr->ks = ONES;
+	backgroundMaterialPtr->shininess = 0.6;
+	backgroundObjPtr = new Square(scene, backgroundMaterialPtr);
+	auto* transformPtr = &scene->transformRoot;
+	auto& m = scene->getCamera()->m;
+	const mat4f rot = {
+		vec4f{m[0][0], m[0][1], m[0][2], 0.0},
+		vec4f{m[1][0], m[1][1], m[1][2], 0.0},
+		vec4f{m[2][0], m[2][1], m[2][2], 0.0},
+		vec4f{0.0, 0.0, 0.0, 1.0}
+	};
+	const auto& eye = scene->getCamera()->eye;
+	static const auto BG_DISTANCE = 20.0;
+	backgroundObjPtr->setTransform(
+		transformPtr->createChild(mat4f::translate(eye*0.1))
+		            ->createChild(rot)
+		            ->createChild(mat4f::translate(vec3f{0.0, 0.0, -1.0} * BG_DISTANCE))
+					->createChild(mat4f::scale(ONES * pow(BG_DISTANCE * 0.3, 2)))
+	);
+}
+
 bool RayTracer::loadScene(char* fn)
 {
 	try
@@ -282,6 +317,28 @@ bool RayTracer::loadScene(char* fn)
 
 	bufferSize = bufferWidth * bufferHeight * 3;
 	buffer = new unsigned char[ bufferSize ];
+
+	// Background
+	{
+		initializeBackgroundObj();
+		auto* backgroundMaterialPtr = new Material();
+		backgroundMaterialPtr->emissionTexturePtr = backgroundTexturePtr;
+		backgroundObjPtr->setMaterial(backgroundMaterialPtr);
+
+		const auto backgroundIt = std::find(scene->objects.begin(), scene->objects.end(), backgroundObjPtr);
+		if (!isUsingBackground && backgroundIt != scene->objects.end())
+		{
+			// Remove the object from scene objects.
+			scene->objects.erase(backgroundIt);
+		}
+		else if (isUsingBackground && backgroundIt == scene->objects.end())
+		{
+			// Add background object to scene.
+			scene->add(backgroundObjPtr);
+		}
+	}
+	// ---
+
 
 	// separate objects into bounded and unbounded
 	scene->initScene();
@@ -328,18 +385,18 @@ vec3f RayTracer::adaptiveSampling(const double i, const double j, const double w
 	double x0 = i - w / 2.f, x1 = i + w / 2.f;
 	double y0 = j - h / 2.f, y1 = j + h / 2.f;
 	vec3f c00 = trace(scene, x0, y0),
-		c01 = trace(scene, x0, y1),
-		c10 = trace(scene, x1, y0),
-		c11 = trace(scene,x1, y1),
-	c = trace(scene,i,j);
+	      c01 = trace(scene, x0, y1),
+	      c10 = trace(scene, x1, y0),
+	      c11 = trace(scene, x1, y1),
+	      c = trace(scene, i, j);
 	vec3f color = c;
 	int total = 1;
-	if((c00-c).length() > 0.1)
+	if ((c00 - c).length() > 0.1)
 	{
 		color += adaptiveSampling(i - w / 4.f, j - h / 4.f, w / 2.f, h / 2.f, depth + 1);
 		++total;
 	}
-	if((c01-c).length() > 0.1)
+	if ((c01 - c).length() > 0.1)
 	{
 		color += adaptiveSampling(i - w / 4.f, j + h / 4.f, w / 2.f, h / 2.f, depth + 1);
 		++total;
@@ -367,9 +424,8 @@ void RayTracer::tracePixel(const int i, const int j)
 	const auto x = double(i) / double(bufferWidth);
 	const auto y = double(j) / double(bufferHeight);
 
-	if(!isAdaptiveSuper)
+	if (!isAdaptiveSuper)
 	{
-
 		const auto widthInterval = 1.0 / bufferWidth / superSample;
 		const auto heightInterval = 1.0 / bufferHeight / superSample;
 
@@ -383,12 +439,12 @@ void RayTracer::tracePixel(const int i, const int j)
 		}
 
 		col = sum / (superSample * superSample);
-	} else
+	}
+	else
 	{
 		col = adaptiveSampling(x, y, 1.0 / bufferWidth, 1.0 / bufferHeight, 0);
 	}
 
-	
 
 	auto* pixel = buffer + (i + j * bufferWidth) * 3;
 

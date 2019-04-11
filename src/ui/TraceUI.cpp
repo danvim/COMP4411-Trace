@@ -56,8 +56,8 @@ void TraceUi::cbLoadBackground(Fl_Widget* o, void*)
 
 	if (newBackgroundFileName != nullptr)
 	{
-		delete[] pUi->backgroundPtr;
-		pUi->backgroundPtr = readBmp(newBackgroundFileName, pUi->backgroundWidth, pUi->backgroundHeight);
+		delete[] pUi->backgroundTexturePtr;
+		pUi->backgroundTexturePtr = new Texture(newBackgroundFileName, Texture::UV::Square);
 	}
 	else
 	{
@@ -222,6 +222,8 @@ void TraceUi::cbRender(Fl_Widget* o, void* v)
 
 		pUi->mTraceGlWindow->show();
 
+		pUi->rayTracer->isUsingBackground = pUi->isUsingBackground;
+		pUi->rayTracer->backgroundTexturePtr = pUi->backgroundTexturePtr;
 		pUi->rayTracer->traceSetup(width, height, pUi->superSample);
 		pUi->rayTracer->maxDepth = pUi->mNDepth;
 		pUi->rayTracer->isAdaptiveSuper = pUi->isAdaptiveSuper;

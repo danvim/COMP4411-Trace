@@ -1,4 +1,5 @@
 #include "Square.h"
+#include <stack>
 
 bool Square::intersectLocal(const Ray& r, ISect& i) const
 {
@@ -45,7 +46,27 @@ bool Square::intersectLocal(const Ray& r, ISect& i) const
 
 std::pair<double, double> Square::getUV(const Ray& r, const ISect& i) const
 {
-	auto bigP = transform->globalToLocalCoords(getP(r, i));
+	vec3f pos = transform->globalToLocalCoords(r.getPosition());
+	vec3f dir = transform->globalToLocalCoords(r.getPosition() + r.getDirection()) - pos;
+	double length = dir.length();
+	dir /= length;
+
+	Ray localRay(pos, dir);
+
+	auto bigP = getP(localRay, i);
+	// auto* t = transform;
+	// std::stack<TransformNode*> stack;
+	// while(t != &scene->transformRoot)
+	// {
+	// 	stack.push(t);
+	// 	t = t->parent;
+	// }
+	// stack.push(&scene->transformRoot);
+	// while (!stack.empty())
+	// {
+	// 	bigP = stack.top()->globalToLocalCoords(bigP);
+	// 	stack.pop();
+	// }
 
 	if (bigP[0] < -0.5 || bigP[0] > 0.5)
 	{

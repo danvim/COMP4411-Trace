@@ -62,11 +62,11 @@ protected:
 	mat4f inverse;
 	mat3f normi;
 
+public:
 	// information about parent & children
 	TransformNode* parent;
 	std::list<TransformNode*> children;
 
-public:
 	typedef std::list<TransformNode*>::iterator ChildIter;
 	typedef std::list<TransformNode*>::const_iterator ChildCIter;
 
@@ -288,9 +288,9 @@ public:
 	vec3f ambientLight = vec3f(0, 0, 0);
 
 	std::map<std::string, Texture*> texturePool;
+	std::list<Geometry*> objects;
 
 private:
-	std::list<Geometry*> objects;
 	std::list<Geometry*> unboundedObjects;
 	std::list<Geometry*> boundedObjects;
 	std::list<Light*> lights;
