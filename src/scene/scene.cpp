@@ -4,6 +4,8 @@
 #include "../ui/TraceUI.h"
 // ReSharper disable once CppUnusedIncludeDirective
 #include "light.h"
+#include "../SceneObjects/trimesh.h"
+#include "../SceneObjects/Sphere.h"
 extern TraceUi* traceUi;
 
 BoundingBox& BoundingBox::operator=(const BoundingBox& target)
@@ -134,6 +136,49 @@ Scene::~Scene()
 	for( LightIter l = lights.begin(); l != lights.end(); ++l ) {
 		delete *l;
 	}
+}
+
+void Scene::loadHeightMap(unsigned char* height_map_ptr, int w, int h)
+{
+	Material *mat = new Material;
+	TransformRoot *transform = new TransformRoot;
+	Trimesh* mesh = new Trimesh(this, mat, transform);
+	mat->kd = vec3f(0.5, 0.5, 0.5);
+	// Trimesh* m2 = new Trimesh(this,mat,transform);
+	// m2->addVertex({ 0,0,0 });
+	// m2->addVertex({ 5,5,0 });
+	// m2->addVertex({ 0,5,0 });
+	// m2->addFace(0, 1, 2);
+	// for(auto& f:m2->faces)
+	// boundedObjects.push_back(f);
+	// Sphere* sp = new Sphere(this, mat);
+	// sp->setTransform(transform);
+	// add(sp);
+	// unboundedObjects.push_back(sp);
+	// unboundedObjects.push_back(m2);
+
+	for (int j = 0; j < h; j++)
+	{
+		for (int i = 0; i < w; i++)
+		{
+			double x = (1.0* i) / w;
+			double y = (1.0*j) / h;
+			double z = height_map_ptr[(i+j*w) * 3] / 255.f;
+			mesh->addVertex({ x*5,z,y*5 });
+			mesh->addMaterial(mat);
+		}
+	}
+	for (int j = 0; j < h - 1; j++)
+	{
+		for (int i = 0; i < w - 1; i++)
+		{
+			mesh->addFace(j*w + i, (j + 1)*w + i, j*w + i + 1);
+			mesh->addFace((j + 1)*w + i, (j + 1)*w + i + 1, j*w + i + 1);
+		}
+	}
+	mesh->generateNormals();
+	for(auto& f:mesh->faces)
+	boundedObjects.push_back(f);
 }
 
 // Get any intersection with an object.  Return information about the 

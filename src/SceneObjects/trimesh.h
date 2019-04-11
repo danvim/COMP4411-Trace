@@ -9,6 +9,7 @@ class TrimeshFace;
 
 class Trimesh : public MaterialSceneObject
 {
+public:
     friend class TrimeshFace;
     typedef std::vector<vec3f> Normals;
     typedef std::vector<vec3f> Vertices;
