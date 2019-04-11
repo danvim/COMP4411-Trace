@@ -1,0 +1,60 @@
+SBT-raytracer 1.0
+
+// box_cyl_reflect.ray
+// Test the reflection term
+// Don't forget to increase the trace depth to >= 2!
+
+
+
+camera
+{
+	position = (15, 0, 5);
+	viewdir = (-1, 0, -0.3);
+	updir = (0, 0, 1);
+}
+
+ambient_light
+{
+	color = (0.5, 0.5, 0.5);
+}
+
+// Directional light which shouldn't
+// cast any shadows
+directional_light
+{
+	direction = (-1, 0, -0.2);
+	color = (1, 1, 1);
+}
+
+// The box forms a plane, which should reflect the cylinder
+scale( 15, 15, 1, 
+	square {
+		material = { 
+			diffuse = "brick_diff.bmp"; 
+			specular = "brick_spec.bmp";
+			normal = "brick_norm.bmp";
+			reflective = (1, 1, 1);
+			shininess = 0.2;
+		}
+	} )
+
+translate( 6, 0, 1,
+	scale(2, 2, 2, 
+		torus {
+			a = 1;
+			b = 0.2;
+			material = {
+				ambient = (0.2, 0.2, 0.2);
+				diffuse = marble {
+					color = (0.6, 0.0, 1.0);
+					lightness = 0.5;
+					contrast = 0.8;
+					frequency = 20;
+					scale = (1, 1, 0.5);
+					depth = 4;
+				};
+				specular = (0.5, 0.5, 0.5);
+				reflective = (1, 1, 1);
+				shininess = 0.2;
+			}
+		} ))
