@@ -37,23 +37,24 @@ vec3f Material::shade(Scene* scene, const Ray& r, const ISect& i) const
 		// obj is type of MaterialSceneObject
 		// do uv mapping
 		auto [u, v] = obj->getUV(r, i);
-		if (diffuseTexturePtr != nullptr)
+		if (diffuseTexturePtr != nullptr && diffuseMarblePtr == nullptr)
 		{
 			diffuseColor = diffuseTexturePtr->getColorByUV(u, v);
 		}
+		else if (diffuseMarblePtr != nullptr)
+		{
+			diffuseColor = diffuseMarblePtr->getColor(P);
+		}
+
 		if (specularTexturePtr != nullptr)
 		{
 			specularColor = specularTexturePtr->getColorByUV(u, v);
 		}
+
 		if (transmissionTexturePtr != nullptr)
 		{
 			opacity = ONES - transmissionTexturePtr->getColorByUV(u, v);
 		}
-		// if (normalTexturePtr != nullptr)
-		// {
-		// 	const auto diffFromUp = N - UP;
-		// 	N = (normalTexturePtr->getColorByUV(u, v) + diffFromUp).normalize();
-		// }
 	}
 
 	for (auto l = scene->beginLights(); l != scene->endLights(); ++l)
