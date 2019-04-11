@@ -34,6 +34,8 @@ void TraceUi::cbLoadScene(Fl_Widget* o, void* v)
 	{
 		char buf[256];
 
+		pUi->rayTracer->isUsingBackground = pUi->isUsingBackground;
+		pUi->rayTracer->backgroundTexturePtr = pUi->backgroundTexturePtr;
 		if (pUi->rayTracer->loadScene(newFile))
 		{
 			sprintf_s(buf, "Ray <%s>", newFile);
@@ -222,8 +224,6 @@ void TraceUi::cbRender(Fl_Widget* o, void* v)
 
 		pUi->mTraceGlWindow->show();
 
-		pUi->rayTracer->isUsingBackground = pUi->isUsingBackground;
-		pUi->rayTracer->backgroundTexturePtr = pUi->backgroundTexturePtr;
 		pUi->rayTracer->traceSetup(width, height, pUi->superSample);
 		pUi->rayTracer->maxDepth = pUi->mNDepth;
 		pUi->rayTracer->isAdaptiveSuper = pUi->isAdaptiveSuper;
