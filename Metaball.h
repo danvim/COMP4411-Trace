@@ -22,9 +22,11 @@ public:
 	Metaball(Scene *scene, Material *mat);
 	~Metaball();
 
-	bool isThresholdReach(const std::vector<Ball>& active, const Ray& ray, double t) const;
 	bool intersectLocal(const Ray& r, ISect& i) const override;
-	bool intersectBoundingSphere(const Ball& ball, const Ray& r, std::pair<double, double>& T) const ;
+	bool intersectBoundingSphere(const Ball& ball, const Ray& r, std::pair<double, double>& T) const;
+	bool isThresholdReach(const std::vector<Ball>& active, const Ray& ray, double t, vec3f& N) const;
+	double evaluate(const std::vector<Ball>& active, vec3f pos)const;
+	vec3f evaluateGrad(const std::vector<Ball>& active, const Ray& ray, double t, vec3f& N)const;
 	std::vector<Ball> metaballs;
 	double threshold = 0.25;
 };

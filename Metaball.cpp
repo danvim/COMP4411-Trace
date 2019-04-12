@@ -16,19 +16,6 @@ Metaball::~Metaball()
 {
 }
 
-bool Metaball::isThresholdReach(const std::vector<Ball>& active, const Ray& ray, double t) const
-{
-	vec3f p = ray.at(t);
-	double d = 0;
-	for(auto&& ball: active)
-	{
-		double r = (ball.position - p).length();
-		// d += 1 / r / r;
-		d += (1 - r * r * r * (r * (r * 6 - 15) + 10)) * ball.strength;
-	}
-	return d > threshold;
-}
-
 bool Metaball::intersectLocal(const Ray& r, ISect& i) const
 {
 	std::vector<Intersect> intersections;
@@ -66,16 +53,18 @@ bool Metaball::intersectLocal(const Ray& r, ISect& i) const
 			}
 			if (cnt == intersections.size())break;
 		}
-		int nSteps = 1000;
+		int nSteps = 100;
 		double dt = (intersections[cnt].t - intersect.t)/double(nSteps);
 		double t = intersect.t;
+		if (t < RAY_EPSILON)continue;
+		vec3f N;
 		for(int k=0; k<nSteps; k++)
 		{
-			if(isThresholdReach(active,r,t))
+			if(isThresholdReach(active,r,t,N))
 			{
 				i.obj = this;
-				i.N = r.at(t);
-				i.t = t;
+				i.N = N;
+				i.t = t+RAY_EPSILON;
 				return true;
 			}
 			t += dt;
@@ -103,15 +92,10 @@ bool Metaball::intersectBoundingSphere(const Ball& ball, const Ray& ray, std::pa
 	double t2 = -b + discriminant;
 	t2 /= 2 * a;
 
-	if (t2 <= RAY_EPSILON) {
-		return false;
-	}
-
-
 	double t1 = -b - discriminant;
 	t1 /= 2 * a;
 
-	if (t1 > RAY_EPSILON) {
+	if (t1 < t2) {
 		T.first = t1;
 		T.second = t2;
 	}
@@ -121,4 +105,51 @@ bool Metaball::intersectBoundingSphere(const Ball& ball, const Ray& ray, std::pa
 	}
 
 	return true;
+}
+
+bool Metaball::isThresholdReach(const std::vector<Ball>& active, const Ray& ray, double t, vec3f& N) const
+{
+	if(evaluate(active,ray.at(t)) > threshold - RAY_EPSILON)
+	{
+		N = evaluateGrad(active, ray, t, N);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+double Metaball::evaluate(const std::vector<Ball>& active, vec3f p) const
+{
+	double d = 0;
+	for (auto&& ball : active)
+	{
+		double r = (ball.position - p).length();
+		// d += 1 / r / r;
+		d += (1 - r * r * r * (r * (r * 6 - 15) + 10)) * ball.strength;
+	}
+	return d;
+}
+
+vec3f Metaball::evaluateGrad(const std::vector<Ball>& active, const Ray& ray, double t, vec3f& N) const
+{
+	double delta = 0.01;
+	vec3f grad;
+	vec3f p = ray.at(t);
+	for(int i=0;i<3;i++)
+	{
+		vec3f d;
+		d[i] += delta;
+		double upper = evaluate(active, p + d);
+		double lower = evaluate(active, p - d);
+		grad[i] = (upper - lower) / (2 * delta);
+	}
+	if(ray.getDirection().dot(grad)<0)
+	{
+		return grad;
+	}else
+	{
+		return -grad;
+	}
 }
