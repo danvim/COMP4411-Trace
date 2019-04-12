@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include "Cylinder.h"
+#include "../scene/ISect.h"
 
 bool Cylinder::intersectLocal( const Ray& r, ISect& i ) const
 {

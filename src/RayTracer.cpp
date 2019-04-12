@@ -3,13 +3,13 @@
 #include <FL/fl_ask.H>
 
 #include "RayTracer.h"
-#include "scene/light.h"
 #include "scene/material.h"
 #include "scene/ray.h"
 #include "fileio/read.h"
 #include "fileio/parse.h"
 #include "SceneObjects/trimesh.h"
 #include "SceneObjects/Square.h"
+#include "scene/ISect.h"
 
 extern std::vector<vec3f> sampleDistributed(vec3f c, double r, int count);
 

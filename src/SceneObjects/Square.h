@@ -1,7 +1,7 @@
 #ifndef SQUARE_H_
 #define SQUARE_H_
+#include "../scene/MaterialSceneObject.h"
 
-#include "../scene/scene.h"
 
 class Square
 	: public MaterialSceneObject

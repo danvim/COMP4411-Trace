@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "scene/scene.h"
+#include "scene/SceneObject.h"
 
 class BooleanNode: public SceneObject
 {

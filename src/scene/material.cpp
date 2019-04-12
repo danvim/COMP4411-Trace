@@ -3,6 +3,8 @@
 #include "ray.h"
 #include "material.h"
 #include "light.h"
+#include "MaterialSceneObject.h"
+#include "ISect.h"
 
 // the color of that point.
 vec3f Material::shade(Scene* scene, const Ray& r, const ISect& i, std::stack<Geometry*>& intersections) const

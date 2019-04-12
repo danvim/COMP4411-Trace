@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include "Cone.h"
+#include "../scene/ISect.h"
 
 bool Cone::intersectLocal(const Ray& r, ISect& i) const
 {

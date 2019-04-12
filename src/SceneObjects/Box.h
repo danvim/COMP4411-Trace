@@ -1,7 +1,7 @@
 #ifndef BOX_H_
 #define BOX_H_
+#include "../scene/MaterialSceneObject.h"
 
-#include "../scene/scene.h"
 
 class Box
 	: public MaterialSceneObject

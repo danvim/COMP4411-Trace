@@ -1,4 +1,5 @@
 ﻿#include "IntersectionNode.h"
+#include "scene/ISect.h"
 
 IntersectionNode::
 IntersectionNode(Scene* const scene, SceneObject* const a, SceneObject* const b): BooleanNode(scene, a, b)
@@ -17,7 +18,7 @@ bool IntersectionNode::intersect(const Ray& r, ISect& i, std::stack<Geometry*>& 
 
 	std::tie(x, y) = aISect.t < bISect.t ? std::pair<Geometry*, Geometry*>(a, b) : std::pair<Geometry*, Geometry*>(b, a);
 
-	if (intersections.top() == x)
+	if (!intersections.empty() && intersections.top() == x)
 	{
 		intersections.pop();
 	}

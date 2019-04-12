@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cfloat>
 #include "trimesh.h"
+#include "../scene/ISect.h"
 
 Trimesh::~Trimesh()
 {

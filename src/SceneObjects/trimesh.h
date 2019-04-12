@@ -2,9 +2,8 @@
 #define TRIMESH_H_
 
 #include <vector>
+#include "../scene/MaterialSceneObject.h"
 
-#include "../scene/material.h"
-#include "../scene/scene.h"
 class TrimeshFace;
 
 class Trimesh : public MaterialSceneObject
@@ -19,7 +18,7 @@ public:
     Faces faces;
     Normals normals;
     Materials materials;
-public:
+
     Trimesh( Scene *scene, Material *mat, TransformNode *transform )
         : MaterialSceneObject(scene, mat)
     {

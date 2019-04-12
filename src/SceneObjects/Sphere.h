@@ -1,7 +1,7 @@
 #ifndef SPHERE_H_
 #define SPHERE_H_
 
-#include "../scene/scene.h"
+#include "../scene/MaterialSceneObject.h"
 
 class Sphere
 	: public MaterialSceneObject

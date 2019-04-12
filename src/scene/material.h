@@ -11,7 +11,6 @@
 #include "../vecmath/vecmath.h"
 #include "Texture.h"
 #include "../Marble.h"
-#include "scene.h"
 
 class Scene;
 class Ray;

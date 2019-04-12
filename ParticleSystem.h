@@ -1,6 +1,6 @@
 #pragma once
-#include "src/scene/scene.h"
 #include <vector>
+#include "src/scene/MaterialSceneObject.h"
 
 extern double drand(double low, double high);
 extern int irand(int low, int high);

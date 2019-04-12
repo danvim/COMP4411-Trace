@@ -1,7 +1,7 @@
 #ifndef CYLINDER_H_
 #define CYLINDER_H_
+#include "../scene/MaterialSceneObject.h"
 
-#include "../scene/scene.h"
 
 class Cylinder
 	: public MaterialSceneObject

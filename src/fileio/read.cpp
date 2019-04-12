@@ -347,6 +347,8 @@ static Geometry* processGeometry(const std::string& name, Obj* child, Scene* sce
 			dynamic_cast<SceneObject*>(processObject(tuple[1], scene, materials, false))
 		);
 
+		node->setTransform(transform);
+
 		if (addToScene)
 		{
 			scene->add(node);
@@ -423,8 +425,9 @@ static Geometry* processGeometry(const std::string& name, Obj* child, Scene* sce
 		if (addToScene)
 		{
 			scene->add(obj);
-			return obj;
 		}
+
+		return obj;
 	}
 	return nullptr;
 }
@@ -733,7 +736,7 @@ static Geometry* processObject(Obj* obj, Scene* scene, MMap& materials, const bo
 		name == "transform" ||
 		name == "trimesh" ||
 		name == "polymesh" ||
-		name == "intersection")
+		name == "intersection"||
 		name == "particles"||
 		name == "metaballs")
 	{

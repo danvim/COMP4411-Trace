@@ -5,6 +5,7 @@
 
 #include "scene/scene.h"
 #include <stack>
+#include "scene/MaterialSceneObject.h"
 
 class RayTracer
 {

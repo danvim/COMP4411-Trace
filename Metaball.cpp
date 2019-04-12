@@ -1,5 +1,5 @@
 #include "Metaball.h"
-
+#include "src/scene/ISect.h"
 
 
 Metaball::Metaball(Scene *scene, Material *mat):MaterialSceneObject(scene, mat)

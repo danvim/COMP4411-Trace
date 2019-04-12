@@ -1,6 +1,7 @@
 ﻿#include "SpotLight.h"
 #include "../../utils.h"
 #include <cassert>
+#include "../ISect.h"
 
 SpotLight::SpotLight(Scene* scene, const vec3f& color, const vec3f& position, const vec3f& orientation,
                      const double size,

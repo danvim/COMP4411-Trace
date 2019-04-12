@@ -1,5 +1,6 @@
 #include "light.h"
 #include <vector>
+#include "ISect.h"
 
 extern std::vector<vec3f> sampleDistributed(vec3f c, double r, int count);
 
@@ -9,6 +10,15 @@ double DirectionalLight::distanceAttenuation( const vec3f& p ) const
 	return 1.0;
 }
 
+
+Light::Light(Scene* scene, const vec3f& col): SceneElement(scene), color(col)
+{
+}
+
+DirectionalLight::DirectionalLight(Scene* scene, const vec3f& orien, const vec3f& color): Light(scene, color),
+                                                                                          orientation(orien)
+{
+}
 
 vec3f DirectionalLight::shadowAttenuation(const vec3f& p, std::stack<Geometry*>& intersections) const
 {
@@ -81,6 +91,10 @@ vec3f PointLight::getDirection( const vec3f& p ) const
 	return (position - p).normalize();
 }
 
+
+PointLight::PointLight(Scene* scene, const vec3f& pos, const vec3f& color): Light(scene, color), position(pos)
+{
+}
 
 vec3f PointLight::shadowAttenuation(const vec3f& p, std::stack<Geometry*>& intersections) const
 {

@@ -1,4 +1,5 @@
 #include "ParticleSystem.h"
+#include "src/scene/ISect.h"
 
 ParticleSystem::ParticleSystem(Scene *scene, Material *mat)
 	: MaterialSceneObject(scene, mat)

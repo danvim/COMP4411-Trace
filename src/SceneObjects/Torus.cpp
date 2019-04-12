@@ -1,6 +1,7 @@
 ﻿#include "Torus.h"
 #include "../quartic.h"
 #include <vector>
+#include "../scene/ISect.h"
 
 Torus::Torus(Scene* scene, Material* mat, const double a, const double b)
 	: MaterialSceneObject(scene, mat),

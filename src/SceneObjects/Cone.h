@@ -1,7 +1,7 @@
 #ifndef CONE_H_
 #define CONE_H_
+#include "../scene/MaterialSceneObject.h"
 
-#include "../scene/scene.h"
 
 class Cone
 	: public MaterialSceneObject

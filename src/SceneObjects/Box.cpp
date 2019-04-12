@@ -1,4 +1,5 @@
 #include "Box.h"
+#include "../scene/ISect.h"
 
 extern double diff(double, double);
 

@@ -183,6 +183,9 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="src\SceneObjects\Torus.cpp" />
+    <ClCompile Include="src\scene\BoundingBox.cpp" />
+    <ClCompile Include="src\scene\Geometry.cpp" />
+    <ClCompile Include="src\scene\ISect.cpp" />
     <ClCompile Include="src\scene\lights\SpotLight.cpp" />
     <ClCompile Include="src\scene\Texture.cpp" />
     <ClCompile Include="src\SubtractNode.cpp" />
@@ -241,12 +244,6 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="src\scene\ray.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="src\scene\scene.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -300,8 +297,15 @@
     <ClInclude Include="src\quartic.h" />
     <ClInclude Include="src\RayTracer.h" />
     <ClInclude Include="src\SceneObjects\Torus.h" />
+    <ClInclude Include="src\scene\BoundingBox.h" />
+    <ClInclude Include="src\scene\Geometry.h" />
+    <ClInclude Include="src\scene\ISect.h" />
     <ClInclude Include="src\scene\lights\SpotLight.h" />
+    <ClInclude Include="src\scene\MaterialSceneObject.h" />
+    <ClInclude Include="src\scene\SceneElement.h" />
+    <ClInclude Include="src\scene\SceneObject.h" />
     <ClInclude Include="src\scene\Texture.h" />
+    <ClInclude Include="src\scene\TransformNode.h" />
     <ClInclude Include="src\SubtractNode.h" />
     <ClInclude Include="src\ui\TraceGLWindow.h" />
     <ClInclude Include="src\ui\TraceUI.h" />

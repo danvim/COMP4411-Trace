@@ -102,9 +102,6 @@
     <ClCompile Include="src\scene\material.cpp">
       <Filter>Source Files\scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\ray.cpp">
-      <Filter>Source Files\scene</Filter>
-    </ClCompile>
     <ClCompile Include="src\scene\scene.cpp">
       <Filter>Source Files\scene</Filter>
     </ClCompile>
@@ -147,6 +144,7 @@
     <ClCompile Include="src\SceneObjects\Torus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\BooleanNode.cpp">
       <Filter>Source Files\SceneObjects\BooleanNodes</Filter>
     </ClCompile>
     <ClCompile Include="src\UnionNode.cpp">
@@ -157,9 +155,21 @@
     </ClCompile>
     <ClCompile Include="src\SubtractNode.cpp">
       <Filter>Source Files\SceneObjects\BooleanNodes</Filter>
+    </ClCompile>
     <ClCompile Include="Metaball.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\Geometry.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\ISect.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\BoundingBox.cpp">
+      <Filter>Source Files\scene</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="src\RayTracer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -252,6 +262,27 @@
     </ClInclude>
     <ClInclude Include="Metaball.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\SceneElement.h">
+      <Filter>Header Files\scene.</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\BoundingBox.h">
+      <Filter>Header Files\scene.</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\TransformNode.h">
+      <Filter>Header Files\scene.</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\Geometry.h">
+      <Filter>Header Files\scene.</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\SceneObject.h">
+      <Filter>Header Files\scene.</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\MaterialSceneObject.h">
+      <Filter>Header Files\scene.</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\ISect.h">
+      <Filter>Header Files\scene.</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../scene/scene.h"
+#include "../scene/MaterialSceneObject.h"
 
 // From: http://cosinekitty.com/raytrace/chapter13_torus.html
 
