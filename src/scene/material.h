@@ -7,14 +7,16 @@
 #ifndef MATERIAL_H_
 #define MATERIAL_H_
 
+#include <stack>
 #include "../vecmath/vecmath.h"
 #include "Texture.h"
 #include "../Marble.h"
+#include "scene.h"
 
 class Scene;
 class Ray;
 class ISect;
-
+class Geometry;
 
 class Material
 {
@@ -64,7 +66,7 @@ public:
 
 	Marble* diffuseMarblePtr = nullptr;
 
-	virtual vec3f shade(Scene* scene, const Ray& r, const ISect& i) const;
+	virtual vec3f shade(Scene* scene, const Ray& r, const ISect& i, std::stack<Geometry*>& intersections) const;
 
 	Material&
 	operator+=(const Material& m);

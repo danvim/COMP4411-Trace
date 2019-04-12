@@ -29,16 +29,17 @@
 #include "../ui/TraceUI.h"
 #include "../Marble.h"
 #include "../SceneObjects/Torus.h"
+#include "../IntersectionNode.h"
 
 typedef std::map<std::string, Material*> MMap;
 
-static void processObject(Obj* obj, Scene* scene, MMap& materials);
+static Geometry* processObject(Obj* obj, Scene* scene, MMap& materials, bool addToScene);
 static Obj* getColorField(Obj* obj);
 static Obj* getField(Obj* obj, const std::string& name);
 static bool hasField(Obj* obj, const std::string& name);
 static vec3f tupleToVec(Obj* obj);
-static void processGeometry(const std::string& name, Obj* child, Scene* scene,
-                            const MMap& materials, TransformNode* transform);
+static Geometry* processGeometry(const std::string& name, Obj* child, Scene* scene,
+                                 MMap& materials, TransformNode* transform, bool addToScene);
 static void processTrimesh(std::string name, Obj* child, Scene* scene,
                            const MMap& materials, TransformNode* transform);
 static void processCamera(Obj* child, Scene* scene);
@@ -115,7 +116,7 @@ Scene* readScene(std::istream& is)
 			break;
 		}
 
-		processObject(cur, ret, materials);
+		processObject(cur, ret, materials, true);
 		delete cur;
 	}
 
@@ -187,8 +188,8 @@ static vec3f tupleToVec(Obj* obj)
 	return vec3f(t[0]->getScalar(), t[1]->getScalar(), t[2]->getScalar());
 }
 
-static void processGeometry(Obj* obj, Scene* scene,
-                            const MMap& materials, TransformNode* transform)
+static Geometry* processGeometry(Obj* obj, Scene* scene,
+                                 MMap& materials, TransformNode* transform, bool addToScene = true)
 {
 	std::string name;
 	Obj* child;
@@ -212,7 +213,7 @@ static void processGeometry(Obj* obj, Scene* scene,
 		throw ParseError(std::string(oss.str()));
 	}
 
-	processGeometry(name, child, scene, materials, transform);
+	return processGeometry(name, child, scene, materials, transform, addToScene);
 }
 
 // Extract the named scalar field into ret, if it exists.
@@ -251,31 +252,31 @@ static void verifyTuple(const MyTuple& tup, size_t size)
 	}
 }
 
-static void processGeometry(const std::string& name, Obj* child, Scene* scene,
-                            const MMap& materials, TransformNode* transform)
+static Geometry* processGeometry(const std::string& name, Obj* child, Scene* scene,
+                                 MMap& materials, TransformNode* transform, const bool addToScene = true)
 {
 	if (name == "translate")
 	{
 		const auto& tup = child->getTuple();
 		verifyTuple(tup, 4);
-		processGeometry(tup[3],
-		                scene,
-		                materials,
-		                transform->createChild(mat4f::translate(vec3f(tup[0]->getScalar(),
-		                                                              tup[1]->getScalar(),
-		                                                              tup[2]->getScalar()))));
+		return processGeometry(tup[3],
+		                       scene,
+		                       materials,
+		                       transform->createChild(mat4f::translate(vec3f(tup[0]->getScalar(),
+		                                                                     tup[1]->getScalar(),
+		                                                                     tup[2]->getScalar()))), addToScene);
 	}
 	else if (name == "rotate")
 	{
 		const auto& tup = child->getTuple();
 		verifyTuple(tup, 5);
-		processGeometry(tup[4],
-		                scene,
-		                materials,
-		                transform->createChild(mat4f::rotate(vec3f(tup[0]->getScalar(),
-		                                                           tup[1]->getScalar(),
-		                                                           tup[2]->getScalar()),
-		                                                     tup[3]->getScalar())));
+		return processGeometry(tup[4],
+		                       scene,
+		                       materials,
+		                       transform->createChild(mat4f::rotate(vec3f(tup[0]->getScalar(),
+		                                                                  tup[1]->getScalar(),
+		                                                                  tup[2]->getScalar()),
+		                                                            tup[3]->getScalar())));
 	}
 	else if (name == "scale")
 	{
@@ -333,6 +334,24 @@ static void processGeometry(const std::string& name, Obj* child, Scene* scene,
 		                                                   l4[2]->getScalar(),
 		                                                   l4[3]->getScalar()))));
 	}
+	else if (name == "intersection")
+	{
+		const auto& tuple = child->getTuple();
+		verifyTuple(tuple, 2);
+
+		auto* node = new IntersectionNode(
+			scene, 
+			dynamic_cast<SceneObject*>(processObject(tuple[0], scene, materials, false)),
+			dynamic_cast<SceneObject*>(processObject(tuple[1], scene, materials, false))
+		);
+
+		if (addToScene)
+		{
+			scene->add(node);
+		}
+
+		return node;
+	}
 	else if (name == "trimesh" || name == "polymesh")
 	{
 		// 'polymesh' is for backwards compatibility
@@ -389,8 +408,14 @@ static void processGeometry(const std::string& name, Obj* child, Scene* scene,
 		}
 
 		obj->setTransform(transform);
-		scene->add(obj);
+
+		if (addToScene)
+		{
+			scene->add(obj);
+			return obj;
+		}
 	}
+	return nullptr;
 }
 
 static void processTrimesh(std::string name, Obj* child, Scene* scene,
@@ -620,7 +645,7 @@ processCamera(Obj* child, Scene* scene)
 	}
 }
 
-static void processObject(Obj* obj, Scene* scene, MMap& materials)
+static Geometry* processObject(Obj* obj, Scene* scene, MMap& materials, const bool addToScene = true)
 {
 	// Assume the object is named.
 	std::string name;
@@ -653,8 +678,8 @@ static void processObject(Obj* obj, Scene* scene, MMap& materials)
 		}
 
 		scene->add(new DirectionalLight(scene,
-		                                tupleToVec(getField(child, "direction")).normalize(),
-		                                tupleToVec(getColorField(child))));
+			tupleToVec(getField(child, "direction")).normalize(),
+			tupleToVec(getColorField(child))));
 	}
 	else if (name == "point_light")
 	{
@@ -696,10 +721,11 @@ static void processObject(Obj* obj, Scene* scene, MMap& materials)
 		name == "scale" ||
 		name == "transform" ||
 		name == "trimesh" ||
-		name == "polymesh")
+		name == "polymesh" ||
+		name == "intersection")
 	{
 		// polymesh is for backwards compatibility.
-		processGeometry(name, child, scene, materials, &scene->transformRoot);
+		return processGeometry(name, child, scene, materials, &scene->transformRoot, addToScene);
 		//scene->add( geo );
 	}
 	else if (name == "material")
@@ -714,4 +740,6 @@ static void processObject(Obj* obj, Scene* scene, MMap& materials)
 	{
 		throw ParseError(std::string("Unrecognized object: ") + name);
 	}
+
+	return nullptr;
 }

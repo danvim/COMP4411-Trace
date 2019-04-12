@@ -23,7 +23,8 @@ vec3f RayTracer::trace(Scene* scene, double x, double y)
 	scene->getCamera()->rayThrough(x, y, r);
 	materials = std::stack<Material>();
 	materials.push(Material::getAir());
-	vec3f color = traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, materials).clamp();
+	auto intersections = std::stack<Geometry*>();
+	vec3f color = traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, materials, intersections).clamp();
 
 	if (getScene()->fod)
 	{
@@ -33,7 +34,7 @@ vec3f RayTracer::trace(Scene* scene, double x, double y)
 		for (vec3f v : vecs)
 		{
 			vec3f ro = fPt - f / (v.dot(r.getDirection())) * v;
-			color += traceRay(scene, Ray(ro, v), {0, 0, 0}, std::max(0, maxDepth), materials);
+			color += traceRay(scene, Ray(ro, v), {0, 0, 0}, std::max(0, maxDepth), materials, intersections);
 		}
 		color /= 20.0;
 
@@ -65,7 +66,7 @@ vec3f RayTracer::trace(Scene* scene, double x, double y)
 		{
 			dir += 0.005 * v;
 			Ray ray(r.getPosition(), dir.normalize());
-			color += traceRay(scene, ray, vec3f(1.0, 1.0, 1.0), 0, materials);
+			color += traceRay(scene, ray, vec3f(1.0, 1.0, 1.0), 0, materials, intersections);
 		}
 		color /= 10.f;
 	}
@@ -75,11 +76,11 @@ vec3f RayTracer::trace(Scene* scene, double x, double y)
 // Do recursive ray tracing!  You'll want to insert a lot of code here
 // (or places called from here) to handle reflection, refraction, etc etc.
 vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
-                          const vec3f& thresh, int depth, std::stack<Material> materials)
+                          const vec3f& thresh, int depth, std::stack<Material> materials, std::stack<Geometry*>& intersections)
 {
 	ISect i;
 	if (depth > maxDepth)return vec3f(0, 0, 0);
-	if (scene->intersect(r, i))
+	if (scene->intersect(r, i, intersections))
 	{
 		// YOUR CODE HERE
 
@@ -91,6 +92,7 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 		// Instead of just returning the result of shade(), add some
 		// more steps: add in the contributions from reflected and refracted
 		// rays.
+
 
 
 		//reflection
@@ -121,7 +123,7 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 
 		vec3f R = V - 2 * V.dot(N) * N;
 		R = R.normalize();
-		vec3f phongColor = m.shade(scene, r, i);
+		vec3f phongColor = m.shade(scene, r, i, intersections);
 
 		//Dynamic threshold
 		if (scene->terminationThreshold > phongColor.length())
@@ -129,7 +131,7 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 			return phongColor;
 		}
 		Ray reflectRay(P, R);
-		vec3f reflectColor = traceRay(scene, reflectRay, thresh, depth + 1, materials);
+		vec3f reflectColor = traceRay(scene, reflectRay, thresh, depth + 1, materials, intersections);
 		reflectColor = prod(reflectColor, m.kr);
 		if (getScene()->glossyReflection)
 		{
@@ -138,7 +140,7 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 			for (vec3f v : vecs)
 			{
 				Ray reflectRayL(P, v);
-				reflectColor += prod(traceRay(scene, reflectRayL, thresh, depthR, materials), m.kr);
+				reflectColor += prod(traceRay(scene, reflectRayL, thresh, depthR, materials, intersections), m.kr);
 			}
 			reflectColor /= 50.f;
 		}
@@ -166,7 +168,7 @@ vec3f RayTracer::traceRay(Scene* scene, const Ray& r,
 			// }
 			// T = A;
 			Ray refractRay(P, T);
-			refractColor = traceRay(scene, refractRay, thresh, depth + 1, materials);
+			refractColor = traceRay(scene, refractRay, thresh, depth + 1, materials, intersections);
 		}
 
 		refractColor = prod(refractColor, m.kt);

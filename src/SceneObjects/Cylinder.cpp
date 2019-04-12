@@ -140,3 +140,8 @@ bool Cylinder::intersectCaps( const Ray& r, ISect& i ) const
 
 	return false;
 }
+
+bool Cylinder::isFullyEnclosed() const
+{
+	return capped;
+}

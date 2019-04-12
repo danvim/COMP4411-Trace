@@ -61,7 +61,7 @@ bool Torus::hasBoundingBoxCapability() const
 	return true;
 }
 
-BoundingBox Torus::ComputeLocalBoundingBox() const
+BoundingBox Torus::computeLocalBoundingBox() const
 {
 	BoundingBox localBounds;
 	localBounds.min = vec3f(-a - b, -a - b, -b);

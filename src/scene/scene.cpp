@@ -5,7 +5,6 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include "light.h"
 #include "../SceneObjects/trimesh.h"
-#include "../SceneObjects/Sphere.h"
 extern TraceUi* traceUi;
 
 BoundingBox& BoundingBox::operator=(const BoundingBox& target)
@@ -78,7 +77,7 @@ bool BoundingBox::intersect(const Ray& r, double& tMin, double& tMax) const
 }
 
 
-bool Geometry::intersect(const Ray&r, ISect&i) const
+bool Geometry::intersect(const Ray&r, ISect&i, std::stack<Geometry*>& intersections) const
 {
     // Transform the ray into the object's local coordinate space
     vec3f pos = transform->globalToLocalCoords(r.getPosition());
@@ -183,7 +182,7 @@ void Scene::loadHeightMap(unsigned char* height_map_ptr, int w, int h)
 
 // Get any intersection with an object.  Return information about the 
 // intersection through the reference parameter.
-bool Scene::intersect( const Ray& r, ISect& i ) const
+bool Scene::intersect(const Ray& r, ISect& i, std::stack<Geometry*>& intersections) const
 {
 	typedef std::list<Geometry*>::const_iterator iter;
 	iter j;
@@ -193,7 +192,7 @@ bool Scene::intersect( const Ray& r, ISect& i ) const
 
 	// try the non-bounded objects
 	for( j = unboundedObjects.begin(); j != unboundedObjects.end(); ++j ) {
-		if( (*j)->intersect( r, cur ) ) {
+		if( (*j)->intersect( r, cur, intersections) ) {
 			if( !have_one || cur.t < i.t ) {
 				i = cur;
 				have_one = true;
@@ -203,7 +202,7 @@ bool Scene::intersect( const Ray& r, ISect& i ) const
 
 	// try the bounded objects
 	for( j = boundedObjects.begin(); j != boundedObjects.end(); ++j ) {
-		if( (*j)->intersect( r, cur ) ) {
+		if( (*j)->intersect( r, cur, intersections) ) {
 			if( !have_one || cur.t < i.t ) {
 				i = cur;
 				have_one = true;

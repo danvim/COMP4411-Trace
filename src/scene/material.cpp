@@ -5,7 +5,7 @@
 #include "light.h"
 
 // the color of that point.
-vec3f Material::shade(Scene* scene, const Ray& r, const ISect& i) const
+vec3f Material::shade(Scene* scene, const Ray& r, const ISect& i, std::stack<Geometry*>& intersections) const
 {
 	// YOUR CODE HERE
 
@@ -70,7 +70,7 @@ vec3f Material::shade(Scene* scene, const Ray& r, const ISect& i) const
 		vec3f L = pLight->getDirection(P);
 		vec3f intensity = pLight->getColor(P);
 		const double distAtte = pLight->distanceAttenuation(P);
-		vec3f shadowAtte = pLight->shadowAttenuation(P);
+		vec3f shadowAtte = pLight->shadowAttenuation(P, intersections);
 
 		const double diffuse = std::max(0.0, N.dot(L));
 

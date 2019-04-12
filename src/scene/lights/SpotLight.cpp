@@ -17,7 +17,7 @@ SpotLight::SpotLight(Scene* scene, const vec3f& color, const vec3f& position, co
 	cosInnerCone = cos(innerCone());
 }
 
-vec3f SpotLight::shadowAttenuation(const vec3f& p) const
+vec3f SpotLight::shadowAttenuation(const vec3f& p, std::stack<Geometry*>& intersections) const
 {
 	auto* pScene = getScene();
 	const auto d = getDirection(p);
@@ -27,7 +27,7 @@ vec3f SpotLight::shadowAttenuation(const vec3f& p) const
 	ISect intersection;
 	const Ray ray(p, d);
 	auto ret = color * spotEffect;
-	if (pScene->intersect(ray, intersection))
+	if (pScene->intersect(ray, intersection, intersections))
 	{
 		ret = prod(intersection.getMaterial().kt, ret);
 	}

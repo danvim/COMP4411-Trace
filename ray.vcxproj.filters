@@ -44,10 +44,6 @@
       <UniqueIdentifier>{bad86107-ec2a-4412-953e-2aa6c944ad15}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
-    <Filter Include="Header Files\SceneObjects.">
-      <UniqueIdentifier>{77da7083-e73c-48a1-9725-612c96ba2de5}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{2a500cad-34e4-4544-a082-ff2e3169691d}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
@@ -57,6 +53,16 @@
     </Filter>
     <Filter Include="Header Files\scene.\lights">
       <UniqueIdentifier>{ad0bcef3-d692-4b30-9819-84b21a2832b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SceneObjects\BooleanNodes">
+      <UniqueIdentifier>{ac5ff4a2-3c30-418d-b825-cfc6d5762c09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SceneObjects">
+      <UniqueIdentifier>{77da7083-e73c-48a1-9725-612c96ba2de5}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Header Files\SceneObjects\BooleanNodes">
+      <UniqueIdentifier>{f8647d9e-7a7b-4e33-8616-cf14bffe63c0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +144,18 @@
     <ClCompile Include="src\SceneObjects\Torus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\BooleanNode.cpp">
+      <Filter>Source Files\SceneObjects\BooleanNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UnionNode.cpp">
+      <Filter>Source Files\SceneObjects\BooleanNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IntersectionNode.cpp">
+      <Filter>Source Files\SceneObjects\BooleanNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SubtractNode.cpp">
+      <Filter>Source Files\SceneObjects\BooleanNodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\RayTracer.h">
@@ -177,22 +195,22 @@
       <Filter>Header Files\scene.</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneObjects\Box.h">
-      <Filter>Header Files\SceneObjects.</Filter>
+      <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneObjects\Cone.h">
-      <Filter>Header Files\SceneObjects.</Filter>
+      <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneObjects\Cylinder.h">
-      <Filter>Header Files\SceneObjects.</Filter>
+      <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneObjects\Sphere.h">
-      <Filter>Header Files\SceneObjects.</Filter>
+      <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneObjects\Square.h">
-      <Filter>Header Files\SceneObjects.</Filter>
+      <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneObjects\trimesh.h">
-      <Filter>Header Files\SceneObjects.</Filter>
+      <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\lights\SpotLight.h">
       <Filter>Header Files\scene.\lights</Filter>
@@ -213,7 +231,19 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneObjects\Torus.h">
-      <Filter>Header Files\SceneObjects.</Filter>
+      <Filter>Header Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BooleanNode.h">
+      <Filter>Header Files\SceneObjects\BooleanNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UnionNode.h">
+      <Filter>Header Files\SceneObjects\BooleanNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IntersectionNode.h">
+      <Filter>Header Files\SceneObjects\BooleanNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SubtractNode.h">
+      <Filter>Header Files\SceneObjects\BooleanNodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

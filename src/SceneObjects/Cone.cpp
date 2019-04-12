@@ -145,3 +145,8 @@ bool Cone::intersectCaps(const Ray& r, ISect& i) const
 
 	return false;
 }
+
+bool Cone::isFullyEnclosed() const
+{
+	return capped;
+}

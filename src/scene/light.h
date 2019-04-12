@@ -6,7 +6,7 @@
 class Light : public SceneElement
 {
 public:
-	virtual vec3f shadowAttenuation(const vec3f& p) const = 0;
+	virtual vec3f shadowAttenuation(const vec3f& p, std::stack<Geometry*>& intersections) const = 0;
 	virtual double distanceAttenuation(const vec3f& p) const = 0;
 	virtual vec3f getColor(const vec3f& p) const = 0;
 	virtual vec3f getDirection(const vec3f& p) const = 0;
@@ -28,7 +28,7 @@ public:
 	{
 	}
 
-	vec3f shadowAttenuation(const vec3f& p) const override;
+	vec3f shadowAttenuation(const vec3f& p, std::stack<Geometry*>& intersections) const override;
 	double distanceAttenuation(const vec3f& p) const override;
 	vec3f getColor(const vec3f& p) const override;
 	vec3f getDirection(const vec3f& p) const override;
@@ -45,7 +45,7 @@ public:
 	{
 	}
 
-	vec3f shadowAttenuation(const vec3f& p) const override;
+	vec3f shadowAttenuation(const vec3f& p, std::stack<Geometry*>& intersections) const override;
 	double distanceAttenuation(const vec3f& p) const override;
 	vec3f getColor(const vec3f& p) const override;
 	vec3f getDirection(const vec3f& p) const override;

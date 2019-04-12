@@ -14,5 +14,5 @@ public:
 
 	bool intersectLocal(const Ray& r, ISect& iSect) const override;
 	bool hasBoundingBoxCapability() const override;
-	BoundingBox ComputeLocalBoundingBox() const override;
+	BoundingBox computeLocalBoundingBox() const override;
 };

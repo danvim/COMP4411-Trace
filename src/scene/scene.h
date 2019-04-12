@@ -8,14 +8,19 @@
 #define SCENE_H_
 
 #include <list>
-
+#include <stack>
 #include "material.h"
 #include "camera.h"
 #include "../vecmath/vecmath.h"
 #include <map>
+#include "ray.h"
 
 class Light;
 class Scene;
+class Ray;
+class ISect;
+class Material;
+class Camera;
 
 class SceneElement
 {
@@ -138,7 +143,7 @@ class Geometry
 {
 public:
 	// intersections performed in the global coordinate space.
-	virtual bool intersect(const Ray& r, ISect& i) const;
+	virtual bool intersect(const Ray& r, ISect& i, std::stack<Geometry*>& intersections) const;
 
 	// intersections performed in the object's local coordinate space
 	// do not call directly - this should only be called by intersect()
@@ -153,7 +158,7 @@ public:
 		// take the object's local bounding box, transform all 8 points on it,
 		// and use those to find a new bounding box.
 
-		const auto localBounds = ComputeLocalBoundingBox();
+		const auto localBounds = computeLocalBoundingBox();
 
 		auto min = localBounds.min;
 		auto max = localBounds.max;
@@ -187,9 +192,16 @@ public:
 		bounds.min = vec3f(newMin);
 	}
 
-	// default method for ComputeLocalBoundingBox returns a bogus bounding box;
+	// default method for computeLocalBoundingBox returns a bogus bounding box;
 	// this should be overridden if hasBoundingBoxCapability() is true.
-	virtual BoundingBox ComputeLocalBoundingBox() const { return BoundingBox(); }
+	virtual BoundingBox computeLocalBoundingBox() const { return BoundingBox(); }
+
+	/**
+	 * Checks if the position is within the mesh. Used for CSG
+	 */
+	virtual bool contains(bool intersections) const { return true; }
+
+	virtual bool isFullyEnclosed() const { return true; }
 
 	void setTransform(TransformNode* transform) { this->transform = transform; };
 
@@ -273,7 +285,7 @@ public:
 	}
 	void loadHeightMap(unsigned char* height_map_ptr, int w, int h);
 
-	bool intersect(const Ray& r, ISect& i) const;
+	bool intersect(const Ray& r, ISect& i, std::stack<Geometry*>& intersections) const;
 	void initScene();
 
 	std::list<Light*>::const_iterator beginLights() const { return lights.begin(); }

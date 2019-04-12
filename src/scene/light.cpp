@@ -10,7 +10,7 @@ double DirectionalLight::distanceAttenuation( const vec3f& p ) const
 }
 
 
-vec3f DirectionalLight::shadowAttenuation( const vec3f& p ) const
+vec3f DirectionalLight::shadowAttenuation(const vec3f& p, std::stack<Geometry*>& intersections) const
 {
     // YOUR CODE HERE:
     // You should implement shadow-handling code here.
@@ -20,7 +20,7 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& p ) const
 	ISect i;
 	Ray r(p, d);
 	vec3f ret = color;
-	if(pScene->intersect(r, i))
+	if(pScene->intersect(r, i, intersections))
 	{
 		ret = prod(color, i.getMaterial().kt);
 	}
@@ -31,7 +31,7 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& p ) const
 		{
 			Ray r(p, v);
 			ISect i;
-			if (scene->intersect(r, i))
+			if (scene->intersect(r, i, intersections))
 			{
 				ret += prod(color, i.getMaterial().kt);
 			}
@@ -82,7 +82,7 @@ vec3f PointLight::getDirection( const vec3f& p ) const
 }
 
 
-vec3f PointLight::shadowAttenuation(const vec3f& p) const
+vec3f PointLight::shadowAttenuation(const vec3f& p, std::stack<Geometry*>& intersections) const
 {
     // YOUR CODE HERE:
     // You should implement shadow-handling code here.
@@ -91,7 +91,7 @@ vec3f PointLight::shadowAttenuation(const vec3f& p) const
 	ISect i;
 	Ray r(p, d);
 	vec3f ret = color;
-	if (pScene->intersect(r, i))
+	if (pScene->intersect(r, i, intersections))
 	{
 		ret = prod(color,i.getMaterial().kt);
 	}
@@ -102,7 +102,7 @@ vec3f PointLight::shadowAttenuation(const vec3f& p) const
 		{
 			Ray r(p, v);
 			ISect i;
-			if (scene->intersect(r, i))
+			if (scene->intersect(r, i, intersections))
 			{
 				ret += prod(color, i.getMaterial().kt);
 			}
