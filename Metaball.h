@@ -1,7 +1,6 @@
 #pragma once
-#include "src/scene/scene.h"
 #include <vector>
-#include "src/SceneObjects/Sphere.h"
+#include "src/scene/MaterialSceneObject.h"
 
 typedef struct
 {

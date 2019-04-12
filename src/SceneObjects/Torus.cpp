@@ -1,6 +1,7 @@
 ﻿#include "Torus.h"
 #include "../quartic.h"
 #include <vector>
+#include "../scene/ISect.h"
 
 Torus::Torus(Scene* scene, Material* mat, const double a, const double b)
 	: MaterialSceneObject(scene, mat),
@@ -61,7 +62,7 @@ bool Torus::hasBoundingBoxCapability() const
 	return true;
 }
 
-BoundingBox Torus::ComputeLocalBoundingBox() const
+BoundingBox Torus::computeLocalBoundingBox() const
 {
 	BoundingBox localBounds;
 	localBounds.min = vec3f(-a - b, -a - b, -b);

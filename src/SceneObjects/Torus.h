@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../scene/scene.h"
+#include "../scene/MaterialSceneObject.h"
 
 // From: http://cosinekitty.com/raytrace/chapter13_torus.html
 
@@ -14,5 +14,5 @@ public:
 
 	bool intersectLocal(const Ray& r, ISect& iSect) const override;
 	bool hasBoundingBoxCapability() const override;
-	BoundingBox ComputeLocalBoundingBox() const override;
+	BoundingBox computeLocalBoundingBox() const override;
 };

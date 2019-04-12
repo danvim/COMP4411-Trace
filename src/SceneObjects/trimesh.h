@@ -2,9 +2,8 @@
 #define TRIMESH_H_
 
 #include <vector>
+#include "../scene/MaterialSceneObject.h"
 
-#include "../scene/material.h"
-#include "../scene/scene.h"
 class TrimeshFace;
 
 class Trimesh : public MaterialSceneObject
@@ -19,7 +18,7 @@ public:
     Faces faces;
     Normals normals;
     Materials materials;
-public:
+
     Trimesh( Scene *scene, Material *mat, TransformNode *transform )
         : MaterialSceneObject(scene, mat)
     {
@@ -63,7 +62,7 @@ public:
 
     bool hasBoundingBoxCapability() const override { return true; }
 
-    BoundingBox ComputeLocalBoundingBox() const override
+    BoundingBox computeLocalBoundingBox() const override
     {
         BoundingBox localBounds;
         localBounds.max = maximum( parent->vertices[ids[0]], parent->vertices[ids[1]]);

@@ -1,5 +1,6 @@
 #include "light.h"
 #include <vector>
+#include "ISect.h"
 #include <corecrt_math_defines.h>
 
 extern std::vector<vec3f> sampleDistributed(vec3f c, double r, int count);
@@ -11,7 +12,16 @@ double DirectionalLight::distanceAttenuation( const vec3f& p ) const
 }
 
 
-vec3f DirectionalLight::shadowAttenuation( const vec3f& p ) const
+Light::Light(Scene* scene, const vec3f& col): SceneElement(scene), color(col)
+{
+}
+
+DirectionalLight::DirectionalLight(Scene* scene, const vec3f& orien, const vec3f& color): Light(scene, color),
+                                                                                          orientation(orien)
+{
+}
+
+vec3f DirectionalLight::shadowAttenuation(const vec3f& p, std::stack<Geometry*>& intersections) const
 {
     // YOUR CODE HERE:
     // You should implement shadow-handling code here.
@@ -21,7 +31,7 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& p ) const
 	ISect i;
 	Ray r(p, d);
 	vec3f ret = color;
-	if(pScene->intersect(r, i))
+	if(pScene->intersect(r, i, intersections))
 	{
 		ret = prod(color, i.getMaterial().kt);
 	}
@@ -32,7 +42,7 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& p ) const
 		{
 			Ray r(p, v);
 			ISect i;
-			if (scene->intersect(r, i))
+			if (scene->intersect(r, i, intersections))
 			{
 				ret += prod(color, i.getMaterial().kt);
 			}
@@ -83,7 +93,11 @@ vec3f PointLight::getDirection( const vec3f& p ) const
 }
 
 
-vec3f PointLight::shadowAttenuation(const vec3f& p) const
+PointLight::PointLight(Scene* scene, const vec3f& pos, const vec3f& color): Light(scene, color), position(pos)
+{
+}
+
+vec3f PointLight::shadowAttenuation(const vec3f& p, std::stack<Geometry*>& intersections) const
 {
     // YOUR CODE HERE:
     // You should implement shadow-handling code here.
@@ -92,7 +106,7 @@ vec3f PointLight::shadowAttenuation(const vec3f& p) const
 	ISect i;
 	Ray r(p, d);
 	vec3f ret = color;
-	if (pScene->intersect(r, i))
+	if (pScene->intersect(r, i, intersections))
 	{
 		ret = prod(color,i.getMaterial().kt);
 	}
@@ -103,7 +117,7 @@ vec3f PointLight::shadowAttenuation(const vec3f& p) const
 		{
 			Ray r(p, v);
 			ISect i;
-			if (scene->intersect(r, i))
+			if (scene->intersect(r, i, intersections))
 			{
 				ret += prod(color, i.getMaterial().kt);
 			}

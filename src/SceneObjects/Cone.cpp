@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include "Cone.h"
+#include "../scene/ISect.h"
 
 bool Cone::intersectLocal(const Ray& r, ISect& i) const
 {
@@ -144,4 +145,9 @@ bool Cone::intersectCaps(const Ray& r, ISect& i) const
 	}
 
 	return false;
+}
+
+bool Cone::isFullyEnclosed() const
+{
+	return capped;
 }

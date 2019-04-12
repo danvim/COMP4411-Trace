@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include "Sphere.h"
+#include "../scene/ISect.h"
 
 bool Sphere::intersectLocal( const Ray& r, ISect& i ) const
 {

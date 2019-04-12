@@ -1,7 +1,7 @@
 #ifndef CYLINDER_H_
 #define CYLINDER_H_
+#include "../scene/MaterialSceneObject.h"
 
-#include "../scene/scene.h"
 
 class Cylinder
 	: public MaterialSceneObject
@@ -15,7 +15,7 @@ public:
 	bool intersectLocal( const Ray& r, ISect& i ) const override;
 	bool hasBoundingBoxCapability() const override { return true; }
 
-	BoundingBox ComputeLocalBoundingBox() const override
+	BoundingBox computeLocalBoundingBox() const override
     {
         BoundingBox localBounds;
 		localBounds.min = vec3f(-1.0f, -1.0f, 0.0f);
@@ -25,6 +25,8 @@ public:
 
     bool intersectBody( const Ray& r, ISect& i ) const;
 	bool intersectCaps( const Ray& r, ISect& i ) const;
+
+	bool isFullyEnclosed() const override;
 
 protected:
 	bool capped;

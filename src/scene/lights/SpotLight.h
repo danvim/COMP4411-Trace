@@ -6,7 +6,7 @@ class SpotLight final : public PointLight
 public:
 	SpotLight(Scene* scene, const vec3f& color, const vec3f& position, const vec3f& orientation, double size, double blend);
 
-	vec3f shadowAttenuation(const vec3f& p) const override;
+	vec3f shadowAttenuation(const vec3f& p, std::stack<Geometry*>& intersections) const override;
 
 protected:
 	vec3f orientation;

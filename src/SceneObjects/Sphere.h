@@ -1,7 +1,7 @@
 #ifndef SPHERE_H_
 #define SPHERE_H_
 
-#include "../scene/scene.h"
+#include "../scene/MaterialSceneObject.h"
 
 class Sphere
 	: public MaterialSceneObject
@@ -15,7 +15,7 @@ public:
 	bool intersectLocal( const Ray& r, ISect& i ) const override;
 	bool hasBoundingBoxCapability() const override { return true; }
 
-	BoundingBox ComputeLocalBoundingBox() const override
+	BoundingBox computeLocalBoundingBox() const override
     {
         BoundingBox localBounds;
 		localBounds.min = vec3f(-1.0f, -1.0f, -1.0f);

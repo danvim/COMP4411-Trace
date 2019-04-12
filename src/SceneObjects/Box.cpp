@@ -1,4 +1,5 @@
 #include "Box.h"
+#include "../scene/ISect.h"
 
 extern double diff(double, double);
 
@@ -8,7 +9,7 @@ bool Box::intersectLocal( const Ray& r, ISect& i ) const
     // Add box intersection code here.
 	// it currently ignores all boxes and just returns false.
 
-	BoundingBox b = ComputeLocalBoundingBox();
+	BoundingBox b = computeLocalBoundingBox();
 	double tMin, tMax;
 	if(!b.intersect(r, tMin, tMax))
 	{

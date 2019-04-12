@@ -1,5 +1,5 @@
 #include "Square.h"
-#include <stack>
+#include "../scene/ISect.h"
 
 bool Square::intersectLocal(const Ray& r, ISect& i) const
 {
