@@ -697,6 +697,17 @@ static void processObject(Obj* obj, Scene* scene, MMap& materials)
 		vec3f color = tupleToVec(getField(child, "color"));
 		scene->ambientLight = color;
 	}
+	else if (name =="warn_light")
+	{
+		if (child == nullptr)
+		{
+			throw ParseError("No info for warn_light");
+		}
+		scene->add(new WarnLight(scene,
+			tupleToVec(getField(child, "position")),
+			tupleToVec(getField(child, "direction")).normalize(),
+			tupleToVec(getColorField(child))));
+	}
 	else if (name == "sphere" ||
 		name == "box" ||
 		name == "cylinder" ||

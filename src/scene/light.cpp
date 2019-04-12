@@ -115,3 +115,22 @@ vec3f PointLight::shadowAttenuation(const vec3f& p) const
 	}
 	return ret;
 }
+
+double WarnLight::distanceAttenuation(const vec3f& p) const
+{
+	vec3f d = (p - position).normalize();
+	double length = 1.f / (d.dot(dir));
+	vec3f dvec = d * length;
+	dvec -= dir * length*d.dot(dir);
+	length = dvec.length();
+	double x = length * dvec.dot(u);
+	double y = length * dvec.dot(v);
+	std::cout << x << y;
+	if(x*x+y*y<0.01)
+	{
+		return PointLight::distanceAttenuation(p);
+	}else
+	{
+		return 0;
+	}
+}

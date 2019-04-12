@@ -54,4 +54,19 @@ protected:
 	vec3f position;
 };
 
+class WarnLight : public PointLight
+{
+public:
+	WarnLight(Scene* scene, const vec3f& pos, const vec3f dir, const vec3f& color)
+		:PointLight(scene, pos, color), dir(dir)
+	{
+		u = dir.cross({ 0,1,0 }).normalize();
+		v = dir.cross(u).normalize();
+		u = dir.cross(v).normalize();
+	}
+
+	double distanceAttenuation(const vec3f& p) const override;
+	vec3f dir,u,v;
+};
+
 #endif // LIGHT_H_
