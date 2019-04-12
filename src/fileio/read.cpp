@@ -28,6 +28,7 @@
 #include "../scene/lights/SpotLight.h"
 #include "../ui/TraceUI.h"
 #include "../Marble.h"
+#include "../../ParticleSystem.h"
 #include "../SceneObjects/Torus.h"
 
 typedef std::map<std::string, Material*> MMap;
@@ -377,6 +378,11 @@ static void processGeometry(const std::string& name, Obj* child, Scene* scene,
 		{
 			obj = new Square(scene, mat);
 		}
+		else if (name == "particles")
+		{
+			obj = new ParticleSystem(scene, mat);
+			static_cast<ParticleSystem*>(obj)->init();
+		}
 		else if (name == "torus")
 		{
 			auto a = 1.0;
@@ -696,7 +702,8 @@ static void processObject(Obj* obj, Scene* scene, MMap& materials)
 		name == "scale" ||
 		name == "transform" ||
 		name == "trimesh" ||
-		name == "polymesh")
+		name == "polymesh" ||
+		name == "particles")
 	{
 		// polymesh is for backwards compatibility.
 		processGeometry(name, child, scene, materials, &scene->transformRoot);

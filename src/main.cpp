@@ -158,9 +158,19 @@ float frand()
 	return (float)rand() / RAND_MAX;
 }
 
+double drand(double low, double high)
+{
+	return (double)rand() / RAND_MAX * (high-low) + low;
+}
+
 int irand(int max)
 {
 	return rand() % max;
+}
+
+int irand(int min, int max)
+{
+	return rand() % (max-min) + min;
 }
 
 double degToRad(double deg)

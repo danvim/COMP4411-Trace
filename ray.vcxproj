@@ -157,6 +157,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="src\getopt.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -285,6 +286,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="src\Marble.h" />
     <ClInclude Include="src\PerlinNoise.h" />
     <ClInclude Include="src\quartic.h" />

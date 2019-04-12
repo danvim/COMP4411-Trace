@@ -39,5 +39,5 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
 - [ ] (3B) ray intersection optimization
   - [ ] (4B) more realistic shading model
 - [ ] (4B) CSG
-  - [ ] (4B) particle system
+  - [x] (4B) particle system
     - [ ] (4B) caustics
