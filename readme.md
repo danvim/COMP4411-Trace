@@ -20,7 +20,7 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
 - [X] (1W) Adaptive termination (slider control the contribution threshold)
   - [X] (1W) Antialiasing by super sample then averaging down
 - [X] (1B) Spot lights
-  - [ ] (1B) Background image
+  - [X] (1B) Background image
 - [ ] (1B) accelerate shadow attenuation
 - [x] (1B) smart overlapping
 - [X] (1B1W) Texture mapping
@@ -28,7 +28,7 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
 - [ ] (1B1W) Warn model
   - [X] (2B) bump mapping
 - [X] (2B) Solid textures
-  - [ ] (2B) New type of geometry
+  - [X] (2B) New type of geometry
     - [X] (2B) Height fields
       - [X] (6B1W) distribution ray tracing
         - [X] depth of field
@@ -39,5 +39,5 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
 - [ ] (3B) ray intersection optimization
   - [ ] (4B) more realistic shading model
 - [ ] (4B) CSG
-  - [ ] (4B) particle system
+  - [x] (4B) particle system
     - [ ] (4B) caustics

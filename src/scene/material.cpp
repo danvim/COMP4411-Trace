@@ -25,8 +25,8 @@ vec3f Material::shade(Scene* scene, const Ray& r, const ISect& i) const
 	vec3f N = i.N;
 	vec3f P = r.at(i.t);
 	
-	vec3f color = ke + prod(ka, scene->ambientLight);
-
+	
+	auto emissionColor = ke;
 	auto diffuseColor = kd;
 	auto specularColor = ks;
 	vec3f opacity = ONES - kt;
@@ -55,7 +55,14 @@ vec3f Material::shade(Scene* scene, const Ray& r, const ISect& i) const
 		{
 			opacity = ONES - transmissionTexturePtr->getColorByUV(u, v);
 		}
+
+		if (emissionTexturePtr != nullptr)
+		{
+			emissionColor = emissionTexturePtr->getColorByUV(u, v);
+		}
 	}
+
+	vec3f color = emissionColor + prod(ka, scene->ambientLight);
 
 	for (auto l = scene->beginLights(); l != scene->endLights(); ++l)
 	{

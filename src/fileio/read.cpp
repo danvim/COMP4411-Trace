@@ -29,6 +29,7 @@
 #include "../ui/TraceUI.h"
 #include "../Marble.h"
 #include "../../ParticleSystem.h"
+#include "../SceneObjects/Torus.h"
 
 typedef std::map<std::string, Material*> MMap;
 
@@ -377,10 +378,20 @@ static void processGeometry(const std::string& name, Obj* child, Scene* scene,
 		{
 			obj = new Square(scene, mat);
 		}
-		else if(name=="particles")
+		else if (name == "particles")
 		{
 			obj = new ParticleSystem(scene, mat);
 			static_cast<ParticleSystem*>(obj)->init();
+		}
+		else if (name == "torus")
+		{
+			auto a = 1.0;
+			auto b = 0.2;
+
+			maybeExtractField(child, "a", a);
+			maybeExtractField(child, "b", b);
+
+			obj = new Torus(scene, mat, a, b);
 		}
 
 		obj->setTransform(transform);
@@ -488,7 +499,7 @@ static Marble* processMarble(Obj* child)
 	const auto lightness = getField(child, "lightness")->getScalar();
 	const auto contrast = getField(child, "contrast")->getScalar();
 	const auto scale = tupleToVec(getField(child, "scale"));
-	const auto depth = getField(child, "depth")->getScalar();
+	const auto depth = int(getField(child, "depth")->getScalar());
 	return new Marble(color, frequency, lightness, contrast, scale, depth);
 }
 

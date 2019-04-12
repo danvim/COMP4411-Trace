@@ -172,12 +172,14 @@
     </ClCompile>
     <ClCompile Include="src\Marble.cpp" />
     <ClCompile Include="src\PerlinNoise.cpp" />
+    <ClCompile Include="src\quartic.cpp" />
     <ClCompile Include="src\RayTracer.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="src\SceneObjects\Torus.cpp" />
     <ClCompile Include="src\scene\lights\SpotLight.cpp" />
     <ClCompile Include="src\scene\Texture.cpp" />
     <ClCompile Include="src\ui\TraceGLWindow.cpp">
@@ -287,7 +289,9 @@
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="src\Marble.h" />
     <ClInclude Include="src\PerlinNoise.h" />
+    <ClInclude Include="src\quartic.h" />
     <ClInclude Include="src\RayTracer.h" />
+    <ClInclude Include="src\SceneObjects\Torus.h" />
     <ClInclude Include="src\scene\lights\SpotLight.h" />
     <ClInclude Include="src\scene\Texture.h" />
     <ClInclude Include="src\ui\TraceGLWindow.h" />

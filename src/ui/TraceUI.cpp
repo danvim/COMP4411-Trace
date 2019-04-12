@@ -34,6 +34,8 @@ void TraceUi::cbLoadScene(Fl_Widget* o, void* v)
 	{
 		char buf[256];
 
+		pUi->rayTracer->isUsingBackground = pUi->isUsingBackground;
+		pUi->rayTracer->backgroundTexturePtr = pUi->backgroundTexturePtr;
 		if (pUi->rayTracer->loadScene(newFile))
 		{
 			sprintf_s(buf, "Ray <%s>", newFile);
@@ -56,8 +58,8 @@ void TraceUi::cbLoadBackground(Fl_Widget* o, void*)
 
 	if (newBackgroundFileName != nullptr)
 	{
-		delete[] pUi->backgroundPtr;
-		pUi->backgroundPtr = readBmp(newBackgroundFileName, pUi->backgroundWidth, pUi->backgroundHeight);
+		delete[] pUi->backgroundTexturePtr;
+		pUi->backgroundTexturePtr = new Texture(newBackgroundFileName, Texture::UV::Square);
 	}
 	else
 	{

@@ -70,13 +70,11 @@ bool ParticleSystem::intersectLocal(const Ray& r, ISect& i) const
 	for(auto&& particle: particles)
 	{
 		vec3f q = particle.position;
-		double t = p.dot(q) / d.dot(q);
-		vec3f dd = (p - q).normalize();
-		if(equal(q,p,d)){
+		if(intersectParticle(q,p,d)){
 		// if((r.at(t)-q).length() - 5< RAY_EPSILON){
 		// if(abs(abs(dd.dot(d))-1)<RAY_EPSILON){
 			isIntersect = true;
-			t = (q - p).length();;
+			double t = (q - p).length();
 			minT = std::min(minT, t);
 			for (int j = 0; j < 3; j++)color[j] = std::max(color[j], particle.color[j]);
 		}

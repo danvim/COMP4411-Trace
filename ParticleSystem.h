@@ -29,11 +29,10 @@ public:
 	vec3f origin, dir, acceleration, initColor, u,v;
 	double speedMin, speedMax, decayMin, decayMax;
 	int framesCnt, particlesCnt;
-	bool equal(vec3f& postionParticle, vec3f& positionRay, vec3f& direction)const {
-		vec3f dir = (postionParticle - positionRay).normalize();
-		if (abs(abs(dir * direction) - 1) < 0.00001)
-			return true;
-		return false;
+	//q: particle pos, p: ray pos, d: ray dir
+	bool intersectParticle(vec3f& q, vec3f& p, vec3f& d)const {
+		vec3f pq = (q - p).normalize();
+		return (abs(abs(pq * d) - 1) < RAY_EPSILON);
 	}
 };
 
