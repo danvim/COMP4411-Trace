@@ -68,6 +68,7 @@
 #include "fileio/bitmap.h"
 #include <sstream>
 #include <vector>
+#include "../Metaball.h"
 
 #ifndef M_PI
 #define M_PI  3.14159265358979323846
@@ -158,9 +159,19 @@ float frand()
 	return (float)rand() / RAND_MAX;
 }
 
+double drand(double low, double high)
+{
+	return (double)rand() / RAND_MAX * (high-low) + low;
+}
+
 int irand(int max)
 {
 	return rand() % max;
+}
+
+int irand(int min, int max)
+{
+	return rand() % (max-min) + min;
 }
 
 double degToRad(double deg)
@@ -212,6 +223,8 @@ std::vector<vec3f> sampleDistributed(vec3f c, double r, int count)
 // event handling overhead.
 int main(int argc, char** argv)
 {
+	// std::pair<double, double> T;
+	// ss<<Metaball(NULL,NULL).intersectBoundingSphere({ {0,0,0},1 }, { {2,2,2},vec3f(-1,-1,-1).normalize() }, T);
 	// RayTracer rt;
 	// sampleDistributed({ 1,0,0 }, 0.05, 1);
 	// ss << rt.refraction(vec3f(cos(M_PI / 6), sin(M_PI / 6), 0), vec3f(0, 1, 0), 1, 1.33).normalize() << std::endl;

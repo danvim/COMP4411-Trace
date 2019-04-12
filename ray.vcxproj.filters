@@ -138,13 +138,15 @@
     <ClCompile Include="src\Marble.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\quartic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SceneObjects\Torus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\BooleanNode.cpp">
       <Filter>Source Files\SceneObjects\BooleanNodes</Filter>
     </ClCompile>
     <ClCompile Include="src\UnionNode.cpp">
@@ -155,9 +157,9 @@
     </ClCompile>
     <ClCompile Include="src\SubtractNode.cpp">
       <Filter>Source Files\SceneObjects\BooleanNodes</Filter>
+    <ClCompile Include="Metaball.cpp">
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="src\RayTracer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -227,6 +229,9 @@
     <ClInclude Include="src\Marble.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\quartic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -244,6 +249,9 @@
     </ClInclude>
     <ClInclude Include="src\SubtractNode.h">
       <Filter>Header Files\SceneObjects\BooleanNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Metaball.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
