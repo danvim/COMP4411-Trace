@@ -746,6 +746,20 @@ static Geometry* processObject(Obj* obj, Scene* scene, MMap& materials, const bo
 		vec3f color = tupleToVec(getField(child, "color"));
 		scene->ambientLight = color;
 	}
+	else if (name =="warn_light")
+	{
+		if (child == nullptr)
+		{
+			throw ParseError("No info for warn_light");
+		}
+		WarnLight* wl = new WarnLight(scene,
+			tupleToVec(getField(child, "position")),
+			tupleToVec(getField(child, "direction")).normalize(),
+			tupleToVec(getColorField(child)));
+		wl->setType((WarnLight::Type)(int)getField(child, "type")->getScalar());
+		wl->size = getField(child, "size")->getScalar();
+		scene->add(wl);
+	}
 	else if (name == "sphere" ||
 		name == "box" ||
 		name == "cylinder" ||
