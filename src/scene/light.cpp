@@ -1,5 +1,6 @@
 #include "light.h"
 #include <vector>
+#include <corecrt_math_defines.h>
 
 extern std::vector<vec3f> sampleDistributed(vec3f c, double r, int count);
 
@@ -118,15 +119,39 @@ vec3f PointLight::shadowAttenuation(const vec3f& p) const
 
 double WarnLight::distanceAttenuation(const vec3f& p) const
 {
-	vec3f d = (p - position).normalize();
-	double length = 1.f / (d.dot(dir));
-	vec3f dvec = d * length;
-	dvec -= dir * length*d.dot(dir);
-	length = dvec.length();
-	double x = length * dvec.dot(u);
-	double y = length * dvec.dot(v);
-	std::cout << x << y;
-	if(x*x+y*y<0.01)
+	// vec3f d = (p - position).normalize();
+	// double length = 1.f / (d.dot(dir));
+	// vec3f dvec = d * length;
+	// dvec -= dir * length*d.dot(dir);
+	// length = dvec.length();
+	// double x = length * dvec.dot(u);
+	// double y = length * dvec.dot(v);
+	double c, m;
+	// std::cout << x << y;
+	vec4f P = matrix * vec4f({ p[0],p[1],p[2],1 });
+	double x = P[0];
+	double y = P[1];
+	bool show = false;
+	switch(type)
+	{
+	case Type::kCircle:
+		show = x * x + y * y < size*size; break;
+	case Type::kSquare:
+		show = x > -size && x< size && y>-size && y < size; break;
+	case Type::kTriangle:
+		c =  size;
+		m = tan(M_PI / 3);
+		show = y > -size/2 && y < m*x + c && y < -m * x + c; break;
+	case Type::kStar:
+		c = size;
+		m = tan(M_PI / 3);
+		show = y > -size / 2 && y < m*x + c && y < -m * x + c;
+		show = show || (y < size / 2 && y > m*x - c && y > -m * x - c);
+		break;
+	default:
+		show = false;
+	}
+	if(show)
 	{
 		return PointLight::distanceAttenuation(p);
 	}else

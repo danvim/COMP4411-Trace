@@ -25,7 +25,7 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
 - [x] (1B) smart overlapping
 - [X] (1B1W) Texture mapping
 - [x] (1B1W) Antialiasing by adaptive supersampling
-- [ ] (1B1W) Warn model
+- [x] (1B1W) Warn model
   - [X] (2B) bump mapping
 - [X] (2B) Solid textures
   - [X] (2B) New type of geometry
