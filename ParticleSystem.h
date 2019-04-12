@@ -3,6 +3,7 @@
 #include <vector>
 
 extern double drand(double low, double high);
+extern int irand(int low, int high);
 
 typedef struct
 {
@@ -28,5 +29,11 @@ public:
 	vec3f origin, dir, acceleration, initColor, u,v;
 	double speedMin, speedMax, decayMin, decayMax;
 	int framesCnt, particlesCnt;
+	bool equal(vec3f& postionParticle, vec3f& positionRay, vec3f& direction)const {
+		vec3f dir = (postionParticle - positionRay).normalize();
+		if (abs(abs(dir * direction) - 1) < 0.00001)
+			return true;
+		return false;
+	}
 };
 

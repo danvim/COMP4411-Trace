@@ -168,6 +168,11 @@ int irand(int max)
 	return rand() % max;
 }
 
+int irand(int min, int max)
+{
+	return rand() % (max-min) + min;
+}
+
 double degToRad(double deg)
 {
 	return deg * 2 * M_PI / 360.0f;
