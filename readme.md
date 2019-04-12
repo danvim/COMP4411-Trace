@@ -38,6 +38,6 @@ Programming protect 3 of HKUST Computer Graphics course COMP4411
 - [X] (3B) higher level geometry (rotation/ extrusion/ metaballs)
 - [ ] (3B) ray intersection optimization
   - [ ] (4B) more realistic shading model
-- [ ] (4B) CSG
+- [X] (4B) CSG
   - [x] (4B) particle system
     - [ ] (4B) caustics
