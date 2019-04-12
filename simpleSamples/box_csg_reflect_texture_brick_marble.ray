@@ -42,10 +42,11 @@ scale( 15, 15, 1,
 // that the bottom, which doesn't face the light, is still 
 // reflected properly (this is a common hack, since with 
 // raytracing you don't have diffuse-diffuse reflections)
-translate( 6, 0, 1,
+		
+translate( 6, -2, 1,
 	scale(2, 2, 2, 
-		intersection (
-			translate(0, 0, 0.5, 
+		subtraction (
+			translate(0, -0.5, 0, 
 				sphere {
 					material = {
 					ambient = (0.2, 0.2, 0.2);
@@ -53,7 +54,7 @@ translate( 6, 0, 1,
 						color = (0.6, 0.0, 1.0);
 						lightness = 0.5;
 						contrast = 0.8;
-						frequency = 20;
+						frequency = 25;
 						scale = (1, 1, 0.5);
 						depth = 4;
 					};
@@ -62,7 +63,39 @@ translate( 6, 0, 1,
 					shininess = 0.2;
 				}}
 			),
-			translate(0, 0, -0.5, 
+			translate(0, 0.5, 0, 
+				sphere {
+					material = {
+					ambient = (0.2, 0.2, 0.2);
+					diffuse = (1.0, 0.6, 0.8);
+					specular = (0.5, 0.5, 0.5);
+					reflective = (1, 1, 1);
+					shininess = 0.2;
+				}}
+			)
+		) ))
+		
+translate( 6, 2, 1,
+	scale(2, 2, 2, 
+		intersection (
+			translate(0, -0.5, 0, 
+				sphere {
+					material = {
+					ambient = (0.2, 0.2, 0.2);
+					diffuse = marble {
+						color = (0.6, 0.0, 1.0);
+						lightness = 0.5;
+						contrast = 0.8;
+						frequency = 25;
+						scale = (0.5, 0.5, 1);
+						depth = 4;
+					};
+					specular = (0.5, 0.5, 0.5);
+					reflective = (1, 1, 1);
+					shininess = 0.2;
+				}}
+			),
+			translate(0, 0.5, 0, 
 				sphere {
 					material = {
 					ambient = (0.2, 0.2, 0.2);

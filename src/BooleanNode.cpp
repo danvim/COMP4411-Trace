@@ -17,3 +17,11 @@ void BooleanNode::setMaterial(Material* m)
 {
 	return a->setMaterial(m);
 }
+
+Ray BooleanNode::getLocalRay(const Ray& r) const
+{
+	const auto pos = transform->globalToLocalCoords(r.getPosition());
+	const auto dir = (transform->globalToLocalCoords(r.getPosition() + r.getDirection()) - pos).normalize();
+
+	return Ray(pos, dir);
+}

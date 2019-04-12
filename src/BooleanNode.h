@@ -18,4 +18,6 @@ public:
 
 	SceneObject* a{};
 	SceneObject* b{};
+
+	Ray getLocalRay(const Ray& r) const;;
 };

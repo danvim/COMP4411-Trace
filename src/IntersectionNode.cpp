@@ -8,28 +8,49 @@ IntersectionNode(Scene* const scene, SceneObject* const a, SceneObject* const b)
 
 bool IntersectionNode::intersect(const Ray& r, ISect& i, std::stack<Geometry*>& intersections) const
 {
+	i.obj = a;
 	auto aISect = i;
 	auto bISect = i;
-	const auto isAIntersects = a->intersect(r, aISect, intersections);
-	const auto isBIntersects = b->intersect(r, bISect, intersections);
-	const auto isIntersects = isAIntersects && isBIntersects;
-	Geometry* x = nullptr;
-	Geometry* y = nullptr;
+	const auto localRay = getLocalRay(r);
+	const auto isAIntersects = a->intersect(localRay, aISect, intersections);
+	const auto isBIntersects = b->intersect(localRay, bISect, intersections);
+	if (!(isAIntersects && isBIntersects))
+	{
+		return false;
+	}
 
-	std::tie(x, y) = aISect.t < bISect.t ? std::pair<Geometry*, Geometry*>(a, b) : std::pair<Geometry*, Geometry*>(b, a);
+	Geometry* nearObj;
+	Geometry* farObj;
+	ISect* nearISect;
 
-	if (!intersections.empty() && intersections.top() == x)
+	// Take closer intersection
+	if (aISect.t < bISect.t)
+	{
+		nearObj = a;
+		farObj = b;
+		nearISect = &aISect;
+	}
+	else
+	{
+		nearObj = b;
+		farObj = a;
+		nearISect = &bISect;
+	}
+
+	if (!intersections.empty() && intersections.top() == nearObj)
 	{
 		intersections.pop();
 	}
 	else
 	{
-		intersections.push(x);
-		const auto localRay = Ray(r.at(aISect.t + RAY_EPSILON), r.getDirection());
-		return b->intersect(localRay, i, intersections);
+		intersections.push(nearObj);
+		const auto inRay = Ray(localRay.at(nearISect->t + RAY_EPSILON), localRay.getDirection());
+		const auto intersects = farObj->intersect(inRay, i, intersections);
+		i.obj = a;
+		return intersects;
 	}
 
-	return isIntersects;
+	return false;
 }
 
 bool IntersectionNode::contains(bool intersections) const

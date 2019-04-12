@@ -32,6 +32,7 @@
 #include "../SceneObjects/Torus.h"
 #include "../IntersectionNode.h"
 #include "../../Metaball.h"
+#include "../SubtractNode.h"
 
 typedef std::map<std::string, Material*> MMap;
 
@@ -343,6 +344,26 @@ static Geometry* processGeometry(const std::string& name, Obj* child, Scene* sce
 
 		auto* node = new IntersectionNode(
 			scene, 
+			dynamic_cast<SceneObject*>(processObject(tuple[0], scene, materials, false)),
+			dynamic_cast<SceneObject*>(processObject(tuple[1], scene, materials, false))
+		);
+
+		node->setTransform(transform);
+
+		if (addToScene)
+		{
+			scene->add(node);
+		}
+
+		return node;
+	}
+	else if (name == "subtraction")
+	{
+		const auto& tuple = child->getTuple();
+		verifyTuple(tuple, 2);
+
+		auto* node = new SubtractNode(
+			scene,
 			dynamic_cast<SceneObject*>(processObject(tuple[0], scene, materials, false)),
 			dynamic_cast<SceneObject*>(processObject(tuple[1], scene, materials, false))
 		);
