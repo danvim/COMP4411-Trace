@@ -30,6 +30,7 @@
 #include "../Marble.h"
 #include "../../ParticleSystem.h"
 #include "../SceneObjects/Torus.h"
+#include "../../Metaball.h"
 
 typedef std::map<std::string, Material*> MMap;
 
@@ -393,6 +394,10 @@ static void processGeometry(const std::string& name, Obj* child, Scene* scene,
 
 			obj = new Torus(scene, mat, a, b);
 		}
+		else if(name=="metaballs")
+		{
+			obj = new Metaball(scene, mat);
+		}
 
 		obj->setTransform(transform);
 		scene->add(obj);
@@ -703,7 +708,8 @@ static void processObject(Obj* obj, Scene* scene, MMap& materials)
 		name == "transform" ||
 		name == "trimesh" ||
 		name == "polymesh" ||
-		name == "particles")
+		name == "particles"||
+		name == "metaballs")
 	{
 		// polymesh is for backwards compatibility.
 		processGeometry(name, child, scene, materials, &scene->transformRoot);

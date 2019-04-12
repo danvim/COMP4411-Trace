@@ -157,6 +157,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Metaball.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="src\getopt.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -286,6 +287,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Metaball.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="src\Marble.h" />
     <ClInclude Include="src\PerlinNoise.h" />
